@@ -1,31 +1,33 @@
 import { Route, Routes } from "react-router-dom";
-import { TakeExam } from "../pages/TakeExam";
-import { Login } from "../pages/Login";
+import { TakeExam } from "../pages/UserPages/dashboard/TakeExam";
+import { Login } from "../pages/UserPages/auth/Login";
+import { CreateAccount } from "../pages/UserPages/auth/CreateAccount";
+import { Dashboard } from "../pages/UserPages/dashboard/Dashboard";
+import { DashboardPage } from "../pages/UserPages/dashboard/DashboardPage";
 
 export const MyRoutes = () => {
     return (
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/take-exam" element={<TakeExam />} />
-        {/* <Route path="/login" element={<Signin />} />
-        <Route path="/register" element={<Signup />} />
-        <Route path="/search-results" element={<SearchResults />} />
+        <Route path="/" element={<CreateAccount />} />
+        <Route path="/login" element={<Login />} />
+        {/* <Route path="/take-exam" element={<TakeExam />} /> */}
+        {/* <Route path="/search-results" element={<SearchResults />} />
         <Route path="/search-profile" element={<SearchProfilell />} /> */}
-        {/* <Route
+        <Route
           path="/dashboard"
-          element={<DashboardSideBar />}
+          element={<Dashboard />}
           // element={<Navigate replace to="/dashboard/overview" />}
         >
-          <Route path="/dashboard/overview" element={<DashboardOverview />} />
-          <Route path="/dashboard/venue" element={<DashboardVenue />} />
-          <Route path="/dashboard/vendor" element={<DashboardVendor />} />
-          <Route path="/dashboard/users" element={<DashboardUsers />} />
-          <Route path="/dashboard/edit-user" element={<DashboardEditUser />} />
-          <Route path="/dashboard/add" element={<DashboardAdd />} />
+          <Route path="overview" element={<DashboardPage />} />
+          <Route path="take-exam" element={<TakeExam />} />
+          {/* <Route path="material" element={<DashboardVendor />} />
+          <Route path="practice" element={<DashboardUsers />} />
+          <Route path="result" element={<DashboardEditUser />} /> */}
+          {/* <Route path="/dashboard/add" element={<DashboardAdd />} />
           <Route path="/dashboard/edit" element={<DashboardEdit />} />
           <Route path="/dashboard/edit-venue" />
-          <Route path="/dashboard/edit-vendor" />
-        </Route> */}
+          <Route path="/dashboard/edit-vendor" /> */}
+        </Route>
         <Route path="*" />
       </Routes>
     );
