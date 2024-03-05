@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Header } from '../../../components/user/Header';
 import { materials } from '../../../components/user/materials';
 import { Button } from '../../../components/shared/Button';
+import quiz from '../../../assets/quiz.png';
 import { Modal } from '../../../components/shared/Modal';
 // import useStore from './store'; // Import your Zustand store
 
