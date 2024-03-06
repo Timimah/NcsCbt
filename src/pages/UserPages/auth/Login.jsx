@@ -10,7 +10,7 @@ export const Login = () => {
   // const [error, setError] = useState(false);
 
   const handleLogin = () => {
-    navigate('/take-exam');
+    navigate('/dashboard/take-exam');
   }
   const createAccount = () => {
     navigate('/')
@@ -38,7 +38,7 @@ export const Login = () => {
           </div>
         </div>
       </div>
-      {showModal && <Modal title="Instructions" btntitle="Start Test" btnStyles="bg-primary rounded-lg text-white w-fit py-4 px-4" modStyles="w-full mx-8 my-8 h-3/4 px-16 text-wrap py-10" content={
+      {showModal && <Modal title="Instructions" btntitle="Start Test" btnStyles="bg-primary rounded-lg text-white w-fit py-4 px-4" modStyles="w-full mx-8 my-8 h-3/4 px-16 text-wrap py-10 bg-white" content={
         <>
           <div className="flex flex-col gap-4 mb-4 text-sm">
             <p>Welcome to the [Exam Name] CBT platform. Please read the following instructions carefully before starting the exam.</p>
@@ -56,7 +56,7 @@ export const Login = () => {
         </>
       }
       navClick={handleLogin} onClick={() => setShowModal(false)}
-      buttons={<Button title="Start Test" btnStyles="mt-10 px-4 py-3 bg-primary rounded-lg text-white w-fit" btnClick={handleLogin} />}
+      buttons={<Button title="Start Test" btnStyles="mt-10 px-4 py-3 bg-primary rounded-lg text-white w-fit self-center" btnClick={handleLogin} />}
       />}
       {/* {setError && <Modal content={logerror} />} */}
     </div>
