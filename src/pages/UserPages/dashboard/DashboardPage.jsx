@@ -4,6 +4,7 @@ import { materials } from '../../../components/user/materials';
 import { Button } from '../../../components/shared/Button';
 import quiz from '../../../assets/quiz.png';
 import { Modal } from '../../../components/shared/Modal';
+import { Chart } from '../../../components/user/Chart';
 // import useStore from './store'; // Import your Zustand store
 
 export const DashboardPage = ({ title, username }) => {
@@ -16,9 +17,9 @@ export const DashboardPage = ({ title, username }) => {
     const topMaterials = sortedMaterials.slice(0, 4);
 
     return (
-        <div className="flex flex-col w-full">
+        <div className="flex flex-col w-full p-10">
             <Header title="Dashboard" username="Bedlam" />
-            <main className="flex-grow p-6">
+            <main className="flex-grow">
                 <section>
                     <h2 className="text-lg mb-4 text-darkgrey">Top Materials to Read</h2>
                     <div className='grid grid-cols-4 gap-4'>
@@ -49,16 +50,18 @@ export const DashboardPage = ({ title, username }) => {
                     </div>
                 </section>
 
-                <section className="bg-yellow-200 rounded-lg p-6 mt-8 flex items-center">
+                <section className="bg-yellow-200 rounded-lg p-6 mt-8 flex items-center justify-center">
                     <div className="w-1/2 flex flex-col gap-4 text-left">
-                        <h2 className="text-xl mb-4">Take Quiz to Test Your Knowledge</h2>
+                        <h2 className="text-3xl mb-4">Take Quiz to Test Your Knowledge</h2>
                         <Button title="Take Exam" btnStyles="bg-primary text-white py-2 px-4 rounded-md w-fit" btnClick={() => setShowModal(true)} />
                     </div>
                     <img className='object-contain' src={quiz} alt="Quiz" />
                 </section>
                 <section className="mt-8">
                     <h2 className="text-xl font-bold mb-4">Test Overview</h2>
-                    {/* Add your chart component here */}
+                    <div className='bg-white'>
+                    <Chart />
+                    </div>
                 </section>
             </main>
             {showModal &&

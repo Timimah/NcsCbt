@@ -4,6 +4,7 @@ import { Login } from "../pages/UserPages/auth/Login";
 import { CreateAccount } from "../pages/UserPages/auth/CreateAccount";
 import { Dashboard } from "../pages/UserPages/dashboard/Dashboard";
 import { DashboardPage } from "../pages/UserPages/dashboard/DashboardPage";
+import { Materials } from "../pages/UserPages/dashboard/Materials";
 
 export const MyRoutes = () => {
     return (
@@ -20,8 +21,8 @@ export const MyRoutes = () => {
         >
           <Route path="overview" element={<DashboardPage />} />
           <Route path="take-exam" element={<TakeExam />} />
-          {/* <Route path="material" element={<DashboardVendor />} />
-          <Route path="practice" element={<DashboardUsers />} />
+          <Route path="material" element={<Materials />} />
+          {/* <Route path="practice" element={<DashboardUsers />} />
           <Route path="result" element={<DashboardEditUser />} /> */}
           {/* <Route path="/dashboard/add" element={<DashboardAdd />} />
           <Route path="/dashboard/edit" element={<DashboardEdit />} />

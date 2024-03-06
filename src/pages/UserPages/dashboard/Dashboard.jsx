@@ -12,7 +12,7 @@ export const Dashboard = ({ children }) => {
 
   return (
     <section className='flex bg-vector w-full bg-white h-full transform transition-all duration-300'>
-      <div className='flex flex-col items-center w-1/5 bg-white text-grey'>
+      <div className='flex flex-col items-center w-1/4 bg-white text-grey py-10'>
         <div
           className={
             active === "dashboardmain"
@@ -37,7 +37,7 @@ export const Dashboard = ({ children }) => {
           }
           onClick={() => {
             setActive("material");
-            // navigate("/dashboard/overview");
+            navigate("/dashboard/material");
           }}
         >
           <svg width="18" height="22" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
