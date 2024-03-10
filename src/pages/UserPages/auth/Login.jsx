@@ -13,7 +13,7 @@ export const Login = () => {
     navigate('/dashboard/take-exam');
   }
   const createAccount = () => {
-    navigate('/')
+    navigate('/create-account')
   }
 
   return (
