@@ -85,7 +85,7 @@ export const Dashboard = ({ children }) => {
           }
           onClick={() => {
             setActive("result");
-            navigate("/dashboard/take-exam");
+            navigate("/dashboard/result");
           }}
         >
           <svg width="18" height="21" viewBox="0 0 18 21" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -101,7 +101,7 @@ export const Dashboard = ({ children }) => {
           }
           onClick={() => {
             setActive("logout");
-            navigate("/login");
+            navigate("/");
           }}
         >
           <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
