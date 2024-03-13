@@ -8,7 +8,7 @@ import flowr from '../../assets/flowr.png'
 import quote from '../../assets/quote.png';
 import { Card } from '../../components/website/Card';
 import { Cbt } from '../../components/user/Cbt';
-import { Pq } from '../../components/user/PQ';
+import { Pq } from '../../components/user/Pq';
 import { Time } from '../../components/user/Time';
 import { User } from '../../components/user/USER';
 import { Data } from '../../components/user/Data';
