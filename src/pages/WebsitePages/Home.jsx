@@ -10,7 +10,7 @@ import { Card } from '../../components/website/Card';
 import { Cbt } from '../../components/user/Cbt';
 import { Pq } from '../../components/user/Pq';
 import { Time } from '../../components/user/Time';
-import { User } from '../../components/user/USER';
+import { User } from '../../components/user/User';
 import { Data } from '../../components/user/Data';
 import { TestimonialCard } from '../../components/website/TestimonialCard';
 import { PricingTable } from '../../components/website/PricingTable';
