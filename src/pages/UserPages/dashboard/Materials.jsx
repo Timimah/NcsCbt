@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { materials } from '../../../components/user/materials';
-import { Header } from '../../../components/user/Header';
+import { Header } from '../../../components/shared/Header';
 
 export const Materials = () => {
     const [searchTerm, setSearchTerm] = useState('');

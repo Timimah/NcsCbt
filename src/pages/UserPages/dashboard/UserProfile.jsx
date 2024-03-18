@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Header } from '../../../components/user/Header';
+import { Header } from '../../../components/shared/Header';
 import { Button } from '../../../components/shared/Button';
 
 export const ProfilePage = () => {

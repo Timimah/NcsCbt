@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { Header } from '../../../components/user/Header';
+import { Header } from '../../../components/shared/Header';
 import { materials } from '../../../components/user/materials';
 import { Button } from '../../../components/shared/Button';
 import quiz from '../../../assets/quiz.png';
 import { Modal } from '../../../components/shared/Modal';
 import { Chart } from '../../../components/user/Chart';
-// import useStore from './store'; // Import your Zustand store
+import { useUserStore } from '../../../store/userStore';
 
 export const DashboardPage = ({ title, username }) => {
     const [showModal, setShowModal] = useState(false);
-    //   const { username, userAvatar } = useStore((state) => state);
+    const { loggedInUser } = useUserStore();
     // Sort materials by rating in descending order
     const sortedMaterials = materials.sort((a, b) => b.rating - a.rating);
 
@@ -18,7 +18,7 @@ export const DashboardPage = ({ title, username }) => {
 
     return (
         <div className="flex flex-col w-full p-10">
-            <Header title="Dashboard" username="Bedlam" />
+            <Header title="Dashboard" />
             <main className="flex-grow">
                 <section>
                     <h2 className="text-lg mb-4 text-darkgrey">Top Materials to Read</h2>
@@ -50,7 +50,7 @@ export const DashboardPage = ({ title, username }) => {
                     </div>
                 </section>
 
-                <section className="bg-yellow-200 rounded-lg p-6 mt-8 flex items-center justify-center">
+                <section className="bg-yellow rounded-lg p-6 mt-8 flex items-center justify-center">
                     <div className="w-1/2 flex flex-col gap-4 text-left">
                         <h2 className="text-3xl mb-4">Take Quiz to Test Your Knowledge</h2>
                         <Button title="Take Exam" btnStyles="bg-primary text-white py-2 px-4 rounded-md w-fit" btnClick={() => setShowModal(true)} />

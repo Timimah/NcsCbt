@@ -6,7 +6,7 @@ export const AdminDashboard = ({ children }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        navigate("/admin/admin-overview");
+        navigate("/admin-dashboard/overview");
     }, []);
 
     return (
@@ -20,7 +20,7 @@ export const AdminDashboard = ({ children }) => {
                     }
                     onClick={() => {
                         setActive("dashboardmain");
-                        navigate("/admin/admin-overview");
+                        navigate("/admin-dashboard/overview");
                     }}
                 >
                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -36,7 +36,7 @@ export const AdminDashboard = ({ children }) => {
                     }
                     onClick={() => {
                         setActive("user");
-                        navigate("/admin/user");
+                        navigate("/admin-dashboard/user");
                     }}
                 >
                     <svg width="23" height="15" viewBox="0 0 23 15" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -52,7 +52,7 @@ export const AdminDashboard = ({ children }) => {
                     }
                     onClick={() => {
                         setActive("checkin");
-                        navigate("/admin/checkin");
+                        navigate("/admin-dashboard/checkin");
                     }}
                 >
                     <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -68,7 +68,7 @@ export const AdminDashboard = ({ children }) => {
                     }
                     onClick={() => {
                         setActive("material");
-                        navigate("/admin/materials");
+                        navigate("/admin-dashboard/materials");
                     }}
                 >
                     <svg width="18" height="22" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -116,7 +116,7 @@ export const AdminDashboard = ({ children }) => {
                     }
                     onClick={() => {
                         setActive("payment");
-                        // navigate("/dashboard/overview");
+                        navigate("/admin-dashboard/payment-history");
                     }}
                 >
                     <svg width="19" height="14" viewBox="0 0 19 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -132,7 +132,7 @@ export const AdminDashboard = ({ children }) => {
                     }
                     onClick={() => {
                         setActive("result");
-                        // navigate("/dashboard/result");
+                        navigate("/admin-dashboard/result");
                     }}
                 >
                     <svg width="18" height="21" viewBox="0 0 18 21" fill="none" xmlns="http://www.w3.org/2000/svg">

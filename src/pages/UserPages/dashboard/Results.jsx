@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Table } from '../../../components/shared/Table';
 import { results } from '../../../components/user/results';
-import { Header } from '../../../components/user/Header';
+import { Header } from '../../../components/shared/Header';
 
 const columns = [
     { key: 'id', label: 'S/N' },

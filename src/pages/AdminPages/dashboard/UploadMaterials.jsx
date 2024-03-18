@@ -1,16 +1,26 @@
 import React, { useState } from 'react';
 import { materials } from '../../../components/user/materials';
-import { Header } from '../../../components/user/Header';
+import { Header } from '../../../components/shared/Header';
 import { Button } from '../../../components/shared/Button';
 import { Modal } from '../../../components/shared/Modal';
 import upload from '../../../assets/upload-cloud.png'
 import success from '../../../assets/upload.png'
+import { useAdminStore } from '../../../store/adminStore';
 
 export const UploadMaterials = () => {
+    const  { material } = useAdminStore();
+    const [materialName, setMaterialName] = useState('');
+  const [authorsName, setAuthorsName] = useState('');
+  const [rank, setRank] = useState('select rank');
+  const [coverImage, setCoverImage] = useState(null);
+  const [file, setFile] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    // const [uploadedMaterials, setUploadedMaterials] = useState([]);
     const [displayedMaterials, setDisplayedMaterials] = useState(materials.slice(0, 8));
     const [showModal, setShowModal] = useState(false);
     const [handleUpload, setHandleUpload] = useState(false);
+
+    
 
     const handleSearch = (e) => {
         const term = e.target.value;
@@ -112,28 +122,29 @@ export const UploadMaterials = () => {
                             <label htmlFor="materialName">Material Name</label>
                             <input
                                 type="text"
+                                value={materialName}
                                 className="border rounded-md py-2 px-4"
                                 placeholder="Material Name"
-                            // onChange={handleSearch}
+                            onChange={(e) => {setMaterialName(e.target.value)}}
                             />
                         </div>
                         <div className='w-full flex flex-col'>
                             <label htmlFor="authorsName">Author's Name</label>
                             <input
                                 type="text"
+                                value={authorsName}
+                                onChange={(e) => {setAuthorsName(e.target.value)}}    
                                 className="border rounded-md py-2 px-4"
                                 placeholder="Author's Name"
-                            // onChange={handleSearch}
                             />
                         </div>
                         <div className='w-full flex flex-col'>
-                            <label htmlFor="phoneNumber">Phone Number</label>
-                            <input
-                                type="tel"
-                                className="border rounded-md py-2 px-4"
-                                placeholder="Enter Phone Number"
-                            // onChange={handleSearch}
-                            />
+                        <label htmlFor="rank" className="block py-1 -mb-1">Select Rank</label>
+            <select id="rank" name="rank" value={rank} onChange={(e) => { setRank(e.target.value); }} className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary`}>
+              <option value="rank1">Rank 1</option>
+              <option value="rank2">Rank 2</option>
+              <option value="rank3">Rank 3</option>
+            </select>
                         </div>
                         <div className='w-full flex flex-col gap-10'>
                             <div className='border border-dotted border-primary rounded-lg flex flex-col justify-center items-center px-14 py-10'>

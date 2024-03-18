@@ -1,55 +1,63 @@
 import React, { useState } from 'react';
-import { Header } from '../../../components/user/Header';
+import { Header } from '../../../components/shared/Header';
 import { materials } from '../../../components/user/materials';
 import { Button } from '../../../components/shared/Button';
-import quiz from '../../../assets/quiz.png';
 import { Modal } from '../../../components/shared/Modal';
 import { Chart } from '../../../components/user/Chart';
+import user from '../../../assets/user.png'
+import adminn from '../../../assets/user.png'
+import subscription from '../../../assets/sub.png'
+import examinee from '../../../assets/examinee.png'
+import { useAdminStore } from '../../../store/adminStore';
+import { OverviewCard } from '../../../components/admin/OverviewCard';
+import { useUserStore } from '../../../store/userStore';
 // import useStore from './store'; // Import your Zustand store
 
-const cards = [
-    {
-        icon: '👥',
-        value: 75,
-        label: 'Total User',
-        bgColor: 'bg-green-100',
-        textColor: 'text-green-600',
-        iconBgColor: 'bg-green-500',
-        iconTextColor: 'text-white',
-    },
-    {
-        icon: '👥',
-        value: 128,
-        label: 'Total subscriber',
-        bgColor: 'bg-blue-100',
-        textColor: 'text-blue-600',
-        iconBgColor: 'bg-blue-500',
-        iconTextColor: 'text-white',
-    },
-    {
-        icon: '🎫',
-        value: 357,
-        label: 'Total Subscription',
-        bgColor: 'bg-orange-100',
-        textColor: 'text-orange-600',
-        iconBgColor: 'bg-orange-500',
-        iconTextColor: 'text-white',
-    },
-    {
-        icon: '📝',
-        value: 65,
-        label: 'Total Examinee',
-        bgColor: 'bg-purple-100',
-        textColor: 'text-purple-600',
-        iconBgColor: 'bg-purple-500',
-        iconTextColor: 'text-white',
-    },
-];
 
 export const AdminOverview = ({ title, username }) => {
+    const { users } = useUserStore();
+    const { admin, subscriptions } = useAdminStore();
     const [showModal, setShowModal] = useState(false);
-    //   const { username, userAvatar } = useStore((state) => state);
     // Sort materials by rating in descending order
+    const cards = [
+        {
+            icon: user,
+            value: users.length,
+            label: 'Total User',
+            bgColor: 'bg-green-100',
+            textColor: 'text-green-600',
+            iconBgColor: 'bg-green-500',
+            iconTextColor: 'text-white',
+        },
+        {
+            icon: adminn,
+            value: admin.length,
+            label: 'Total Admin',
+            bgColor: 'bg-blue-100',
+            textColor: 'text-blue-600',
+            iconBgColor: 'bg-blue-500',
+            iconTextColor: 'text-white',
+        },
+        {
+            icon: subscription,
+            value: subscriptions.length,
+            label: 'Total Subscriptions',
+            bgColor: 'bg-green-100',
+            textColor: 'text-green-600',
+            iconBgColor: 'bg-green-500',
+            iconTextColor: 'text-white',
+        },
+        {
+            icon: examinee,
+            value: user.length,
+            label: 'Total Examinee',
+            bgColor: 'bg-blue-100',
+            textColor: 'text-blue-600',
+            iconBgColor: 'bg-blue-500',
+            iconTextColor: 'text-white',
+        }
+    ]
+
     const sortedMaterials = materials.sort((a, b) => b.rating - a.rating);
 
     // Get the top 4 materials with the highest rating
@@ -57,23 +65,21 @@ export const AdminOverview = ({ title, username }) => {
 
     return (
         <div className="flex flex-col w-full p-10">
-            <Header title="Dashboard" username="Bedlam" />
+            <Header title="Dashboard" />
             <main className="flex-grow">
-                <div className="flex justify-between p-5">
+                <div className="flex justify-around gap-6 p-5">
                     {cards.map((card, index) => (
-                        <div
-                            key={index}
-                            className={`${card.bgColor} ${card.textColor} rounded-lg shadow-md p-4 flex items-center space-x-4 w-64`}
-                        >
-                            <div
-                                className={`${card.iconBgColor} ${card.iconTextColor} rounded-full p-3 flex items-center justify-center`}
-                            >
-                                <span className="text-2xl">{card.icon}</span>
-                            </div>
-                            <div>
-                                <div className="font-bold text-xl">{card.value}</div>
-                                <div className="text-sm">{card.label}</div>
-                            </div>
+                        <div key={index} className='w-fit'>
+                            <OverviewCard
+                                cardStyles="p-6"
+                                label={card.label}
+                                cardValue={card.value}
+                                icon={
+                                    <>
+                                        <img className='w-10' src={card.icon} alt={card.icon} />
+                                    </>
+                                }
+                            />
                         </div>
                     ))}
                 </div>

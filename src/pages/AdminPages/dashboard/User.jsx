@@ -1,16 +1,13 @@
 import React, { useState } from 'react'
 import { Table } from '../../../components/shared/Table';
-import { Header } from '../../../components/user/Header';
+import { Header } from '../../../components/shared/Header';
 import { Button } from '../../../components/shared/Button'
 import { Modal } from '../../../components/shared/Modal'
-
-const columns = [
-    { key: 'id', label: 'S/N' },
-    { key: 'examineeId', label: 'Examinee ID' },
-    { key: 'name', label: 'Name' },
-    { key: 'email', label: 'Email Adress' },
-    { key: 'checkinTime', label: 'Checkin Time' },
-];
+import { useAdminStore } from '../../../store/adminStore';
+import { useUserStore } from '../../../store/userStore';
+import { OverviewCard } from '../../../components/admin/OverviewCard';
+import user from '../../../assets/user.png'
+import adminn from '../../../assets/user.png'
 
 const examineeData = [
     {
@@ -57,30 +54,62 @@ const examineeData = [
     }
 ]
 
-const cards = [
-    {
-        icon: '👥',
-        value: 75,
-        label: 'Total User',
-        bgColor: 'bg-green-100',
-        textColor: 'text-green-600',
-        iconBgColor: 'bg-green-500',
-        iconTextColor: 'text-white',
-    },
-    {
-        icon: '👥',
-        value: 128,
-        label: 'Total subscriber',
-        bgColor: 'bg-blue-100',
-        textColor: 'text-blue-600',
-        iconBgColor: 'bg-blue-500',
-        iconTextColor: 'text-white',
-    }
+const adminHeader = [
+    { key: 'id', label: 'S/N' },
+    { key: 'name', label: 'Name' },
+    { key: 'adminEmail', label: 'Email Address' },
+    { key: 'phoneNumber', label: 'Phone Number' },
 ]
+
+const userHeader = [
+    { key: 'id', label: 'S/N' },
+    { key: 'examineeId', label: 'Examinee ID' },
+    { key: 'fullName', label: 'Full Name' },
+    { key: 'userEmail', label: 'Email Address' },
+    { key: 'phoneNumber', label: 'Phone Number' },
+
+    // Add any other relevant columns for users
+]
+
 
 export const User = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
+    const [activeTab, setActiveTab] = useState("admin");
+    const { createAdmin, admin } = useAdminStore();
+    const { users } = useUserStore();
+    console.log(admin)
+
+    const cards = [
+        {
+            icon: user,
+            value: users.length,
+            label: 'Users',
+            bgColor: 'bg-green-100',
+            textColor: 'text-green-600',
+            iconBgColor: 'bg-green-500',
+            iconTextColor: 'text-white',
+        },
+        {
+            icon: adminn,
+            value: admin.length,
+            label: 'Admins',
+            bgColor: 'bg-blue-100',
+            textColor: 'text-blue-600',
+            iconBgColor: 'bg-blue-500',
+            iconTextColor: 'text-white',
+        }
+    ]
+
+    const [name, setName] = useState("");
+    const [adminEmail, setAdminEmail] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
+    const [adminPassword, setAdminPassword] = useState("");
+
+    const [nameError, setNameError] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [phoneNumberError, setPhoneNumberError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
 
     const handleSearch = (e) => {
         const term = e.target.value;
@@ -99,16 +128,58 @@ export const User = () => {
         console.log('doesn\'t work just yet');
     };
 
+    const handleSubmit = () => {
+        let isValid = true;
+        if (!name.trim()) {
+            setNameError("Name is required");
+            isValid = false;
+        } else {
+            // Check if the id already exists in the users array
+            const userExists = admin.some((a) => a.name === name);
+            if (userExists) {
+                setNameError("Name already exists");
+                isValid = false;
+            }
+        }
+        if (!adminEmail.trim()) {
+            setEmailError("Email is required");
+            isValid = false;
+        }
+        if (!phoneNumber.trim()) {
+            setPhoneNumberError("Phone Number is required");
+            isValid = false;
+        } else {
+            setPhoneNumberError("");
+        }
+        if (!adminPassword.trim()) {
+            setPasswordError("Password is required");
+            isValid = false;
+        }
+
+
+        if (isValid) {
+            const adminData = { name, adminEmail, phoneNumber, adminPassword };
+            createAdmin(adminData);
+            setName("");
+            setAdminEmail("");
+            setPhoneNumber("");
+            setAdminPassword("");
+            console.log("Admin created successfully");
+            setShowModal(false);
+        }
+    };
+
+
     return (
         <div className="flex flex-col w-full p-10 gap-4">
-            <Header title="Dashboard" username="Bedlam" />
+            <Header title="Dashboard" />
             <main className="flex-grow">
                 <section className='flex flex-col gap-4'>
-                    <div className="flex mb-4 justify-between gap-8 h-14">
+                    <div className="flex mb-4 justify-between items-center gap-8 h-14">
                         <div className="relative flex w-2/3">
                             <input
                                 type="text"
-                                className="border rounded-md py-2 px-4 w-full"
+                                className="border rounded-md py-3 px-4 w-full"
                                 placeholder="Search here..."
                                 value={searchTerm}
                                 onChange={handleSearch}
@@ -129,78 +200,98 @@ export const User = () => {
                                 </svg>
                             </div>
                         </div>
-                        <div className="flex justify-between gap-4 w-1/3">
-                                {cards.map((card, index) => (
-                                    <div
-                                        key={index}
-                                        className={`${card.bgColor} ${card.textColor} rounded-lg shadow-md p-4 flex items-center space-x-4 w-64`}
-                                    >
-                                        <div
-                                            className={`${card.iconBgColor} ${card.iconTextColor} rounded-full p-1 flex items-center justify-center`}
-                                        >
-                                            <span className="text-md">{card.icon}</span>
-                                        </div>
-                                        <div>
-                                            <div className="font-bold">{card.value}</div>
-                                            <div className="text-xs">{card.label}</div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                        <div className="flex justify-between w-1/3 gap-4">
+                            {cards.map((card, index) => (
+                                <div key={index} className='w-full'>
+                                    <OverviewCard
+                                        cardStyles="justify-center py-3"
+                                        cardClick={() => {
+                                            if (card.label === "Admin") {
+                                                console.log("Admin")
+                                                setActiveTab("admin");
+                                            } else {
+                                                console.log("User")
+                                                setActiveTab("user");
+                                            }
+                                        }}
+                                        label={card.label}
+                                        cardValue={card.value}
+                                        icon={
+                                            <>
+                                                <img className='w-10' src={card.icon} alt={card.icon} />
+                                            </>
+                                        }
+                                    />
+                                </div>
+                            ))}
+                        </div>
                     </div>
                     <div className='flex justify-end'>
-                        <Button title="Create Admin" btnStyles="px-4 py-3 bg-primary rounded-md text-white" btnClick={() => setShowModal(!showModal)} />
+                        {activeTab === "admin" ? <Button title="Create Admin" btnStyles="px-4 py-3 bg-primary rounded-md text-white" btnClick={() => setShowModal(!showModal)} /> : ""}
                     </div>
                     <div className="px-4 w-full">
-                        <Table data={examineeData} columns={columns} />
+                        {/* {activeTab === "user" && <Table data={users} columns={userHeader}/>} */}
+                        {activeTab === "user" && <Table data={users.length > 0 ? users.map((user, index) => ({ ...user, id: index + 1 })) : [{ id: 1, name: 'No users' }]} columns={userHeader} />}
+                        {activeTab === "admin" && <Table data={admin.length > 0 ? admin.map((admin, index) => ({ ...admin, id: index + 1 })) : [{ id: 1, name: 'No admins' }]} columns={adminHeader} />}
                     </div>
                 </section>
             </main>
             {showModal &&
-                <Modal title="Check Examinee In" content={
+                <Modal title="Create Admin" content={
                     <div className='flex flex-col items-center gap-4 my-2'>
                         <div className='w-full flex flex-col'>
                             <label htmlFor="adminName">Name</label>
                             <input
                                 type="text"
-                                className="border rounded-md py-2 px-4"
+                                value={name}
+                                onChange={(e) => { setName(e.target.value); setNameError(""); }}
+                                className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${nameError ? "border-red-500" : ""
+                                    }`}
                                 placeholder="Name"
-                            // onChange={handleSearch}
                             />
+                            {nameError && <div className="text-sm text-red-500">{nameError}</div>}
                         </div>
                         <div className='w-full flex flex-col'>
                             <label htmlFor="email">Email Address</label>
                             <input
                                 type="email"
-                                className="border rounded-md py-2 px-4"
+                                value={adminEmail}
+                                onChange={(e) => { setAdminEmail(e.target.value); setEmailError(""); }}
+                                className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${emailError ? "border-red-500" : ""
+                                    }`}
                                 placeholder="Enter Email Address"
-                            // onChange={handleSearch}
                             />
+                            {emailError && <div className="text-sm text-red-500">{emailError}</div>}
                         </div>
                         <div className='w-full flex flex-col'>
                             <label htmlFor="phoneNumber">Phone Number</label>
                             <input
                                 type="tel"
-                                className="border rounded-md py-2 px-4"
+                                value={phoneNumber}
+                                onChange={(e) => { setPhoneNumber(e.target.value); setPhoneNumberError(""); }}
+                                className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${phoneNumberError ? "border-red-500" : ""
+                                    }`}
                                 placeholder="Enter Phone Number"
-                            // onChange={handleSearch}
                             />
+                            {phoneNumberError && <div className="text-sm text-red-500">{phoneNumberError}</div>}
                         </div>
                         <div className='w-full flex flex-col'>
                             <label htmlFor="adminpassword">Password</label>
                             <input
-                                type="text"
-                                className="border rounded-md py-2 px-4"
+                                type="password" value={adminPassword}
+                                onChange={(e) => { setAdminPassword(e.target.value); setPasswordError(""); }}
+                                className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${passwordError ? "border-red-500" : ""
+                                    }`}
                                 placeholder="Enter Password"
-                            // onChange={handleSearch}
                             />
+                            {passwordError && <div className="text-sm text-red-500">{passwordError}</div>}
                         </div>
                     </div>
                 }
                     buttons={
-                        <Button title="Create Admin" btnStyles="bg-primary px-4 py-3 text-white rounded-md w-full my-5" btnClick={() => setShowModal(false)} />
+                        <Button title="Create Admin" btnStyles="bg-primary px-4 py-3 text-white rounded-md w-full my-5" btnClick={handleSubmit} />
                     }
-                    modStyles="bg-secondary h-1/2"
+                    modStyles="bg-secondary w-1/2"
                 />
             }
         </div>
