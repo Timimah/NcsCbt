@@ -2,79 +2,165 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Modal } from "../../../components/shared/Modal";
 import { Button } from "../../../components/shared/Button";
-// import logerror from "../assets/error.svg"
+import { useUserStore } from "../../../store/userStore";
 
 export const CreateAccount = () => {
   const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false);
-  // const [error, setError] = useState(false);
+  const { createUser, users } = useUserStore();
 
-  const handleLogin = () => {
-    navigate('/take-exam');
-  }
+  const [fullName, setFullName] = useState("");
+  const [examineeId, setExamineeId] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [rank, setRank] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [fullNameError, setFullNameError] = useState("");
+  const [idError, setIdError] = useState("");
+  const [userEmailError, setUserEmailError] = useState("");
+  const [phoneNumberError, setPhoneNumberError] = useState("");
+  const [rankError, setRankError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+
+  const handleSubmit = () => { 
+    let isValid = true;
+    if (!fullName.trim()) {
+      setFullNameError("Full Name is required");
+      isValid = false;
+    }
+    if (!examineeId.trim()) {
+      setIdError("ID is required");
+      isValid = false;
+    } else {
+      // Check if the id already exists in the users array
+      const userExists = users.some((u) => u.examineeId === examineeId);
+      if (userExists) {
+        setIdError("ID already exists");
+        isValid = false;
+      }
+    }
+    if (!userEmail.trim()) {
+      setUserEmailError("Email is required");
+      isValid = false;
+    }
+    if (!phoneNumber.trim()) {
+      setPhoneNumberError("Phone Number is required");
+      isValid = false;
+    } else {
+      setPhoneNumberError("");
+    }
+    if (!rank.trim()) {
+      setRankError("Rank is required");
+      isValid = false;
+    }
+    if (!password.trim()) {
+      setPasswordError("Password is required");
+      isValid = false;
+    }
+    if (!confirmPassword.trim()) {
+      setConfirmPasswordError("Confirm Password is required");
+      isValid = false;
+    } else if (confirmPassword !== password) {
+      setConfirmPasswordError("Passwords do not match");
+      isValid = false;
+    }
+
+    if (isValid) {
+      const userData = { fullName, examineeId, userEmail, phoneNumber, rank, password };
+      createUser(userData);
+      setFullName("");
+      setExamineeId("");
+      setUserEmail("");
+      setPhoneNumber("");
+      setRank("");
+      setPassword("");
+      setConfirmPassword("");
+      console.log("User created successfully");
+      navigate("/login");
+    }
+  };
 
   return (
     <div className="bg-vector min-h-screen flex items-center justify-center py-10">
       <div className='w-full max-w-lg px-10 py-8 mx-auto bg-secondary rounded-2xl'>
-        <div className='max-w-md mx-auto space-y-3'>
+        <div className='max-w-md mx-auto space-y-3' onSubmit={handleSubmit}>
           <h3 className="text-3xl text-primary font-bold">Welcome</h3>
           <p className="text-grey mb-8">Please enter your ID and password</p>
           <div>
             <label className="block py-1 -mb-1">Full Name</label>
-            <input type="text" className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary" placeholder="Enter your full name" />
-            <p className="text-sm mt-2 px-2 hidden text-gray-600">Text helper</p>
+            <input
+              type="text"
+              value={fullName}
+              onChange={(e) => { setFullName(e.target.value); setFullNameError(""); }}
+              className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${fullNameError ? "border-red-500" : ""
+                }`}
+              placeholder="Enter your full name"
+            />
+            {fullNameError && <div className="text-sm text-red-500">{fullNameError}</div>}
           </div>
           <div>
             <label className="block py-1 -mb-1">ID</label>
-            <input type="text" className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary" placeholder="Enter your ID" />
+            <input
+              type="text"
+              value={examineeId}
+              onChange={(e) => { setExamineeId(e.target.value); setIdError(""); }}
+              className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${idError ? "border-red-500" : ""
+                }`}
+              placeholder="Enter your ID"
+            />
+            {idError && <div className="text-sm text-red-500">{idError}</div>}
           </div>
           <div>
             <label className="block py-1 -mb-1">Email</label>
-            <input type="email" className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary" placeholder="Enter your email" />
+            <input
+              type="email"
+              value={userEmail}
+              onChange={(e) => { setUserEmail(e.target.value); setUserEmailError(""); }}
+              className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${userEmailError ? "border-red-500" : ""
+                }`}
+              placeholder="Enter your email"
+            />
+            {userEmailError && <div className="text-sm text-red-500">{userEmailError}</div>}
           </div>
           <div>
             <label className="block py-1 -mb-1">Phone Number</label>
-            <input type="tel" className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary" placeholder="Enetr your phone number" />
+            <input
+              type="tel"
+              value={phoneNumber}
+              onChange={(e) => { setPhoneNumber(e.target.value); setPhoneNumberError(""); }}
+              className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${phoneNumberError ? "border-red-500" : ""
+                }`}
+              placeholder="Enter your phone number"
+            />
+            {phoneNumberError && <div className="text-sm text-red-500">{phoneNumberError}</div>}
           </div>
           <div>
-            <label className="block py-1 -mb-1">Select Rank</label>
-            <input type="password" className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary" placeholder="Password" />
+            <label htmlFor="rank" className="block py-1 -mb-1">Select Rank</label>
+            <select id="rank" name="rank" value={rank} onChange={(e) => { setRank(e.target.value); setRankError("") }} className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${rankError ? 'border-red-500' : ''}`}>
+              <option value="rank1">Rank 1</option>
+              <option value="rank2">Rank 2</option>
+              <option value="rank3">Rank 3</option>
+            </select>
+            {rankError && <div className="text-sm text-red-500">{rankError}</div>}
           </div>
           <div>
-            <label className="block py-1 -mb-1">Password</label>
-            <input type="password" className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary" placeholder="Password" />
+            <label htmlFor="password" className="block py-1 -mb-1">Password</label>
+            <input type="password" id="password" name="password" value={password} onChange={(e) => { setPassword(e.target.value); setPasswordError("") }} className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${passwordError ? 'border-red-500' : ''}`} placeholder="Enter your password" />
+            {passwordError && <div className="text-sm text-red-500">{passwordError}</div>}
           </div>
           <div>
-            <label className="block py-1 -mb-1">Confirm Password</label>
-            <input type="password" className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary" placeholder="Confirm Password" />
+            <label htmlFor="confirmPassword" className="block py-1 -mb-1">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" value={confirmPassword} onChange={(e) => { setConfirmPassword(e.target.value); setConfirmPasswordError("") }} className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${confirmPasswordError ? 'border-red-500' : ''}`} placeholder="Confirm your password" />
+            {confirmPasswordError && <div className="text-sm text-red-500">{confirmPasswordError}</div>}
           </div>
           <div className="flex flex-col gap-3 pt-3 items-center">
-            <Button title="Create Account" btnStyles="bg-primary text-white text-lg rounded-lg shadow-sm py-4 px-4 w-full" btnClick={() => navigate('/login')} />
+            <Button title="Create Account" btnStyles="bg-primary text-white text-lg rounded-lg shadow-sm py-4 px-4 w-full" btnClick={handleSubmit} />
             {/* <a href="#">Forgot Password</a> */}
           </div>
         </div>
       </div>
-      {showModal && <Modal title="Instructions" btntitle="Start Test" btnStyles="bg-primary rounded-lg text-white w-fit py-4 px-4" modStyles="w-full mx-8 my-8 h-3/4 px-16 text-wrap py-10" content={
-        <>
-          <div className="flex flex-col gap-4 mb-4 text-sm">
-            <p>Welcome to the [Exam Name] CBT platform. Please read the following instructions carefully before starting the exam.</p>
-            <p>Before proceeding, ensure that your computer and internet connection are working properly. Click on the 'System Check' button to verify.</p>
-          </div>
-          <div className="flex flex-col gap-1 text-sm mb-4">
-            <p>1. Time Reminder: <br/> <span className="ml-10">You will have [Time Limit] to complete the exam. A timer will be displayed on the screen to help you manage your time effectively.</span></p>
-            <p>2. Navigation Instructions: <br/> <span className="ml-10">Use the navigation buttons provided to move between questions. You can go back and forth as needed.</span></p>
-            <p>3. Answering Format: <br/> <span className="ml-10">Answer each question by selecting the appropriate option.</span></p>
-            <p>4. Marking for Review: <br/> <span className="ml-10">If you're unsure about an answer, you can mark the question for review and return to it later.</span></p>
-            <p>5. Technical Support Information: <br/> <span className="ml-10">If you encounter any technical issues during the exam, please raise your hand or contact the invigilator for assistance.</span></p>
-            <p>6. Academic Integrity Reminder: <br/> <span className="ml-10">Maintain academic integrity throughout the exam. Any form of cheating or unauthorized assistance is strictly prohibited.</span></p>
-            <p>7. Exam Duration Notice: <br/> <span className="ml-10">Once the exam starts, it cannot be paused or extended. Ensure that you manage your time effectively to complete all questions.</span></p>
-          </div>
-        </>
-      }
-      navClick={handleLogin} onClick={() => setShowModal(false)}
-      buttons={<Button title="Start Test" btnStyles="mt-10 px-4 py-3 bg-primary rounded-lg text-white w-fit" btnClick={handleLogin} />}
-      />}
-      {/* {setError && <Modal content={logerror} />} */}
     </div>
   );
 }
