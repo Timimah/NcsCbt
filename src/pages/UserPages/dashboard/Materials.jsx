@@ -1,26 +1,32 @@
 import React, { useState } from 'react';
-import { materials } from '../../../components/user/materials';
 import { Header } from '../../../components/shared/Header';
 
 export const Materials = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [displayedMaterials, setDisplayedMaterials] = useState(materials.slice(0, 8));
+    const [displayedMaterials, setDisplayedMaterials] = useState(JSON.parse(localStorage.getItem('materials')).slice(0, 8));
+    const [searchedMaterials, setSearchedMaterials] = useState(JSON.parse(localStorage.getItem('materials')).slice(0, 8));
+    const [isSearching, setIsSearching] = useState(false);
 
     const handleSearch = (e) => {
         const term = e.target.value;
         setSearchTerm(term);
 
         const regex = new RegExp(term, 'i');
-        const filteredMaterials = materials.filter((material) =>
-            regex.test(material.title)
+        const filteredMaterials = displayedMaterials.filter((material) =>
+            regex.test(material.materialName)
         );
 
         if (filteredMaterials.length === 1) {
-            setDisplayedMaterials(filteredMaterials);
+            setSearchedMaterials(filteredMaterials);
         } else {
-            setDisplayedMaterials(filteredMaterials.slice(0, 8));
+            setSearchedMaterials(filteredMaterials.slice(0, 8));
         }
     };
+
+    const searchMaterials = () => {
+        setIsSearching(true);
+        handleSearch();
+    }
 
     const handleSeeMore = () => {
         const start = displayedMaterials.length;
@@ -43,7 +49,7 @@ export const Materials = () => {
                                 value={searchTerm}
                                 onChange={handleSearch}
                             />
-                            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                            <div className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer" onClick={searchMaterials}>
                                 <svg
                                     className="h-5 w-5 text-gray-400"
                                     viewBox="0 0 24 24"
@@ -61,31 +67,36 @@ export const Materials = () => {
                         </div>
                     </div>
                     <div className="grid grid-cols-5 gap-8">
-                        {displayedMaterials.map((material) => (
-                            <div key={material.id} className="p-4">
+                        {!isSearching && 
+                            (
+                                displayedMaterials.map((material) => (
+                                    <div key={material.rank} className="p-4">
+                                        <img
+                                            src={material.coverImage}
+                                            alt={material.materialName}
+                                            className="w-full h-40 object-cover rounded-md mb-2"
+                                        />
+                                        <h3 className="text-lg font-semibold mb-1">{material.materialName}</h3>
+                                        <div className='text-xs font-light'>Rank: {material.rank}</div>
+                                    </div>
+                                ))
+                            )
+                        }
+                        {isSearching && 
+                        (searchedMaterials.map((material) => (
+                            <div key={material.rank} className="p-4">
                                 <img
                                     src={material.coverImage}
-                                    alt={material.title}
+                                    alt={material.materialName}
                                     className="w-full h-40 object-cover rounded-md mb-2"
                                 />
-                                <h3 className="text-lg font-semibold mb-1">{material.title}</h3>
-                                <div className="flex items-center">
-                                    {Array.from({ length: 5 }, (_, index) => (
-                                        <svg
-                                            key={index}
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            fill={index < material.rating ? '#fbbf24' : '#e2e8f0'}
-                                            className="w-5 h-5"
-                                        >
-                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                                        </svg>
-                                    ))}
-                                </div>
+                                <h3 className="text-lg font-semibold mb-1">{material.materialName}</h3>
+                                <div className='text-xs font-light'>Rank: {material.rank}</div>
                             </div>
-                        ))}
+                        )))}
                     </div>
-                    {displayedMaterials.length < materials.length && (
+                    {isSearching && <div className="text-primary cursor-pointer text-lg" onClick={() => {setIsSearching(false); setSearchTerm("")}}>See all materials</div>}
+                    {displayedMaterials.length > 10 && (
                         <button
                             className="hover:text-primary text-end px-4 py-2 mt-4"
                             onClick={handleSeeMore}

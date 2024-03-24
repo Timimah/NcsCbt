@@ -14,7 +14,7 @@ export const Header = ({ title }) => {
     }
 
     return (
-        <header className="py-4 px-6 flex justify-between items-center w-full  ">
+        <header className="py-4 flex justify-between items-center w-full  ">
             <div className='flex flex-col gap-2'>
                 <h1 className="text-3xl font-bold text-darkgrey">{title}</h1>
                 <p className="text-sm text-grey">Welcome, <span>{userName}</span></p>

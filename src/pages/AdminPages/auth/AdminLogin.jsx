@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 export const AdminLogin = () => {
   const navigate = useNavigate();
-  const { loginAdmin } = useAdminStore();
+  const { loginAdmin, loggedInAdmin } = useAdminStore();
   const [adminEmail, setAdminEmail] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
   const [error, setError] = useState("");
@@ -26,6 +26,7 @@ export const AdminLogin = () => {
     } else {
       setError("Invalid email or password");
     }
+    console.log(loggedInAdmin)
   };
   
 

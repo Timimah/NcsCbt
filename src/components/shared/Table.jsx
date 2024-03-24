@@ -14,7 +14,7 @@ export const Table = ({ data, columns }) => {
         </div>
         <div className="table-body flex flex-col">
           {data.map((item, index) => (
-            <div key={item.id} className={`grid grid-cols-${columns.length} ${index % 2 === 0 ? 'bg-secondary' : ''}`}>
+            <div key={item.id} className={`grid grid-cols-${columns.length} ${index % 2 === 0 ? 'bg-secondary' : ''} items-center`}>
               {columns.map((column, index) => (
                 <div key={`${item.id}-${column.key}`} className={`table-cell p-4 ${index === columns.length - 1 ? 'text-center' : ''}`}>
                   {item[column.key]}

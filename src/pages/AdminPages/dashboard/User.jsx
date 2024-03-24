@@ -8,6 +8,7 @@ import { useUserStore } from '../../../store/userStore';
 import { OverviewCard } from '../../../components/admin/OverviewCard';
 import user from '../../../assets/user.png'
 import adminn from '../../../assets/user.png'
+import success from '../../../assets/upload.png'
 
 const examineeData = [
     {
@@ -76,6 +77,7 @@ export const User = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [activeTab, setActiveTab] = useState("admin");
+    const [handleCreate, setHandleCreate] = useState(false);
     const { createAdmin, admin } = useAdminStore();
     const { users } = useUserStore();
     console.log(admin)
@@ -166,6 +168,7 @@ export const User = () => {
             setAdminPassword("");
             console.log("Admin created successfully");
             setShowModal(false);
+            setHandleCreate(true)
         }
     };
 
@@ -237,7 +240,9 @@ export const User = () => {
                 </section>
             </main>
             {showModal &&
-                <Modal title="Create Admin" content={
+                <Modal 
+                closeModal={() => setShowModal(false)}
+                title="Create Admin" content={
                     <div className='flex flex-col items-center gap-4 my-2'>
                         <div className='w-full flex flex-col'>
                             <label htmlFor="adminName">Name</label>
@@ -292,6 +297,20 @@ export const User = () => {
                         <Button title="Create Admin" btnStyles="bg-primary px-4 py-3 text-white rounded-md w-full my-5" btnClick={handleSubmit} />
                     }
                     modStyles="bg-secondary w-1/2"
+                />
+            }
+            {handleCreate &&
+                <Modal
+                    content={
+                        <div className='flex flex-col gap-4 items-center justify-center py-10'>
+                            <div className='motion-safe:animate-bounce duration-75'><img src={success} alt="sucess" /></div>
+                            <div className='text-primary text-3xl font-bold text-center'>Admin created Successfully!</div>
+                        </div>
+                    }
+                    buttons={
+                        <Button title="Done" btnStyles="bg-primary px-4 py-3 text-white rounded-md w-full" btnClick={() => setHandleCreate(false)} />
+                    }
+                    modStyles="bg-secondary w-1/2 transition duration-300 ease-in-out"
                 />
             }
         </div>

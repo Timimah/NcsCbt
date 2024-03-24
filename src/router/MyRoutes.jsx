@@ -16,6 +16,10 @@ import { UploadMaterials } from "../pages/AdminPages/dashboard/UploadMaterials";
 import { Payment } from "../pages/AdminPages/dashboard/Payment";
 import { Result } from "../pages/AdminPages/dashboard/Result";
 import { AdminOverview } from "../pages/AdminPages/dashboard/AdminOverview";
+import { Exam } from "../pages/AdminPages/dashboard/Exam";
+import { UploadQuestions } from "../pages/AdminPages/dashboard/UploadQuestions";
+import { QuestionPreview } from "../pages/AdminPages/dashboard/QuestionPreview";
+import { ViewQuestion } from "../pages/AdminPages/dashboard/ViewQuestions";
 
 export const MyRoutes = () => {
     return (
@@ -46,12 +50,12 @@ export const MyRoutes = () => {
           <Route path="user" element={<User />} />
           <Route path="materials" element={<UploadMaterials />} />
           <Route path="result" element={<Result />} />
+          <Route path="exam" element={<Exam />} />
           <Route path="payment-history" element={<Payment />} />
-          {/* <Route path="/dashboard/add" element={<DashboardAdd />} />
-          <Route path="/dashboard/edit-venue" />
-          <Route path="/dashboard/edit-vendor" /> */}
-          {/* <Route path="/dashboard/add" element={<DashboardAdd />} />
-          <Route path="/dashboard/edit-venue" />
+          <Route path="upload-question" element={<UploadQuestions />} />
+          <Route path="preview-question" element={<QuestionPreview />} />
+          <Route path="view-question" element={<ViewQuestion />} />
+          {/* <Route path="/dashboard/edit-venue" />
           <Route path="/dashboard/edit-vendor" /> */}
         </Route>
         <Route path="*" />

@@ -94,6 +94,7 @@ export const AdminOverview = ({ title, username }) => {
             {showModal &&
                 <Modal
                     title="Quiz Settings"
+                    closeModal={() => setShowModal(false)}
                     content={
                         <div className='text-left mt-4'>
                             <div>

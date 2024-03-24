@@ -32,19 +32,9 @@ export const DashboardPage = ({ title, username }) => {
                                 />
                                 <h3 className='mb-1'>{material.title}</h3>
                                 <div className='flex items-center'>
-                                    {Array.from({ length: 5 }, (_, index) => (
-                                        <svg
-                                            key={index}
-                                            xmlns='http://www.w3.org/2000/svg'
-                                            viewBox='0 0 24 24'
-                                            fill={index < material.rating ? '#fbbf24' : '#e2e8f0'}
-                                            className='w-5 h-5'
-                                        >
-                                            <path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z' />
-                                        </svg>
-                                    ))}
+                                    
                                 </div>
-                                <span>{material.rating}/5</span>
+                                {/* <span>{material.rating}/5</span> */}
                             </div>
                         ))}
                     </div>
@@ -60,12 +50,13 @@ export const DashboardPage = ({ title, username }) => {
                 <section className="mt-8">
                     <h2 className="text-xl font-bold mb-4">Test Overview</h2>
                     <div className='bg-white'>
-                    <Chart />
+                        <Chart />
                     </div>
                 </section>
             </main>
             {showModal &&
                 <Modal
+                    closeModal={() => setShowModal(false)}
                     title="Quiz Settings"
                     content={
                         <div className='text-left mt-4'>
@@ -86,7 +77,7 @@ export const DashboardPage = ({ title, username }) => {
                             </div>
                         </div>
                     }
-                    modStyles="w-1/3 h-fit bg-secondary text-center" 
+                    modStyles="w-1/3 h-fit bg-secondary text-center"
                     buttons={<Button title="Start Quiz" btnStyles="bg-primary text-white py-2 px-4 rounded-md mt-4 w-full" btnClick={() => setShowModal(false)} />}
                 />
             }

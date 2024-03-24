@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import axios from 'axios'
 
 export const useUserStore = create((set, get) => ({
   users: [],
@@ -7,30 +8,50 @@ export const useUserStore = create((set, get) => ({
   subscriptions: [],
   quizzes: [],
 
-  init: () => {
-    const userData = localStorage.getItem('userData');
-    if (userData) {
-      set((state) => ({ ...state, users: JSON.parse(userData), loggedInUser: null }));
-    } else {
-      set((state) => ({ ...state, loggedInUser: null }));
-    }
-  },
+  // init: () => {
+  //   const userData = localStorage.getItem('userData');
+  //   if (userData) {
+  //     set((state) => ({ ...state, users: JSON.parse(userData), loggedInUser: null }));
+  //   } else {
+  //     set((state) => ({ ...state, loggedInUser: null }));
+  //   }
+  // },
 
-  createUser: (userData) => {
-    const newUsers = [...get().users, { ...userData }];
-    set((state) => ({ ...state, users: newUsers }));
-    localStorage.setItem('userData', JSON.stringify(newUsers));
-  },
+  // createUser: async (userData) => {
+  //   try {
+  //     const response = await axios.post('https://ncs-cbt-api.onrender.com/users/register', userData);
 
-  loginUser: (loginData) => {
-    const { examineeId, password } = loginData;
-    const user = get().users.find((user) => user.id === examineeId && user.password === password);
-    if (user) {
-      set((state) => ({ ...state, isLoggedIn: true, loggedInUser: user }));
-      return true;
-    }
-    return false;
-  },
+  //     if (response.data.success) {
+  //       // User created successfully
+  //       console.log('User created successfully:', response.data);
+  //     } else {
+  //       // User creation failed
+  //       console.error('User creation failed:', response.data.error);
+  //     }
+  //   } catch (error) {
+  //     console.error('User creation error:', error);
+  //   }
+  // },
+
+  // loginUser: async (loginData) => {
+  //   try {
+  //     const response = await axios.post('https://ncs-cbt-api.onrender.com/users/login', loginData);
+
+  //     if (response.data.success) {
+  //       // Login successful
+  //       const user = response.data.user;
+  //       set((state) => ({ ...state, isLoggedIn: true, loggedInUser: user }));
+  //       return true;
+  //     } else {
+  //       // Login failed
+  //       console.error('Login failed:', response.data.error);
+  //       return false;
+  //     }
+  //   } catch (error) {
+  //     console.error('Login error:', error);
+  //     return false;
+  //   }
+  // },
 
   logoutUser: () => {
     set((state) => ({ ...state, isLoggedIn: false, loggedInUser: null }));
@@ -60,4 +81,4 @@ export const useUserStore = create((set, get) => ({
 }));
 
 // Initialize the store
-useUserStore.getState().init();
+// useUserStore.getState().init();

@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { materials } from '../../../components/user/materials';
+import React, { useEffect, useState } from 'react';
 import { Header } from '../../../components/shared/Header';
 import { Button } from '../../../components/shared/Button';
 import { Modal } from '../../../components/shared/Modal';
@@ -8,19 +7,82 @@ import success from '../../../assets/upload.png'
 import { useAdminStore } from '../../../store/adminStore';
 
 export const UploadMaterials = () => {
-    const  { material } = useAdminStore();
+    const { addMaterial } = useAdminStore();
     const [materialName, setMaterialName] = useState('');
-  const [authorsName, setAuthorsName] = useState('');
-  const [rank, setRank] = useState('select rank');
-  const [coverImage, setCoverImage] = useState(null);
-  const [file, setFile] = useState(null);
+    const [authorsName, setAuthorsName] = useState('');
+    const [rank, setRank] = useState('');
+    const [coverImage, setCoverImage] = useState(null);
+    const [file, setFile] = useState(null);
+    const [uploadError, setUploadError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
-    // const [uploadedMaterials, setUploadedMaterials] = useState([]);
-    const [displayedMaterials, setDisplayedMaterials] = useState(materials.slice(0, 8));
     const [showModal, setShowModal] = useState(false);
     const [handleUpload, setHandleUpload] = useState(false);
+    const materials = useAdminStore((state) => state.materials);
 
-    
+    const handleCoverImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file && file.size > 1048576) {
+            setUploadError('Cover image size should not exceed 1MB');
+            setCoverImage(null);
+        } else {
+            setUploadError('');
+            setCoverImage(file);
+            // setImageSrc(e.target.files[0].name);
+            // console.log(imageSrc)
+        }
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        setFile(file);
+    }
+
+    const [displayedMaterials, setDisplayedMaterials] = useState(
+        JSON.parse(localStorage.getItem('materials')).slice(0, 10)
+    );
+
+    console.log(JSON.parse(localStorage.getItem('materials')))
+    useEffect(() => {
+        if (materials.length > 10) {
+            setDisplayedMaterials(materials.slice(0, 10));
+        }
+        console.log(displayedMaterials);
+    }, [materials]);
+
+    const uploadMaterial = () => {
+        console.log(coverImage.name, file.name);
+        alert('Uploading...');
+        if (!materialName || !authorsName || !rank || !coverImage || !file) {
+            setUploadError('Please fill in all the required fields');
+            return;
+        }
+
+        if (uploadError) {
+            return;
+        }
+
+        const material = {
+            materialName,
+            authorsName,
+            rank,
+            coverImage,
+            file,
+        };
+        const storedMaterials = JSON.parse(localStorage.getItem('materials')) || [];
+        storedMaterials.push(material);
+        localStorage.setItem('materials', JSON.stringify(storedMaterials));
+        addMaterial(material);
+        console.log('upload successful')
+        setShowModal(false);
+        setHandleUpload(!handleUpload)
+        // Reset the form fields
+        setMaterialName('');
+        setAuthorsName('');
+        setRank('');
+        setCoverImage(null);
+        setFile(null);
+        setUploadError('');
+    };
 
     const handleSearch = (e) => {
         const term = e.target.value;
@@ -39,10 +101,7 @@ export const UploadMaterials = () => {
     };
 
     const handleSeeMore = () => {
-        const start = displayedMaterials.length;
-        const end = start + 8;
-        const newMaterials = materials.slice(start, end);
-        setDisplayedMaterials([...displayedMaterials, ...newMaterials]);
+        setDisplayedMaterials(materials);
     };
 
     return (
@@ -76,47 +135,34 @@ export const UploadMaterials = () => {
                             </div>
                         </div>
                         <div>
-                            <Button title="Upload Material" btnStyles="px-4 py-3 text-white bg-primary rounded-md" btnClick={()=> setShowModal(!showModal)} />
+                            <Button title="Upload Material" btnStyles="px-4 py-3 text-white bg-primary rounded-md" btnClick={() => setShowModal(!showModal)} />
                         </div>
                     </div>
                     <div className="text-2xl mt-6">Uploaded Materials</div>
-                    <div className="grid grid-cols-5 gap-8">
-                        {displayedMaterials.map((material) => (
-                            <div key={material.id} className="p-4">
+                    <div className="grid grid-cols-5 gap-4">
+                        {displayedMaterials.map(material => (
+                            <div key={material.rank} className="p-4">
                                 <img
                                     src={material.coverImage}
-                                    alt={material.title}
-                                    className="w-full h-40 object-cover rounded-md mb-2"
+                                    alt={material.materialName}
+                                    className="w-full h-40 object-cover"
                                 />
-                                <h3 className="text-lg font-semibold mb-1">{material.title}</h3>
-                                <div className="flex items-center">
-                                    {Array.from({ length: 5 }, (_, index) => (
-                                        <svg
-                                            key={index}
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 24 24"
-                                            fill={index < material.rating ? '#fbbf24' : '#e2e8f0'}
-                                            className="w-5 h-5"
-                                        >
-                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                                        </svg>
-                                    ))}
-                                </div>
+                                <div className="text-lg font-bold mt-2">{material.materialName}</div>
+                                <div className='text-xs font-light'>Rank: {material.rank}</div>
                             </div>
                         ))}
+
+                        {materials.length > 10 && (
+                            <button onClick={handleSeeMore}>See More</button>
+                        )}
                     </div>
-                    {displayedMaterials.length < materials.length && (
-                        <button
-                            className="hover:text-primary text-end px-4 py-2 mt-4"
-                            onClick={handleSeeMore}
-                        >
-                            See More...
-                        </button>
-                    )}
                 </section>
             </main>
             {showModal &&
-                <Modal title="Upload Material" content={
+                <Modal
+                closeModal={() => setShowModal(false)}
+                title="Upload Material"
+                content={
                     <div className='flex flex-col items-center gap-4 my-2'>
                         <div className='w-full flex flex-col'>
                             <label htmlFor="materialName">Material Name</label>
@@ -125,7 +171,7 @@ export const UploadMaterials = () => {
                                 value={materialName}
                                 className="border rounded-md py-2 px-4"
                                 placeholder="Material Name"
-                            onChange={(e) => {setMaterialName(e.target.value)}}
+                                onChange={(e) => { setMaterialName(e.target.value) }}
                             />
                         </div>
                         <div className='w-full flex flex-col'>
@@ -133,60 +179,89 @@ export const UploadMaterials = () => {
                             <input
                                 type="text"
                                 value={authorsName}
-                                onChange={(e) => {setAuthorsName(e.target.value)}}    
+                                onChange={(e) => { setAuthorsName(e.target.value) }}
                                 className="border rounded-md py-2 px-4"
                                 placeholder="Author's Name"
                             />
                         </div>
                         <div className='w-full flex flex-col'>
-                        <label htmlFor="rank" className="block py-1 -mb-1">Select Rank</label>
-            <select id="rank" name="rank" value={rank} onChange={(e) => { setRank(e.target.value); }} className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary`}>
-              <option value="rank1">Rank 1</option>
-              <option value="rank2">Rank 2</option>
-              <option value="rank3">Rank 3</option>
-            </select>
+                            <label htmlFor="rank" className="block py-1 -mb-1">Select Rank</label>
+                            <select id="rank" name="rank" value={rank} onChange={(e) => { setRank(e.target.value); }} className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary`}>
+                                <option value="rank1">Rank 1</option>
+                                <option value="rank2">Rank 2</option>
+                                <option value="rank3">Rank 3</option>
+                            </select>
                         </div>
                         <div className='w-full flex flex-col gap-10'>
                             <div className='border border-dotted border-primary rounded-lg flex flex-col justify-center items-center px-14 py-10'>
-                            <div className='flex justify-start w-full -mt-8 -ml-14'>Upload cover image</div>
-                                <div className="flex flex-col items-center justify-center">
-                                    <img src={upload} alt="upload" />
-                                    <div className='text-primary'>Drag & Drop</div>
-                                </div>
-                                <div className='text-sm'>or select file from device</div>
+                                <div className='flex justify-start w-full -mt-8 -ml-14'>Upload cover image</div>
+                                <label htmlFor="coverImage" className="flex flex-col items-center justify-center">
+                                    {coverImage ? (
+                                        <img src={URL.createObjectURL(coverImage)} alt="Cover" className="w-40 h-40 object-cover rounded-md mb-2" />
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center">
+                                            <img src={upload} alt="upload" />
+                                            <div className='text-primary'>Drag & Drop</div>
+                                        </div>
+                                    )}
+                                    <div className='text-sm'>or select file from device</div>
+                                    <input
+                                        type="file"
+                                        id="coverImage"
+                                        accept="image/*"
+                                        onChange={handleCoverImageChange}
+                                        className="hidden"
+                                    />
+                                </label>
                                 <div className='text-xs mt-14'>max. 1MB</div>
+                                {uploadError && <div className="text-red-500 mt-2">{uploadError}</div>}
                             </div>
                             <div className='border border-dotted border-primary rounded-lg flex flex-col justify-center items-center px-14 py-10'>
-                            <div className='flex justify-start w-full -mt-8 -ml-14'>Upload file</div>
-                                <div className="flex flex-col items-center justify-center">
-                                    <img src={upload} alt="upload" />
-                                    <div className='text-primary'>Drag & Drop</div>
-                                </div>
-                                <div className='text-sm'>or select file from device</div>
+                                <div className='flex justify-start w-full -mt-8 -ml-14'>Upload file</div>
+                                <label htmlFor="fileUpload" className="flex flex-col items-center justify-center">
+                                    {file ? (
+                                        <div>{file.name}</div>
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center">
+                                            <img src={upload} alt="upload" />
+                                            <div className='text-primary'>Drag & Drop</div>
+                                        </div>
+                                    )}
+                                    <div className='text-sm'>or select file from device</div>
+                                    <input
+                                        type="file"
+                                        id="fileUpload"
+                                        onChange={handleFileChange}
+                                        className="hidden"
+                                    />
+                                </label>
                                 <div className='text-xs mt-14'>max. 1MB</div>
                             </div>
                         </div>
                     </div>
                 }
                     buttons={
-                        <Button title="Upload File" btnStyles="bg-primary px-4 py-3 text-white rounded-md w-full my-5" btnClick={() => {setShowModal(false); setHandleUpload(!handleUpload)}} />
+                        <Button
+                            title="Upload Material"
+                            btnStyles="bg-primary px-4 py-3 text-white rounded-md w-full my-5"
+                            btnClick={uploadMaterial} />
                     }
-                    modStyles="bg-secondary h-1/2 w-1/2 overflow-y-scroll"
+                    modStyles="bg-secondary h-5/6 w-1/2 overflow-y-scroll"
                 />
             }
             {handleUpload &&
-            <Modal
-            content={
-                <div className='flex flex-col gap-4 items-center justify-center py-10'>
-                    <div className='motion-safe:animate-bounce duration-75'><img src={success} alt="sucess" /></div>
-                    <div className='text-primary text-3xl font-bold'>Upload Successful!</div>
-                </div>
-            }
-            buttons={
-                <Button title="Done" btnStyles="bg-primary px-4 py-3 text-white rounded-md w-full" btnClick={() => setHandleUpload(false)} />
-            }
-            modStyles="bg-secondary w-1/2 transition duration-300 ease-in-out"
-            />
+                <Modal
+                    content={
+                        <div className='flex flex-col gap-4 items-center justify-center py-10'>
+                            <div className='motion-safe:animate-bounce duration-75'><img src={success} alt="sucess" /></div>
+                            <div className='text-primary text-3xl font-bold'>Upload Successful!</div>
+                        </div>
+                    }
+                    buttons={
+                        <Button title="Done" btnStyles="bg-primary px-4 py-3 text-white rounded-md w-full" btnClick={() => setHandleUpload(false)} />
+                    }
+                    modStyles="bg-secondary w-1/2 transition duration-300 ease-in-out"
+                />
             }
         </div>
     );

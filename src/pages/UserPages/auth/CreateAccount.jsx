@@ -1,16 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Modal } from "../../../components/shared/Modal";
 import { Button } from "../../../components/shared/Button";
 import { useUserStore } from "../../../store/userStore";
+import axios from "axios";
 
 export const CreateAccount = () => {
   const navigate = useNavigate();
-  const { createUser, users } = useUserStore();
+  // const { createUser, u } = useUserStore();
 
   const [fullName, setFullName] = useState("");
   const [examineeId, setExamineeId] = useState("");
-  const [userEmail, setUserEmail] = useState("");
+  const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [rank, setRank] = useState("");
   const [password, setPassword] = useState("");
@@ -24,7 +24,7 @@ export const CreateAccount = () => {
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
-  const handleSubmit = () => { 
+  const handleSubmit = async () => { 
     let isValid = true;
     if (!fullName.trim()) {
       setFullNameError("Full Name is required");
@@ -33,18 +33,19 @@ export const CreateAccount = () => {
     if (!examineeId.trim()) {
       setIdError("ID is required");
       isValid = false;
-    } else {
+    } 
+    // else {
       // Check if the id already exists in the users array
-      const userExists = users.some((u) => u.examineeId === examineeId);
-      if (userExists) {
-        setIdError("ID already exists");
-        isValid = false;
-      }
-    }
-    if (!userEmail.trim()) {
-      setUserEmailError("Email is required");
-      isValid = false;
-    }
+      // const userExists = users.some((u) => u.examineeId === examineeId);
+      // if (userExists) {
+      //   setIdError("ID already exists");
+      //   isValid = false;
+      // }
+    // }
+    // if (!email.trim()) {
+    //   setUserEmailError("Email is required");
+    //   isValid = false;
+    // }
     if (!phoneNumber.trim()) {
       setPhoneNumberError("Phone Number is required");
       isValid = false;
@@ -68,11 +69,44 @@ export const CreateAccount = () => {
     }
 
     if (isValid) {
-      const userData = { fullName, examineeId, userEmail, phoneNumber, rank, password };
-      createUser(userData);
+      let userData = { fullName, examineeId, email, phoneNumber, rank, password };
+      console.log(userData)
+      const maxRetries = 3; // Maximum number of retries
+    let retries = 0; // Initialize retries counter
+    const sendRequest = async () => {
+      try {
+        const response = await axios.post(
+          "https://ncs-cbt-api.onrender.com/users/register",
+          userData,
+          {
+            headers: { "Content-Type": "application/json" },
+            // withCredentials: true,
+          }
+        );
+        console.log(response.data.status);
+      } catch (err) {
+        if (!err?.response) {
+          console.log(err);
+          console.log(err.message);
+          if (retries < maxRetries) {
+            retries++;
+            setTimeout(sendRequest, 2000); // Retry after 2 seconds
+          } else {
+            console.log("No Server Response");
+          }
+        } else if (err.response?.status === 409) {
+          setFullNameError("Username Taken");
+        } else {
+          setConfirmPasswordError("Registration Failed");
+        }
+      }
+    };
+    sendRequest();
+
+      // createUser(userData);
       setFullName("");
       setExamineeId("");
-      setUserEmail("");
+      setEmail("");
       setPhoneNumber("");
       setRank("");
       setPassword("");
@@ -81,7 +115,7 @@ export const CreateAccount = () => {
       navigate("/login");
     }
   };
-
+ 
   return (
     <div className="bg-vector min-h-screen flex items-center justify-center py-10">
       <div className='w-full max-w-lg px-10 py-8 mx-auto bg-secondary rounded-2xl'>
@@ -116,8 +150,8 @@ export const CreateAccount = () => {
             <label className="block py-1 -mb-1">Email</label>
             <input
               type="email"
-              value={userEmail}
-              onChange={(e) => { setUserEmail(e.target.value); setUserEmailError(""); }}
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); setUserEmailError(""); }}
               className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${userEmailError ? "border-red-500" : ""
                 }`}
               placeholder="Enter your email"

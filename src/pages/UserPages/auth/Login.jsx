@@ -1,35 +1,67 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "../../../components/shared/Button";
+import axios from "axios";
 import { useUserStore } from "../../../store/userStore";
 
 export const Login = () => {
   const navigate = useNavigate();
-  const { loginUser } = useUserStore();
+  // const { loginUser } = useUserStore();
 
   const [examineeId, setExamineeId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // Find the user with the provided examineeId
-    const user = useUserStore.getState().users.find((u) => u.examineeId === examineeId);
-  
-    if (user) {
-      // Check if the provided password matches the user's password
-      if (user.password === password) {
-        // Login successful, call the loginUser action and navigate to the desired page
-        loginUser({ examineeId, password });
-        console.log("Login successful");
-        navigate("/dashboard");
-      } else {
-        // Incorrect password
-        setError("Invalid password");
+    // const user = useUserStore.getState().users.find((u) => u.examineeId === examineeId);
+
+    const sendRequest = async () => {
+      try {
+        const response = await axios.post(
+          "https://ncs-cbt-api.onrender.com/users/register",
+          { password, examineeId },
+          {
+            headers: { "Content-Type": "application/json" },
+            // withCredentials: true,
+          }
+        );
+        console.log(response.data.status);
+        if (response.data.status === "success") {
+          // Check if the provided password matches the user's password
+          if (user.password === password) {
+            // Login successful, call the loginUser action and navigate to the desired page
+            loginUser({ examineeId, password });
+            console.log("Login successful");
+            navigate("/dashboard");
+          } else {
+            // Incorrect password
+            setError("Invalid password");
+          }
+        } else {
+          // User with the provided examineeId not found
+          setError("Invalid examinee ID");
+        }
+      } catch (err) {
+        if (!err?.response) {
+          console.log(err);
+          console.log(err.message);
+          // if (retries < maxRetries) {
+          //   retries++;
+          //   setTimeout(sendRequest, 2000); // Retry after 2 seconds
+          // } else {
+            console.log("No Server Response");
+          // }
+        } else if (err.response?.status === 409) {
+          setError("Username Taken");
+        } else {
+          setError("Registration Failed");
+        }
       }
-    } else {
-      // User with the provided examineeId not found
-      setError("Invalid examinee ID");
-    }
+    };
+    sendRequest();
+    setExamineeId("");
+    setPassword("");
   };
 
   return (
