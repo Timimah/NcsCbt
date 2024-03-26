@@ -2,11 +2,25 @@ import { create } from 'zustand';
 import axios from 'axios'
 
 export const useUserStore = create((set, get) => ({
-  users: [],
+  // users: [],
   isLoggedIn: false,
-  loggedInUser: null,
+  loggedInUser: "",
+  userIsUser: false,
+  userIsAdmin: false,
   subscriptions: [],
   quizzes: [],
+
+  setIsLoggedIn:
+  (arg) => set({isLoggedIn: arg}),
+
+  setUserIsUser:
+  (arg) => set({userIsUser: arg}),
+
+  setUserIsAdmin:
+  (arg) => set({userIsAdmin: arg}),
+
+  setLoggedInUser: (user) =>
+    set({loggedInUser: user }),
 
   // init: () => {
   //   const userData = localStorage.getItem('userData');

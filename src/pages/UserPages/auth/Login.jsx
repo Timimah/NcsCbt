@@ -6,62 +6,74 @@ import { useUserStore } from "../../../store/userStore";
 
 export const Login = () => {
   const navigate = useNavigate();
-  // const { loginUser } = useUserStore();
+  const { setLoggedInUser, setIsLoggedIn, setUserIsUser } = useUserStore();
 
   const [examineeId, setExamineeId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+
   const handleLogin = async () => {
-    // Find the user with the provided examineeId
-    // const user = useUserStore.getState().users.find((u) => u.examineeId === examineeId);
+    let isValid = false;
+    if (examineeId === "") {
+      setError("Enter a valid ID")
+      isValid = false
+    } else if (password === "") {
+      setError("Enter password")
+      isValid = false;
+    } else {
+      isValid = true;
+    }
 
     const sendRequest = async () => {
-      try {
-        const response = await axios.post(
-          "https://ncs-cbt-api.onrender.com/users/register",
-          { password, examineeId },
-          {
-            headers: { "Content-Type": "application/json" },
-            // withCredentials: true,
-          }
-        );
-        console.log(response.data.status);
-        if (response.data.status === "success") {
-          // Check if the provided password matches the user's password
-          if (user.password === password) {
-            // Login successful, call the loginUser action and navigate to the desired page
-            loginUser({ examineeId, password });
-            console.log("Login successful");
-            navigate("/dashboard");
+      if (isValid) {
+        try {
+          const response = await axios.post("https://ncs-cbt-api.onrender.com/users/login",
+            { examineeId, password },
+            {
+              headers: { 'Content-Type': 'application/json' },
+            }
+          );
+          console.log(response.data.data);
+          const user = response.data.data
+          console.log(user)
+          setLoggedInUser(user.fullName)
+          let userExists = false;
+          if (user.examineeId === examineeId && user.phoneNumber) {
+            userExists = true;
           } else {
-            // Incorrect password
-            setError("Invalid password");
+            setError("User does not exist")
           }
-        } else {
-          // User with the provided examineeId not found
-          setError("Invalid examinee ID");
+          if (user.examineeId !== examineeId) {
+            setError("Examinee ID is incorrect")
+          } else if (!user.phoneNumber) {
+            setError("Password is incorrect")
+          } else {
+            console.log(user.password, user.examineeId)
+          }
+          if (userExists) {
+            console.log("success")
+            setIsLoggedIn(true);
+            setUserIsUser(true);
+            navigate('/dashboard/user-profile');
+          }
+        } catch (err) {
+          if (!err?.response) {
+            console.log(err);
+          } else if (err.response?.status === 400) {
+            setError('Missing Username or Password');
+          } else if (err.response?.status === 401) {
+            setError('Unauthorized');
+          } else {
+            setError('Login Failed');
+          }
         }
-      } catch (err) {
-        if (!err?.response) {
-          console.log(err);
-          console.log(err.message);
-          // if (retries < maxRetries) {
-          //   retries++;
-          //   setTimeout(sendRequest, 2000); // Retry after 2 seconds
-          // } else {
-            console.log("No Server Response");
-          // }
-        } else if (err.response?.status === 409) {
-          setError("Username Taken");
-        } else {
-          setError("Registration Failed");
-        }
+        setExamineeId("");
+        setPassword("");
       }
-    };
+    }
     sendRequest();
-    setExamineeId("");
-    setPassword("");
+
   };
 
   return (
@@ -93,7 +105,7 @@ export const Login = () => {
           {error && <div className="text-sm text-red-500">{error}</div>}
           <div className="flex flex-col gap-3 pt-3 items-center">
             <Button title="Login" btnStyles="bg-primary text-white text-lg rounded-lg shadow-sm py-4 px-4 w-full" btnClick={handleLogin} />
-            <Button title="Create Account" btnStyles=" border border-primary text-primary text-lg rounded-lg shadow-sm py-4 px-4 w-full" btnClick={() => navigate('/create-account')} />
+            <Button title="Create Account" btnStyles="border border-primary text-primary text-lg rounded-lg shadow-sm py-4 px-4 w-full" btnClick={() => navigate('/create-account')} />
           </div>
         </div>
       </div>

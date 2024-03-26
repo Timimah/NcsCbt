@@ -6,7 +6,7 @@ import axios from "axios";
 
 export const CreateAccount = () => {
   const navigate = useNavigate();
-  // const { createUser, u } = useUserStore();
+  const { setUserIsUser, setLoggedInUser } = useUserStore();
 
   const [fullName, setFullName] = useState("");
   const [examineeId, setExamineeId] = useState("");
@@ -84,6 +84,9 @@ export const CreateAccount = () => {
           }
         );
         console.log(response.data.status);
+        setUserIsUser(true)
+      setLoggedInUser(response.data.data.fullName)
+      console.log(response.data.data.fullName)
       } catch (err) {
         if (!err?.response) {
           console.log(err);
@@ -191,6 +194,7 @@ export const CreateAccount = () => {
           </div>
           <div className="flex flex-col gap-3 pt-3 items-center">
             <Button title="Create Account" btnStyles="bg-primary text-white text-lg rounded-lg shadow-sm py-4 px-4 w-full" btnClick={handleSubmit} />
+            <Button title="Login" btnStyles="border border-primary text-primary text-lg rounded-lg shadow-sm py-4 px-4 w-full" btnClick={() => navigate('/login')} />
             {/* <a href="#">Forgot Password</a> */}
           </div>
         </div>

@@ -13,8 +13,8 @@ export const useAdminStore = create((set, get) => ({
   materials: [],
   questions: [],
 
-  setAdminIsLoggedIn:
-  set((arg) => ({adminIsLoggedIn: arg})),
+  // setAdminIsLoggedIn:
+  // set((arg) => ({adminIsLoggedIn: arg})),
   // init: async () => {
   //   try {
   //     const response = await axios.post(`${API_BASE_URL}/admin/register`);

@@ -9,7 +9,8 @@ import { useUserStore } from '../../../store/userStore';
 
 export const DashboardPage = ({ title, username }) => {
     const [showModal, setShowModal] = useState(false);
-    const { loggedInUser } = useUserStore();
+    const { isLoggedIn } = useUserStore();
+    // console.log(isLoggedIn)
     // Sort materials by rating in descending order
     const sortedMaterials = materials.sort((a, b) => b.rating - a.rating);
 

@@ -1,32 +1,79 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../../components/shared/Button";
-import { useAdminStore } from "../../../store/adminStore";
+import axios from "axios";
 import { useEffect, useState } from "react";
 
 export const AdminLogin = () => {
   const navigate = useNavigate();
-  const { loginAdmin, loggedInAdmin } = useAdminStore();
-  const [adminEmail, setAdminEmail] = useState("");
-  const [adminPassword, setAdminPassword] = useState("");
+  // const { loginAdmin, loggedInAdmin } = useAdminStore();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    let isValid = false;
+    if (email === "") {
+      setError("Enter a Email Address")
+      isValid = false
+    } else if (password === "") {
+      setError("Enter Password")
+      isValid = false;
+    } else {
+      isValid = true;
+    }
     // Basic input validation
-    if (!adminEmail || !adminPassword) {
-      setError("Please enter both email and password");
+    if (!email || !password) {
+      setError("Please enter both Email and Password");
       return;
     }
 
-    const loginData = { adminEmail, adminPassword };
-    const loggedIn = loginAdmin(loginData);
-
-    if (loggedIn) {
-      console.log("Login successful");
-      navigate("/admin-dashboard");
-    } else {
-      setError("Invalid email or password");
+    const sendRequest = async () => {
+      if (isValid) {
+        try {
+          const response = await axios.post("https://ncs-cbt-api.onrender.com/admin/login",
+            { email, password },
+            {
+              headers: { 'Content-Type': 'application/json' },
+            }
+          );
+          console.log(response.data.data);
+          const user = response.data.data
+          console.log(user)
+          // setLoggedInUser(user.fullName)
+          let userExists = false;
+          if (user.email === email && user.phoneNumber) {
+            userExists = true;
+          }
+          if (user.email !== email) {
+            setError("Examinee ID is incorrect")
+          } else if (!user.phoneNumber) {
+            setError("Password is incorrect")
+          } else {
+            console.log(user.password, user.examineeId)
+          }
+          if (userExists) {
+            console.log("success")
+            setIsLoggedIn(true);
+            setUserIsAdmin(true);
+            navigate('/admin-dashboard');
+          }
+        } catch (err) {
+          if (!err?.response) {
+            console.log(err);
+          } else if (err.response?.status === 400) {
+            setError('Missing Username or Password');
+          } else if (err.response?.status === 401) {
+            setError('Unauthorized');
+          } else {
+            setError('Login Failed');
+          }
+        }
+        setEmail("");
+        setPassword("");
+      }
     }
-    console.log(loggedInAdmin)
+    sendRequest();
+
   };
   
 
@@ -40,8 +87,8 @@ export const AdminLogin = () => {
             <label className="block py-1 -mb-1">Email</label>
             <input
             type="email"
-            value={adminEmail}
-            onChange={(e) => { setAdminEmail(e.target.value); setError(""); }}
+            value={email}
+            onChange={(e) => { setEmail(e.target.value); setError(""); }}
             className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary"
             placeholder="Enter your Email"
             />
@@ -50,8 +97,8 @@ export const AdminLogin = () => {
             <label className="block py-1 -mb-1">Password</label>
             <input
             type="password"
-            value={adminPassword}
-            onChange={(e) => { setAdminPassword(e.target.value); setError(""); }}
+            value={password}
+            onChange={(e) => { setPassword(e.target.value); setError(""); }}
             className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary"
             placeholder="Password" />
           </div>

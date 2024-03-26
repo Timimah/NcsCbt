@@ -1,14 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAdminStore } from '../../store/adminStore';
+// import { useAdminStore } from '../../store/adminStore';
+import { useUserStore } from '../../store/userStore';
 
 export const Header = ({ title }) => {
     const navigate = useNavigate();
-    const { loggedInAdmin } = useAdminStore();
-    console.log(loggedInAdmin);
-    const userName = loggedInAdmin ? loggedInAdmin.name : 'Admin';
-
-
+    const { loggedInUser, userIsUser, userIsAdmin } = useUserStore();
+    console.log(loggedInUser);
+    let userName = userIsUser ? loggedInUser : userIsAdmin ? loggedInUser : 'User';
+    
     const handleProfile = () => {
         navigate('/dashboard/user-profile')
     }
