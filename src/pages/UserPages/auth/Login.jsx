@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "../../../components/shared/Button";
+import { useUserStore } from "../../../store/userStore";
 import axios from "axios";
 
 export const Login = () => {
   const navigate = useNavigate();
+  const { setLoggedInUser, setIsLoggedIn, setUserIsUser } = useUserStore();
 
   const [examineeId, setExamineeId] = useState("");
   const [password, setPassword] = useState("");
@@ -24,9 +26,12 @@ export const Login = () => {
           }
         );
         const user = response.data.data;
+        setLoggedInUser(user.fullName);
         localStorage.setItem("auth-token", response.data.token);
         setIsLoading(false);
         navigate("/dashboard/user-profile");
+        setIsLoggedIn(true);
+            setUserIsUser(true);
       } catch (err) {
         setIsLoading(false);
         if (!err?.response) {
@@ -45,7 +50,7 @@ export const Login = () => {
     <div className="bg-vector min-h-screen flex items-center justify-center">
       <div className="w-full max-w-lg px-10 py-8 mx-auto bg-secondary rounded-2xl">
         <div className="max-w-md mx-auto space-y-3">
-          <h3 className="text-3xl text-primary font-bold">Welcome back!</h3>\
+          <h3 className="text-3xl text-primary font-bold">Welcome back!</h3>
           <div>{error}</div>
           <p className="text-grey mb-8">Please enter your ID and password</p>
           <div>

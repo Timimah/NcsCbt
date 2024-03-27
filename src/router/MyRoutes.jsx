@@ -6,7 +6,7 @@ import { Dashboard } from "../pages/UserPages/dashboard/Dashboard";
 import { DashboardPage } from "../pages/UserPages/dashboard/DashboardPage";
 import { Materials } from "../pages/UserPages/dashboard/Materials";
 import { Results } from "../pages/UserPages/dashboard/Results";
-import { ProfilePage } from "../pages/UserPages/dashboard/UserProfile";
+import { UserProfile } from "../pages/UserPages/dashboard/UserProfile";
 import { Home } from "../pages/WebsitePages/Home";
 import { AdminDashboard } from "../pages/AdminPages/dashboard/AdminDashboard";
 import { AdminLogin } from "../pages/AdminPages/auth/AdminLogin";
@@ -39,7 +39,7 @@ export const MyRoutes = () => {
           <Route path="material" element={<Materials />} />
           {/* <Route path="practice" element={<DashboardUsers />} /> */}
           <Route path="result" element={<Results />} />
-          <Route path="user-profile" element={<ProfilePage />} />
+          <Route path="user-profile" element={<UserProfile />} />
         </Route>
         <Route
           path="/admin-dashboard"
@@ -51,6 +51,7 @@ export const MyRoutes = () => {
           <Route path="materials" element={<UploadMaterials />} />
           <Route path="result" element={<Result />} />
           <Route path="exam" element={<Exam />} />
+          {/* <Route path="user-profile" element={<UserProfile />} /> */}
           <Route path="payment-history" element={<Payment />} />
           <Route path="upload-question" element={<UploadQuestions />} />
           <Route path="preview-question" element={<QuestionPreview />} />

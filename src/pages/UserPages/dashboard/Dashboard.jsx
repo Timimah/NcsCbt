@@ -7,7 +7,7 @@ export const Dashboard = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate("/dashboard/overview");
+    navigate("/dashboard/user-profile");
   }, []);
 
   return (

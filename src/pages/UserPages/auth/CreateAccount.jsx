@@ -71,8 +71,7 @@ export const CreateAccount = () => {
     if (isValid) {
       let userData = { fullName, examineeId, email, phoneNumber, rank, password };
       console.log(userData)
-      const maxRetries = 3; // Maximum number of retries
-    let retries = 0; // Initialize retries counter
+     
     const sendRequest = async () => {
       try {
         const response = await axios.post(
@@ -80,23 +79,13 @@ export const CreateAccount = () => {
           userData,
           {
             headers: { "Content-Type": "application/json" },
-            // withCredentials: true,
           }
         );
         console.log(response.data.status);
-        setUserIsUser(true)
-      setLoggedInUser(response.data.data.fullName)
-      console.log(response.data.data.fullName)
-      } catch (err) {
+        } catch (err) {
         if (!err?.response) {
           console.log(err);
           console.log(err.message);
-          if (retries < maxRetries) {
-            retries++;
-            setTimeout(sendRequest, 2000); // Retry after 2 seconds
-          } else {
-            console.log("No Server Response");
-          }
         } else if (err.response?.status === 409) {
           setFullNameError("Username Taken");
         } else {
@@ -176,9 +165,19 @@ export const CreateAccount = () => {
           <div>
             <label htmlFor="rank" className="block py-1 -mb-1">Select Rank</label>
             <select id="rank" name="rank" value={rank} onChange={(e) => { setRank(e.target.value); setRankError("") }} className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${rankError ? 'border-red-500' : ''}`}>
-              <option value="rank1">Rank 1</option>
-              <option value="rank2">Rank 2</option>
-              <option value="rank3">Rank 3</option>
+            <option value="">Select a category</option>
+              <option value="CAI">CAI</option>
+              <option value="CAII">CAII</option>
+              <option value="AIC">AIC</option>
+              <option value="IC">IC</option>
+              <option value="ASCII">ASCII</option>
+              <option value="ASCI">ASCI</option>
+              <option value="DSC">DSC</option>
+              <option value="SC">SC</option>
+              <option value="CSC">CSC</option>
+              <option value="AC">AC</option>
+              <option value="DC">DC</option>
+              <option value="CC">CC</option>
             </select>
             {rankError && <div className="text-sm text-red-500">{rankError}</div>}
           </div>
