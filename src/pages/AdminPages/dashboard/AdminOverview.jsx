@@ -22,7 +22,7 @@ export const AdminOverview = ({ title, username }) => {
     const cards = [
         {
             icon: user,
-            value: users.length,
+            value: 0,
             label: 'Total User',
             bgColor: 'bg-green-100',
             textColor: 'text-green-600',
@@ -31,7 +31,7 @@ export const AdminOverview = ({ title, username }) => {
         },
         {
             icon: adminn,
-            value: admin.length,
+            value: 0,
             label: 'Total Admin',
             bgColor: 'bg-blue-100',
             textColor: 'text-blue-600',
@@ -40,7 +40,7 @@ export const AdminOverview = ({ title, username }) => {
         },
         {
             icon: subscription,
-            value: subscriptions.length,
+            value: 0,
             label: 'Total Subscriptions',
             bgColor: 'bg-green-100',
             textColor: 'text-green-600',
@@ -49,7 +49,7 @@ export const AdminOverview = ({ title, username }) => {
         },
         {
             icon: examinee,
-            value: user.length,
+            value: 0,
             label: 'Total Examinee',
             bgColor: 'bg-blue-100',
             textColor: 'text-blue-600',

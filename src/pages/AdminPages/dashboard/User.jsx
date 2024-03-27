@@ -9,6 +9,7 @@ import { OverviewCard } from '../../../components/admin/OverviewCard';
 import user from '../../../assets/user.png'
 import adminn from '../../../assets/user.png'
 import success from '../../../assets/upload.png'
+import axios from 'axios';
 
 const examineeData = [
     {
@@ -72,7 +73,6 @@ const userHeader = [
     // Add any other relevant columns for users
 ]
 
-
 export const User = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
@@ -85,7 +85,7 @@ export const User = () => {
     const cards = [
         {
             icon: user,
-            value: users.length,
+            value: 0,
             label: 'Users',
             bgColor: 'bg-green-100',
             textColor: 'text-green-600',
@@ -94,7 +94,7 @@ export const User = () => {
         },
         {
             icon: adminn,
-            value: admin.length,
+            value: 0,
             label: 'Admins',
             bgColor: 'bg-blue-100',
             textColor: 'text-blue-600',
@@ -108,10 +108,9 @@ export const User = () => {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [adminPassword, setAdminPassword] = useState("");
 
-    const [nameError, setNameError] = useState("");
-    const [emailError, setEmailError] = useState("");
-    const [phoneNumberError, setPhoneNumberError] = useState("");
-    const [passwordError, setPasswordError] = useState("");
+    const [eror, setError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [isValid, setIsValid] = useState(false);
 
     const handleSearch = (e) => {
         const term = e.target.value;
@@ -130,38 +129,30 @@ export const User = () => {
         console.log('doesn\'t work just yet');
     };
 
-    const handleSubmit = () => {
-        let isValid = true;
-        if (!name.trim()) {
-            setNameError("Name is required");
-            isValid = false;
-        } else {
-            // Check if the id already exists in the users array
-            const userExists = admin.some((a) => a.name === name);
-            if (userExists) {
-                setNameError("Name already exists");
-                isValid = false;
-            }
-        }
-        if (!adminEmail.trim()) {
-            setEmailError("Email is required");
-            isValid = false;
-        }
-        if (!phoneNumber.trim()) {
-            setPhoneNumberError("Phone Number is required");
-            isValid = false;
-        } else {
-            setPhoneNumberError("");
-        }
-        if (!adminPassword.trim()) {
-            setPasswordError("Password is required");
-            isValid = false;
-        }
-
-
+    const handleSubmit = async () => {
         if (isValid) {
+        setIsLoading(true);
             const adminData = { name, adminEmail, phoneNumber, adminPassword };
-            createAdmin(adminData);
+            try {
+                const response = await axios.post(
+                  "https://ncs-cbt-api.onrender.com/admin/register",
+                  adminData,
+                  {
+                    headers: { "Content-Type": "application/json" },
+                  }
+                );
+                console.log(response.data.status, response.data);
+                } catch (err) {
+                if (!err?.response) {
+                  console.log(err);
+                  console.log(err.message);
+                } else if (err.response?.status === 409) {
+                  setError(err.response.data.message);
+                } else {
+                  setError("Registration Failed");
+                }
+              }
+            // createAdmin(adminData);
             setName("");
             setAdminEmail("");
             setPhoneNumber("");
@@ -240,61 +231,90 @@ export const User = () => {
                 </section>
             </main>
             {showModal &&
-                <Modal 
-                closeModal={() => setShowModal(false)}
-                title="Create Admin" content={
-                    <div className='flex flex-col items-center gap-4 my-2'>
-                        <div className='w-full flex flex-col'>
-                            <label htmlFor="adminName">Name</label>
-                            <input
-                                type="text"
-                                value={name}
-                                onChange={(e) => { setName(e.target.value); setNameError(""); }}
-                                className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${nameError ? "border-red-500" : ""
-                                    }`}
-                                placeholder="Name"
-                            />
-                            {nameError && <div className="text-sm text-red-500">{nameError}</div>}
+                <Modal
+                    closeModal={() => setShowModal(false)}
+                    title="Create Admin" content={
+                        <div className='flex flex-col items-center gap-4 my-2'>
+                            {error && <div className="text-sm text-red-500">{error}</div>}
+                            <div className='w-full flex flex-col'>
+                                <label htmlFor="adminName">Name</label>
+                                <input
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) => {
+                                        setName(e.target.value);
+                                        if (e.target.value == "") {
+                                            setError("Name is required");
+                                            setIsValid(false);
+                                        }
+                                        setIsValid(true);
+                                        setError("");
+                                    }}
+                                    className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${error ? "border-red-500" : ""
+                                        }`}
+                                    placeholder="Name"
+                                    required
+                                />
+                            </div>
+                            <div className='w-full flex flex-col'>
+                                <label htmlFor="email">Email Address</label>
+                                <input
+                                    type="email"
+                                    value={adminEmail}
+                                    onChange={(e) => {
+                                        setAdminEmail(e.target.value);
+                                        if (e.target.value == "") {
+                                            setError("Email is required");
+                                            setIsValid(false);
+                                        }
+                                        setIsValid(true);
+                                        setError("");
+                                    }}
+                                    className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${error ? "border-red-500" : ""
+                                        }`}
+                                    placeholder="Enter Email Address"
+                                    required
+                                />
+                            </div>
+                            <div className='w-full flex flex-col'>
+                                <label htmlFor="phoneNumber">Phone Number</label>
+                                <input
+                                    type="tel"
+                                    value={phoneNumber}
+                                    onChange={(e) => {
+                                        setPhoneNumber(e.target.value); if (e.target.value == "") {
+                                            setError("PhoneNumber is required");
+                                            setIsValid(false);
+                                        }
+                                        setIsValid(true);
+                                        setError("");
+                                    }}
+                                    className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${error ? "border-red-500" : ""
+                                        }`}
+                                    placeholder="Enter Phone Number"
+                                />
+                            </div>
+                            <div className='w-full flex flex-col'>
+                                <label htmlFor="adminpassword">Password</label>
+                                <input
+                                    type="password" value={adminPassword}
+                                    onChange={(e) => {
+                                        setAdminPassword(e.target.value); if (e.target.value == "") {
+                                            setError("Password is required");
+                                            setIsValid(false);
+                                        }
+                                        setIsValid(true);
+                                        setError("");
+                                    }}
+                                    className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${error ? "border-red-500" : ""
+                                        }`}
+                                    placeholder="Enter Password"
+                                />
+                            </div>
                         </div>
-                        <div className='w-full flex flex-col'>
-                            <label htmlFor="email">Email Address</label>
-                            <input
-                                type="email"
-                                value={adminEmail}
-                                onChange={(e) => { setAdminEmail(e.target.value); setEmailError(""); }}
-                                className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${emailError ? "border-red-500" : ""
-                                    }`}
-                                placeholder="Enter Email Address"
-                            />
-                            {emailError && <div className="text-sm text-red-500">{emailError}</div>}
-                        </div>
-                        <div className='w-full flex flex-col'>
-                            <label htmlFor="phoneNumber">Phone Number</label>
-                            <input
-                                type="tel"
-                                value={phoneNumber}
-                                onChange={(e) => { setPhoneNumber(e.target.value); setPhoneNumberError(""); }}
-                                className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${phoneNumberError ? "border-red-500" : ""
-                                    }`}
-                                placeholder="Enter Phone Number"
-                            />
-                            {phoneNumberError && <div className="text-sm text-red-500">{phoneNumberError}</div>}
-                        </div>
-                        <div className='w-full flex flex-col'>
-                            <label htmlFor="adminpassword">Password</label>
-                            <input
-                                type="password" value={adminPassword}
-                                onChange={(e) => { setAdminPassword(e.target.value); setPasswordError(""); }}
-                                className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${passwordError ? "border-red-500" : ""
-                                    }`}
-                                placeholder="Enter Password"
-                            />
-                            {passwordError && <div className="text-sm text-red-500">{passwordError}</div>}
-                        </div>
-                    </div>
-                }
+                    }
                     buttons={
-                        <Button title="Create Admin" btnStyles="bg-primary px-4 py-3 text-white rounded-md w-full my-5" btnClick={handleSubmit} />
+                        <Button title={isLoading ? "Loading..." : "Create Admin"} btnStyles="bg-primary px-4 py-3 text-white rounded-md w-full my-5" btnClick={handleSubmit} />
                     }
                     modStyles="bg-secondary w-1/2"
                 />
