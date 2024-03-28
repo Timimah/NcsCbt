@@ -6,7 +6,7 @@ import axios from "axios";
 
 export const Login = () => {
   const navigate = useNavigate();
-  const { setLoggedInUser, setIsLoggedIn, setUserIsUser } = useUserStore();
+  const { setLoggedInUser, setIsLoggedIn, setUserIsUser, setLoggedInUserId, setLoggedInUserEmail, setLoggedInUserPhoneNumber, setLoggedInUserRank } = useUserStore();
 
   const [examineeId, setExamineeId] = useState("");
   const [password, setPassword] = useState("");
@@ -31,7 +31,11 @@ export const Login = () => {
         setIsLoading(false);
         navigate("/dashboard/user-profile");
         setIsLoggedIn(true);
-            setUserIsUser(true);
+        setUserIsUser(true);
+        setLoggedInUserEmail(user.email);
+        setLoggedInUserId(user.examineeId);
+        setLoggedInUserPhoneNumber(user.phoneNumber);
+        setLoggedInUserRank(user.rank);
       } catch (err) {
         setIsLoading(false);
         if (!err?.response) {

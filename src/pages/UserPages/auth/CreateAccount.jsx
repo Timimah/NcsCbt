@@ -82,6 +82,7 @@ export const CreateAccount = () => {
           }
         );
         console.log(response.data.status);
+      navigate("/login");
         } catch (err) {
         if (!err?.response) {
           console.log(err);
@@ -104,7 +105,6 @@ export const CreateAccount = () => {
       setPassword("");
       setConfirmPassword("");
       console.log("User created successfully");
-      navigate("/login");
     }
   };
  
