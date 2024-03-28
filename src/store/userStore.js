@@ -7,21 +7,36 @@ export const useUserStore = create((set, get) => ({
   loggedInUser: "",
   userIsUser: false,
   userIsAdmin: false,
+  loggedInUserEmail: "",
+  loggedInUserId: "",
+  loggedInUserRank: "",
+  loggedInUserPhoneNumber: "",
   subscriptions: [],
   quizzes: [],
 
   setIsLoggedIn:
-  (arg) => set({isLoggedIn: arg}),
+    (arg) => set({ isLoggedIn: arg }),
 
   setUserIsUser:
-  (arg) => set({userIsUser: arg}),
+    (arg) => set({ userIsUser: arg }),
 
   setUserIsAdmin:
-  (arg) => set({userIsAdmin: arg}),
+    (arg) => set({ userIsAdmin: arg }),
 
   setLoggedInUser: (user) =>
-    set({loggedInUser: user }),
+    set({ loggedInUser: user }),
 
+  setLoggedInUserEmail: (user) =>
+    set({ loggedInUserEmail: user }),
+
+  setLoggedInUserId: (user) =>
+    set({ loggedInUserId: user }),
+
+  setLoggedInUserRank: (user) =>
+    set({ loggedInUserRank: user }),
+
+  setLoggedInUserPhoneNumber: (user) =>
+    set({ loggedInUserPhoneNumber: user }),
   // init: () => {
   //   const userData = localStorage.getItem('userData');
   //   if (userData) {
