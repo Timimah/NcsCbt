@@ -11,51 +11,6 @@ import adminn from '../../../assets/user.png'
 import success from '../../../assets/upload.png'
 import axios from 'axios';
 
-const examineeData = [
-    {
-        id: 1,
-        examineeId: 'NCS/2021/001',
-        name: 'John Doe',
-        email: 'johndoe@gmail.com',
-        checkinTime: '12:00 PM'
-    },
-    {
-        id: 2,
-        examineeId: 'NCS/2021/002',
-        name: 'Jane Doe',
-        email: 'janedoe@gmail.com',
-        checkinTime: '12:00 PM'
-    },
-    {
-        id: 3,
-        examineeId: 'NCS/2021/003',
-        name: 'Doe John',
-        email: 'doejon@gmail.com',
-        checkinTime: '12:00 PM'
-    },
-    {
-        id: 1,
-        examineeId: 'NCS/2021/001',
-        name: 'John Doe',
-        email: 'johndoe@gmail.com',
-        checkinTime: '12:00 PM'
-    },
-    {
-        id: 2,
-        examineeId: 'NCS/2021/002',
-        name: 'Jane Doe',
-        email: 'janedoe@gmail.com',
-        checkinTime: '12:00 PM'
-    },
-    {
-        id: 3,
-        examineeId: 'NCS/2021/003',
-        name: 'Doe John',
-        email: 'doejon@gmail.com',
-        checkinTime: '12:00 PM'
-    }
-]
-
 const adminHeader = [
     { key: 'id', label: 'S/N' },
     { key: 'name', label: 'Name' },
@@ -78,15 +33,12 @@ export const User = () => {
     const [showModal, setShowModal] = useState(false);
     const [activeTab, setActiveTab] = useState("admin");
     const [handleCreate, setHandleCreate] = useState(false);
-    const { createAdmin, admin } = useAdminStore();
-    const { users } = useUserStore();
-    console.log(admin)
 
     const cards = [
         {
             icon: user,
             value: 0,
-            label: 'Users',
+            label: 'User',
             bgColor: 'bg-green-100',
             textColor: 'text-green-600',
             iconBgColor: 'bg-green-500',
@@ -95,7 +47,7 @@ export const User = () => {
         {
             icon: adminn,
             value: 0,
-            label: 'Admins',
+            label: 'Admin',
             bgColor: 'bg-blue-100',
             textColor: 'text-blue-600',
             iconBgColor: 'bg-blue-500',
@@ -108,7 +60,7 @@ export const User = () => {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [adminPassword, setAdminPassword] = useState("");
 
-    const [eror, setError] = useState("");
+    const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [isValid, setIsValid] = useState(false);
 
@@ -129,29 +81,59 @@ export const User = () => {
         console.log('doesn\'t work just yet');
     };
 
+    if (activeTab === "admin") {
+        console.log("admin")
+        const token = localStorage.getItem("auth-token");
+        const getUsers = async () => {
+            console.log("Loading...")
+            axios.get("https://ncs-cbt-api.onrender.com/admin/getUsers", {
+                headers:
+                {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                }
+            })
+                .then((res) => {
+                    console.log(res);
+                    if (res.data.status == false) {
+                        localStorage.removeItem("token");
+                        // navigate("/login");
+                    } else {
+                        console.log(res.data.data);
+                    }
+                }).catch((err) => {
+                    console.log(err.message);
+                });
+        }
+        getUsers();
+    } else {
+        console.log("user")
+    }
+
     const handleSubmit = async () => {
         if (isValid) {
-        setIsLoading(true);
+            setIsLoading(true);
             const adminData = { name, adminEmail, phoneNumber, adminPassword };
             try {
                 const response = await axios.post(
-                  "https://ncs-cbt-api.onrender.com/admin/register",
-                  adminData,
-                  {
-                    headers: { "Content-Type": "application/json" },
-                  }
+                    "https://ncs-cbt-api.onrender.com/admin/register",
+                    adminData,
+                    {
+                        headers: { "Content-Type": "application/json" },
+                    }
                 );
                 console.log(response.data.status, response.data);
-                } catch (err) {
+            } catch (err) {
                 if (!err?.response) {
-                  console.log(err);
-                  console.log(err.message);
+                    console.log(err);
+                    console.log(err.message);
                 } else if (err.response?.status === 409) {
-                  setError(err.response.data.message);
+                    setError(err.response.data.message);
                 } else {
-                  setError("Registration Failed");
+                    setError("Registration Failed");
                 }
-              }
+            }
             // createAdmin(adminData);
             setName("");
             setAdminEmail("");
@@ -225,8 +207,8 @@ export const User = () => {
                     </div>
                     <div className="px-4 w-full">
                         {/* {activeTab === "user" && <Table data={users} columns={userHeader}/>} */}
-                        {activeTab === "user" && <Table data={users.length > 0 ? users.map((user, index) => ({ ...user, id: index + 1 })) : [{ id: 1, name: 'No users' }]} columns={userHeader} />}
-                        {activeTab === "admin" && <Table data={admin.length > 0 ? admin.map((admin, index) => ({ ...admin, id: index + 1 })) : [{ id: 1, name: 'No admins' }]} columns={adminHeader} />}
+                        {/* {activeTab === "user" && <Table data={users.length > 0 ? users.map((user, index) => ({ ...user })) : [{ id: 1, name: 'No users' }]} columns={userHeader} />} */}
+                        {/* {activeTab === "admin" && <Table data={admin.length > 0 ? admin.map((admin, index) => ({ ...admin, id: index + 1 })) : [{ id: 1, name: 'No admins' }]} columns={adminHeader} />} */}
                     </div>
                 </section>
             </main>

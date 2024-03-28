@@ -42,6 +42,9 @@ export const AdminLogin = () => {
         if (err.response) {
           setError(err.response.data.message);
         }
+        if (err.response.message === "Network Error") {
+          setError("No Internet Connection")
+        }
       }
       setEmail("");
       setPassword("");
