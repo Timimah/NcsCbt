@@ -16,7 +16,7 @@ export const Table = ({ data, columns }) => {
           {data.map((item, index) => (
             <div key={item.id} className={`grid grid-cols-${columns.length} ${index % 2 === 0 ? 'bg-secondary' : ''} items-center`}>
               {columns.map((column, index) => (
-                <div key={`${item.id}-${column.key}`} className={`table-cell p-4 ${index === columns.length - 1 ? 'text-center' : ''}`}>
+                <div key={`${item.id}-${column.key}`} className={`table-cell px-5 py-3 ${index === columns.length - 2 ? 'text-primary overflow-visible overflow-x-auto' : ''} ${index === columns.length - 1 ? 'text-center' : ''}`}>
                   {item[column.key]}
                 </div>
               ))}
