@@ -1,17 +1,18 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Table } from '../../../components/shared/Table';
 import { Header } from '../../../components/shared/Header';
 import { Button } from '../../../components/shared/Button'
 import { Modal } from '../../../components/shared/Modal'
 import { useUserStore } from '../../../store/userStore';
+import axios from 'axios';
 
 
 const userHeader = [
     { key: 'id', label: 'S/N' },
     { key: 'examineeId', label: 'Examinee ID' },
     { key: 'fullName', label: 'Full Name' },
-    { key: 'userEmail', label: 'Email Address' },
-    { key: 'phoneNumber', label: 'Phone Number' },
+    { key: 'rank', label: 'Rank' },
+    { key: 'checkInTime', label: 'Checkin Time' },
 
     // Add any other relevant columns for users
 ]
@@ -21,9 +22,34 @@ export const Checkin = () => {
     const [showModal, setShowModal] = useState(false);
     const [eID, setEID] = useState("")
     const [error, setError] = useState("");
-    const { users } = useUserStore();
+    const [users, setUsers]  = useState([]);
+    const [checkedInUsers, setCheckedInUsers] = useState([]);
     const [checkUser, setCheckuser] = useState(false);
 
+    useEffect(() => {
+        // Fetch users from the database
+        const getAllUsers = async () => {
+            const token = localStorage.getItem("auth-token");
+            console.log("Loading...")
+            try {
+                const response = await axios.get("https://ncs-cbt-api.onrender.com/admin/getUsers", {
+                    headers:
+                    {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    }
+                });
+                console.log(response.data)
+                setUsers(response.data.data)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        getAllUsers();
+    }, []);
+
+    console.log(users)
 
     const handleSearch = (e) => {
         const term = e.target.value;
@@ -50,6 +76,9 @@ export const Checkin = () => {
             const userExists = users.some((user) => user.examineeId === eID);
             if (userExists) {
                 setCheckuser(true);
+                const getUser = users.find((user) => user.examineeId === eID);
+                setCheckedInUsers([...checkedInUsers, getUser])
+                console.log(checkedInUsers)
                 console.log("user exists");
                 setShowModal(false);
             } else {
@@ -92,7 +121,7 @@ export const Checkin = () => {
                         <Button title="Check Examinee In" btnStyles="px-4 py-3 bg-primary rounded-md text-white" btnClick={() => setShowModal(!showModal)} />
                     </div>
                     <div className="w-full">
-                    {checkUser === true && <Table data={users.length > 0 ? users.map((user, index) => ({ ...user, id: index + 1 })) : [{ id: 1, name: 'No Examinee is checked in yet' }]} columns={userHeader} />}
+                    {checkUser === true && <Table data={users.length > 0 ? checkedInUsers.map((user, index) => ({ ...user, id: index + 1 })) : [{ id: 1, name: 'No Examinee is checked in yet' }]} columns={userHeader} />}
                     </div>
                 </section>
             </main>
