@@ -11,7 +11,8 @@ export const useUserStore = create((set, get) => ({
   loggedInUserRank: "",
   loggedInUserPhoneNumber: "",
   subscriptions: [],
-  quizzes: [],
+  users: [],
+  materials: [],
 
   setIsLoggedIn:
     (arg) => set({ isLoggedIn: arg }),
@@ -36,50 +37,12 @@ export const useUserStore = create((set, get) => ({
 
   setLoggedInUserPhoneNumber: (user) =>
     set({ loggedInUserPhoneNumber: user }),
-  // init: () => {
-  //   const userData = localStorage.getItem('userData');
-  //   if (userData) {
-  //     set((state) => ({ ...state, users: JSON.parse(userData), loggedInUser: null }));
-  //   } else {
-  //     set((state) => ({ ...state, loggedInUser: null }));
-  //   }
-  // },
 
-  // createUser: async (userData) => {
-  //   try {
-  //     const response = await axios.post('https://ncs-cbt-api.onrender.com/users/register', userData);
-
-  //     if (response.data.success) {
-  //       // User created successfully
-  //       console.log('User created successfully:', response.data);
-  //     } else {
-  //       // User creation failed
-  //       console.error('User creation failed:', response.data.error);
-  //     }
-  //   } catch (error) {
-  //     console.error('User creation error:', error);
-  //   }
-  // },
-
-  // loginUser: async (loginData) => {
-  //   try {
-  //     const response = await axios.post('https://ncs-cbt-api.onrender.com/users/login', loginData);
-
-  //     if (response.data.success) {
-  //       // Login successful
-  //       const user = response.data.user;
-  //       set((state) => ({ ...state, isLoggedIn: true, loggedInUser: user }));
-  //       return true;
-  //     } else {
-  //       // Login failed
-  //       console.error('Login failed:', response.data.error);
-  //       return false;
-  //     }
-  //   } catch (error) {
-  //     console.error('Login error:', error);
-  //     return false;
-  //   }
-  // },
+    setUsers: (users) =>
+    set({ users: users}),
+    
+    setMaterials: (materials) =>
+    set({ materials: materials}),
 
   logoutUser: () => {
     set((state) => ({ ...state, isLoggedIn: false, loggedInUser: null }));
