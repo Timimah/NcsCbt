@@ -5,40 +5,24 @@ import { Modal } from '../../../components/shared/Modal';
 import upload from '../../../assets/upload-cloud.png'
 import success from '../../../assets/upload.png'
 import axios from 'axios';
+import { useUserStore } from '../../../store/userStore';
 
 export const UploadMaterials = () => {
+    const { materials } = useUserStore();
     const [name, setName] = useState('');
     const [author, setAuthor] = useState('');
     const [rank, setRank] = useState('');
-    // const [coverImage, setCoverImage] = useState(null);
     const [book, setBook] = useState(null);
     const [bookName, setBookName] = useState('');
+
     const [uploadError, setUploadError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [handleUpload, setHandleUpload] = useState(false);
+    const [isSearching, setIsSearching] = useState(false);
+
+    const [searchedMaterials, setSearchedMaterials] = useState([]);
     const [displayedMaterials, setDisplayedMaterials] = useState([]);
-    const [materials, setMaterials] = useState([])
-
-
-    // const handleCoverImageChange = (e) => {
-    //     console.log(e);
-    //     const booknew bookder();
-    //     file.readAsData{URL(e.target.files[0]);
-    //     file.onload = (e) => 
-    //         if (file && file.size > 1048576) {
-    //             setUploadError('Cover image size should not exceed 1MB');
-    //             setCoverImage(null);
-    //         } else {
-    //             setUploadError('');
-    //             setCoverImage(e.target.result);
-    //         }
-    //         file.onerror = (e) => {
-    //             setUploadError('Error uploading cover image');
-    //             setCoverImage(null);
-    //         }
-    //     }
-    // };
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -49,8 +33,9 @@ export const UploadMaterials = () => {
         } else {
             const reader = new FileReader();
             reader.readAsDataURL(file);
-            reader.onload = (e) => {
-                setBook(e.target.result);
+            reader.onload = () => {
+                setBook(reader.result);
+                console.log(reader.result)
                 setBookName(file.name);
                 setUploadError('');
             }
@@ -60,28 +45,14 @@ export const UploadMaterials = () => {
             }
         }
     }
-    console.log(book)
+    // console.log(book)
 
     useEffect(() => {
-        const token = localStorage.getItem("auth-token")
-        axios.get("https://ncs-cbt-api.onrender.com/material/", {
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
-        })
-            .then((res) => {
-                // console.log(res.data)
-                setMaterials(res.data.data)
-                console.log(materials)
-                if (materials.length > 10) {
-                    setDisplayedMaterials(materials.slice(0, 8))
-                } else {
-                    setDisplayedMaterials(materials)
-                }
-            })
-            .catch((err) => {
-                console.log(err)
-            })
+        if (materials.length > 10) {
+            setDisplayedMaterials(materials.slice(0, 8))
+        } else {
+            setDisplayedMaterials(materials)
+        }
     }, []);
 
     const uploadMaterial = async () => {
@@ -125,23 +96,19 @@ export const UploadMaterials = () => {
     };
 
     const handleSearch = (e) => {
-        const term = e.target.value;
-        setSearchTerm(term);
-
-        const regex = new RegExp(term, 'i');
-        const filteredMaterials = materials.filter((material) =>
-            regex.test(material.title)
-        );
+        setIsSearching(true);
+        const filteredMaterials = materials.filter((material) => {
+            const regex = new RegExp(searchTerm, 'i');
+            const searchProperties = [material.name, material.rank, material.author];
+            return searchProperties.some((property) => regex.test(property));
+        });
 
         if (filteredMaterials.length === 1) {
-            setDisplayedMaterials(filteredMaterials);
+            setSearchedMaterials(filteredMaterials);
         } else {
-            setDisplayedMaterials(filteredMaterials.slice(0, 8));
+            setSearchedMaterials(filteredMaterials.slice(0, 8));
         }
-    };
-
-    const handleSeeMore = () => {
-        setDisplayedMaterials(materials);
+        setSearchTerm('');
     };
 
     return (
@@ -156,9 +123,9 @@ export const UploadMaterials = () => {
                                 className="border rounded-md py-2 px-4 pr-10 w-full"
                                 placeholder="Search materials..."
                                 value={searchTerm}
-                                onChange={handleSearch}
+                                onChange={(e) => setSearchTerm(e.target.value)}
                             />
-                            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                            <div className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer hover:text-primary" onClick={handleSearch}>
                                 <svg
                                     className="h-5 w-5 text-gray-400"
                                     viewBox="0 0 24 24"
@@ -180,24 +147,41 @@ export const UploadMaterials = () => {
                     </div>
                     <div className="text-2xl mt-6">Uploaded Materials</div>
                     <div className="grid grid-cols-5 gap-4">
+                    {!isSearching && 
+                            (
+                                displayedMaterials.length > 0 ? displayedMaterials.map(material => (
+                                    <div key={material._id} className="p-4">
+                                        <img
+                                            src={material.name}
+                                            alt={material.name}
+                                            className="w-full h-40 object-cover"
+                                        />
+                                        <div className="text-lg font-bold mt-2">{material.name}</div>
+                                        <div className='text-xs font-light'>Rank: {material.rank}</div>
+                                    </div>
+                                )) : (
+                                    <div className='text-center text-gray-500 text-xl col-span-5'>No materials available</div>
+                                )
+                            )
+                        }
+                        {isSearching && 
+                        (searchedMaterials.map((material) => (
+                            <div key={material._id} className="p-4">
+                                <img
+                                    src={material.name}
+                                    alt={material.name}
+                                    className="w-full h-40 object-cover rounded-md mb-2"
+                                />
+                                <h3 className="text-lg font-semibold mb-1">{material.name}</h3>
+                                <div className='text-xs font-light'>Rank: {material.rank}</div>
+                            </div>
+                        )))}
                         {
-                            displayedMaterials.length > 0 ? displayedMaterials.map(material => (
-                                <div key={material._id} className="p-4">
-                                    <img
-                                        src={material.name}
-                                        alt={material.name}
-                                        className="w-full h-40 object-cover"
-                                    />
-                                    <div className="text-lg font-bold mt-2">{material.name}</div>
-                                    <div className='text-xs font-light'>Rank: {material.rank}</div>
-                                </div>
-                            )) : (
-                                <div className='text-center text-gray-500 text-xl'>No materials available</div>
-                            )}
+                            }
                     </div>
-
+                    {isSearching && <div className="text-primary cursor-pointer text-lg" onClick={() => {setIsSearching(false); setSearchTerm("")}}>See all materials</div>}
                     {materials.length > 10 && (
-                        <button onClick={handleSeeMore}>See More</button>
+                        <button onClick={()=> setDisplayedMaterials(materials)}>See More...</button>
                     )}
                 </section>
             </main>
@@ -311,6 +295,7 @@ export const UploadMaterials = () => {
                         <Button title="Done" btnStyles="bg-primary px-4 py-3 text-white rounded-md w-full" btnClick={() => setHandleUpload(false)} />
                     }
                     modStyles="bg-secondary w-1/2 transition duration-300 ease-in-out"
+                    closeModal={() => setHandleUpload(false)}
                 />
             }
         </div >

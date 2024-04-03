@@ -2,37 +2,35 @@ import React, { useState } from 'react';
 import { Header } from '../../../components/shared/Header';
 
 export const Materials = () => {
+    const {materials} = useUserStore();
     const [searchTerm, setSearchTerm] = useState('');
-    const [displayedMaterials, setDisplayedMaterials] = useState(JSON.parse(localStorage.getItem('materials')).slice(0, 8));
-    const [searchedMaterials, setSearchedMaterials] = useState(JSON.parse(localStorage.getItem('materials')).slice(0, 8));
+    const [displayedMaterials, setDisplayedMaterials] = useState([]);
+    const [searchedMaterials, setSearchedMaterials] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
 
+    useEffect(() => {
+        if (materials.length > 10) {
+            setDisplayedMaterials(materials.slice(0, 8))
+        } else {
+            setDisplayedMaterials(materials)
+        }
+    }, []);
+
     const handleSearch = (e) => {
-        const term = e.target.value;
-        setSearchTerm(term);
+        setIsSearching(true);
+        csetIsSearching(true);
+        const filteredMaterials = materials.filter((material) => {
+            const regex = new RegExp(searchTerm, 'i');
+            const searchProperties = [material.name, material.rank, material.author];
+            return searchProperties.some((property) => regex.test(property));
+        });
 
-        const regex = new RegExp(term, 'i');
-        const filteredMaterials = displayedMaterials.filter((material) =>
-            regex.test(material.materialName)
-        );
-
+        console.log(filteredMaterials);
         if (filteredMaterials.length === 1) {
             setSearchedMaterials(filteredMaterials);
         } else {
             setSearchedMaterials(filteredMaterials.slice(0, 8));
         }
-    };
-
-    const searchMaterials = () => {
-        setIsSearching(true);
-        handleSearch();
-    }
-
-    const handleSeeMore = () => {
-        const start = displayedMaterials.length;
-        const end = start + 8;
-        const newMaterials = materials.slice(start, end);
-        setDisplayedMaterials([...displayedMaterials, ...newMaterials]);
     };
 
     return (
@@ -47,9 +45,9 @@ export const Materials = () => {
                                 className="border rounded-md py-2 px-4 pr-10 w-full"
                                 placeholder="Search materials..."
                                 value={searchTerm}
-                                onChange={handleSearch}
+                                onChange={(e) => setSearchTerm(e.target.value)}
                             />
-                            <div className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer" onClick={searchMaterials}>
+                            <div className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer" onClick={handleSearch}>
                                 <svg
                                     className="h-5 w-5 text-gray-400"
                                     viewBox="0 0 24 24"
@@ -99,7 +97,7 @@ export const Materials = () => {
                     {displayedMaterials.length > 10 && (
                         <button
                             className="hover:text-primary text-end px-4 py-2 mt-4"
-                            onClick={handleSeeMore}
+        onClick={() => setDisplayedMaterials(materials)}
                         >
                             See More...
                         </button>
