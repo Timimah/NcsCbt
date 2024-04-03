@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Header } from '../../../components/shared/Header';
 import { materials } from '../../../components/user/materials';
 import { Button } from '../../../components/shared/Button';
@@ -10,16 +10,20 @@ import subscription from '../../../assets/sub.png'
 import examinee from '../../../assets/examinee.png'
 import { OverviewCard } from '../../../components/admin/OverviewCard';
 import { useUserStore } from '../../../store/userStore';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 // import useStore from './store'; // Import your Zustand store
 
 
-export const AdminOverview = ({ title, username }) => {
+export const AdminOverview = () => {
+    const {users, materials, setUsers, setMaterials} = useUserStore();
+    const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
 
     const cards = [
         {
             icon: user,
-            value: 0,
+            value: users.length,
             label: 'Total User',
             bgColor: 'bg-green-100',
             textColor: 'text-green-600',
@@ -54,6 +58,41 @@ export const AdminOverview = ({ title, username }) => {
             iconTextColor: 'text-white',
         }
     ]
+
+    useEffect(() => {
+        navigate("/admin-dashboard/overview");
+        const token = localStorage.getItem("auth-token")
+        axios.get("https://ncs-cbt-api.onrender.com/admin/getUsers", {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        })
+            .then((res) => {
+                console.log("Getting details...")
+                setUsers(res.data.data)
+                // console.log(users)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+
+            axios.get("https://ncs-cbt-api.onrender.com/material/", {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then((res) => {
+                // console.log(res.data)
+                setMaterials(res.data.data)
+                // console.log(materials)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }, []);
+    console.log(users, materials);
 
     const sortedMaterials = materials.sort((a, b) => b.rating - a.rating);
 

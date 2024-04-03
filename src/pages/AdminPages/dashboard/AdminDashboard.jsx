@@ -1,13 +1,10 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 export const AdminDashboard = ({ children }) => {
     const [active, setActive] = useState("dashboardmain");
     const navigate = useNavigate();
-
-    useEffect(() => {
-        navigate("/admin-dashboard/overview");
-    }, []);
 
     return (
         <section className='flex bg-vector w-full bg-white h-full transform transition-all duration-300'>
