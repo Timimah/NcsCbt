@@ -34,7 +34,7 @@ export const UploadQuestions = () => {
     }, [questions, selectedCategory]);
 
     const categories = [
-        'CAI-CAII', 'CAII-AIC', 'AIC-IC', 'IC-ASCII', 'ASCII-ASCI', 'ASCI-DSC',
+        "Practice", 'CAI-CAII', 'CAII-AIC', 'AIC-IC', 'IC-ASCII', 'ASCII-ASCI', 'ASCI-DSC',
         'DSC-SC', 'SC-CSC', 'CSC-AC', 'AC-DC', 'DC-CC'
     ];
 
