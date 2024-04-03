@@ -3,8 +3,6 @@ import { Table } from '../../../components/shared/Table';
 import { Header } from '../../../components/shared/Header';
 import { Button } from '../../../components/shared/Button'
 import { Modal } from '../../../components/shared/Modal'
-import { useAdminStore } from '../../../store/adminStore';
-import { useUserStore } from '../../../store/userStore';
 import { OverviewCard } from '../../../components/admin/OverviewCard';
 import user from '../../../assets/user.png'
 import adminn from '../../../assets/user.png'

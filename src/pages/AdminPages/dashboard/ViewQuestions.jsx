@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useAdminStore } from '../../../store/adminStore';
 import { Button } from '../../../components/shared/Button';
 import { useLocation } from 'react-router-dom';
 import { Header } from '../../../components/shared/Header';
 
 export const ViewQuestion = () => {
-    // const { questions } = useAdminStore();
     const [displayedQuestions, setDisplayedQuestions] = useState([]);
     const location = useLocation();
     const selectedCategory = location.state?.selectedCategory;

@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { MyRoutes } from './router/MyRoutes'
-import { useAdminStore } from './store/adminStore'
 import { useUserStore } from './store/userStore';
 import axios from 'axios';
 

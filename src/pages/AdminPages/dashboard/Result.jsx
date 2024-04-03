@@ -86,7 +86,7 @@ export const Result = () => {
     const handleExportFormat = (format) => {
       setExportFormat(format);
     };
-  
+
     const handleExport = () => {
       // Export logic goes here
       console.log(`Exporting in ${exportFormat} format`);

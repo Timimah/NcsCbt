@@ -8,17 +8,14 @@ import user from '../../../assets/user.png'
 import adminn from '../../../assets/user.png'
 import subscription from '../../../assets/sub.png'
 import examinee from '../../../assets/examinee.png'
-import { useAdminStore } from '../../../store/adminStore';
 import { OverviewCard } from '../../../components/admin/OverviewCard';
 import { useUserStore } from '../../../store/userStore';
 // import useStore from './store'; // Import your Zustand store
 
 
 export const AdminOverview = ({ title, username }) => {
-    const { users } = useUserStore();
-    const { admin, subscriptions } = useAdminStore();
     const [showModal, setShowModal] = useState(false);
-    // Sort materials by rating in descending order
+
     const cards = [
         {
             icon: user,

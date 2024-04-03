@@ -58,6 +58,10 @@ export const Exam = () => {
     {
       id: 11,
       questionCategory: "DC-CC"
+    },
+    {
+      id: 12,
+      questionCategory: "Practice"
     }
   ];
 

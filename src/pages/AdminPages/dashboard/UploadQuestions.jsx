@@ -2,14 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Header } from '../../../components/shared/Header';
 import { Button } from '../../../components/shared/Button';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAdminStore } from '../../../store/adminStore';
 import edit from '../../../assets/edit.png';
 import add from '../../../assets/add.png';
 import { Modal } from '../../../components/shared/Modal';
 
 export const UploadQuestions = () => {
     const navigate = useNavigate();
-    const { addQuestion } = useAdminStore();
     const [questions, setQuestions] = useState([
         { id: 1, text: '', options: ['', '', '', ''], type: 'single', correctOptions: [] },
     ]);

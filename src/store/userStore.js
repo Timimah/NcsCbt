@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import axios from 'axios'
 
 export const useUserStore = create((set, get) => ({
-  // users: [],
   isLoggedIn: false,
   loggedInUser: "",
   userIsUser: false,

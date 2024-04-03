@@ -55,7 +55,6 @@ export const Login = () => {
       <div className="w-full max-w-lg px-10 py-8 mx-auto bg-secondary rounded-2xl">
         <div className="max-w-md mx-auto space-y-3">
           <h3 className="text-3xl text-primary font-bold">Welcome back!</h3>
-          <div>{error}</div>
           <p className="text-grey mb-8">Please enter your ID and password</p>
           <div>
             <label className="block py-1 -mb-1">Examinee ID</label>

@@ -4,76 +4,102 @@ import { Button } from '../../../components/shared/Button';
 import { Modal } from '../../../components/shared/Modal';
 import upload from '../../../assets/upload-cloud.png'
 import success from '../../../assets/upload.png'
-import { useAdminStore } from '../../../store/adminStore';
 import axios from 'axios';
 
 export const UploadMaterials = () => {
-    const { addMaterial } = useAdminStore();
     const [name, setName] = useState('');
     const [author, setAuthor] = useState('');
     const [rank, setRank] = useState('');
-    const [coverImage, setCoverImage] = useState(null);
-    const [file, setFile] = useState(null);
+    // const [coverImage, setCoverImage] = useState(null);
+    const [book, setBook] = useState(null);
+    const [bookName, setBookName] = useState('');
     const [uploadError, setUploadError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [handleUpload, setHandleUpload] = useState(false);
-    const materials = useAdminStore((state) => state.materials);
+    const [displayedMaterials, setDisplayedMaterials] = useState([]);
+    const [materials, setMaterials] = useState([])
 
-    const handleCoverImageChange = (e) => {
-        console.log(e);
-        const file = new FileReader();
-        file.readAsDataURL(e.target.files[0]);
-        file.onload = (e) => {
-            if (file && file.size > 1048576) {
-                setUploadError('Cover image size should not exceed 1MB');
-                setCoverImage(null);
-            } else {
-                setUploadError('');
-                setCoverImage(e.target.result);
-            }
-            file.onerror = (e) => {
-                setUploadError('Error uploading cover image');
-                setCoverImage(null);
-            }
-        }
-    };
+
+    // const handleCoverImageChange = (e) => {
+    //     console.log(e);
+    //     const booknew bookder();
+    //     file.readAsData{URL(e.target.files[0]);
+    //     file.onload = (e) => 
+    //         if (file && file.size > 1048576) {
+    //             setUploadError('Cover image size should not exceed 1MB');
+    //             setCoverImage(null);
+    //         } else {
+    //             setUploadError('');
+    //             setCoverImage(e.target.result);
+    //         }
+    //         file.onerror = (e) => {
+    //             setUploadError('Error uploading cover image');
+    //             setCoverImage(null);
+    //         }
+    //     }
+    // };
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file && file.size > 10485760) {
             setUploadError('File size should not exceed 10MB');
-            setFile(null);
+            setBook(null);
+            setBookName('');
         } else {
-            setUploadError('');
-            setFile(file);
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (e) => {
+                setBook(e.target.result);
+                setBookName(file.name);
+                setUploadError('');
+            }
+            reader.onerror = (e) => {
+                setUploadError('Error uploading file');
+                setBook(null);
+            }
         }
     }
+    console.log(book)
 
-    const [displayedMaterials, setDisplayedMaterials] = useState(
-        JSON.parse(localStorage.getItem('materials')).slice(0, 10)
-    );
-
-    // useEffect(() => {
-    //     if (materials.length > 10) {
-    //         setDisplayedMaterials(materials.slice(0, 10));
-    //     }
-    //     console.log(displayedMaterials);
-    // }, [materials]);
+    useEffect(() => {
+        const token = localStorage.getItem("auth-token")
+        axios.get("https://ncs-cbt-api.onrender.com/material/", {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then((res) => {
+                // console.log(res.data)
+                setMaterials(res.data.data)
+                console.log(materials)
+                if (materials.length > 10) {
+                    setDisplayedMaterials(materials.slice(0, 8))
+                } else {
+                    setDisplayedMaterials(materials)
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }, []);
 
     const uploadMaterial = async () => {
-        if (name === "" || author === "" || rank === "" || coverImage === null || file === null) {
+        if (name === "" || author === "" || rank === "" || book === null) {
             setUploadError('Please fill in all the required fields');
-            return;
         } else {
-            const material = {name, author, rank, coverImage, file}
+            const material = { name, author, rank, book }
             console.log(material)
+            const token = localStorage.getItem("auth-token")
             try {
                 const response = await axios.post(
                     "https://ncs-cbt-api.onrender.com/material/upload",
                     material,
                     {
-                        headers: { "Content-Type": "application/json" },
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        },
                     }
                 );
                 console.log(response);
@@ -90,19 +116,12 @@ export const UploadMaterials = () => {
             setName('');
             setAuthor('');
             setRank('');
-            setCoverImage(null);
-            setFile(null);
+            // setCoverImage(null);
+            setBook(null);
             setUploadError('');
+            setShowModal(false);
+            setHandleUpload(!handleUpload)
         }
-        // const storedMaterials = JSON.parse(localStorage.getItem('materials')) || [];
-        // storedMaterials.push(material);
-        // localStorage.setItem('materials', JSON.stringify(storedMaterials));
-        // addMaterial(material);
-        // console.log('upload successful')
-        // setShowModal(false);
-        // setHandleUpload(!handleUpload)
-        // Reset the form fields
-
     };
 
     const handleSearch = (e) => {
@@ -161,25 +180,29 @@ export const UploadMaterials = () => {
                     </div>
                     <div className="text-2xl mt-6">Uploaded Materials</div>
                     <div className="grid grid-cols-5 gap-4">
-                        {/* {displayedMaterials.map(material => (
-                            <div key={material.rank} className="p-4">
-                                <img
-                                    src={material.coverImage}
-                                    alt={material.name}
-                                    className="w-full h-40 object-cover"
-                                />
-                                <div className="text-lg font-bold mt-2">{material.name}</div>
-                                <div className='text-xs font-light'>Rank: {material.rank}</div>
-                            </div>
-                        ))}
-
-                        {materials.length > 10 && (
-                            <button onClick={handleSeeMore}>See More</button>
-                        )} */}
+                        {
+                            displayedMaterials.length > 0 ? displayedMaterials.map(material => (
+                                <div key={material._id} className="p-4">
+                                    <img
+                                        src={material.name}
+                                        alt={material.name}
+                                        className="w-full h-40 object-cover"
+                                    />
+                                    <div className="text-lg font-bold mt-2">{material.name}</div>
+                                    <div className='text-xs font-light'>Rank: {material.rank}</div>
+                                </div>
+                            )) : (
+                                <div className='text-center text-gray-500 text-xl'>No materials available</div>
+                            )}
                     </div>
+
+                    {materials.length > 10 && (
+                        <button onClick={handleSeeMore}>See More</button>
+                    )}
                 </section>
             </main>
-            {showModal &&
+            {
+                showModal &&
                 <Modal
                     closeModal={() => setShowModal(false)}
                     title="Upload Material"
@@ -215,7 +238,7 @@ export const UploadMaterials = () => {
                                 </select>
                             </div>
                             <div className='w-full flex flex-col gap-10'>
-                                <div className='border border-dotted border-primary rounded-lg flex flex-col justify-center items-center px-14 py-10'>
+                                {/* <div className='border border-dotted border-primary rounded-lg flex flex-col justify-center items-center px-14 py-10'>
                                     <div className='flex justify-start w-full -mt-8 -ml-14'>Upload cover image</div>
                                     <label htmlFor="coverImage" className="flex flex-col items-center justify-center my-10">
                                         <div className="flex flex-col items-center justify-center">
@@ -238,7 +261,7 @@ export const UploadMaterials = () => {
                                         <div className='flex w-full justify-end text-red-500 cursor-pointer' onClick={() => setCoverImage(null)}>X</div>
                                         <img src={coverImage} alt="Cover" className="w-full object-cover rounded-md mb-2" />
                                     </div>
-                                ) : ("")}
+                                ) : ("")} */}
                                 <div className='border border-dotted border-primary rounded-lg flex flex-col justify-center items-center px-14 py-10'>
                                     <div className='flex justify-start w-full -mt-8 -ml-14'>Upload file</div>
                                     <label htmlFor="fileUpload" className="flex flex-col items-center justify-center my-10">
@@ -257,10 +280,10 @@ export const UploadMaterials = () => {
                                     </label>
                                     <div className='text-xs -mb-8'>max. 10MB</div>
                                 </div>
-                                {file ? (
+                                {book ? (
                                     <div className='flex w-full justify-between items-center rounded-md px-4 py-2 border border-primary'>
-                                        <div>{file.name}</div>
-                                        <div className='cursor-pointer text-red-500' onClick={() => setFile(null)}>X</div>
+                                        <div>{bookName}</div>
+                                        <div className='cursor-pointer text-red-500' onClick={() => { setBook(null); setBookName("") }}>X</div>
                                     </div>
                                 ) : ("")}
                             </div>
@@ -275,7 +298,8 @@ export const UploadMaterials = () => {
                     modStyles="bg-secondary h-5/6 w-1/2 overflow-y-scroll"
                 />
             }
-            {handleUpload &&
+            {
+                handleUpload &&
                 <Modal
                     content={
                         <div className='flex flex-col gap-4 items-center justify-center py-10'>
@@ -289,6 +313,6 @@ export const UploadMaterials = () => {
                     modStyles="bg-secondary w-1/2 transition duration-300 ease-in-out"
                 />
             }
-        </div>
+        </div >
     );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 // import { useAdminStore } from '../../store/adminStore';
 import { useUserStore } from '../../store/userStore';
 
@@ -7,7 +7,13 @@ export const Header = ({ title }) => {
     const navigate = useNavigate();
     const { loggedInUser, userIsUser, userIsAdmin } = useUserStore();
     console.log(loggedInUser);
-    let userName = userIsUser ? loggedInUser : userIsAdmin ? loggedInUser : 'User';
+    let userName = loggedInUser ? loggedInUser : "";
+    
+    useEffect(() => {
+        if (userName === "") {
+            navigate('/')
+        }
+    }, [userName])
     
     const handleProfile = () => {
         navigate('/dashboard/user-profile')
