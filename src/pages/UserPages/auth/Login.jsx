@@ -6,7 +6,15 @@ import axios from "axios";
 
 export const Login = () => {
   const navigate = useNavigate();
-  const { setLoggedInUser, setIsLoggedIn, setUserIsUser, setLoggedInUserId, setLoggedInUserEmail, setLoggedInUserPhoneNumber, setLoggedInUserRank } = useUserStore();
+  const {
+    setLoggedInUser,
+    setIsLoggedIn,
+    setUserIsUser,
+    setLoggedInUserId,
+    setLoggedInUserEmail,
+    setLoggedInUserPhoneNumber,
+    setLoggedInUserRank,
+  } = useUserStore();
 
   const [examineeId, setExamineeId] = useState("");
   const [password, setPassword] = useState("");
@@ -29,13 +37,15 @@ export const Login = () => {
         setLoggedInUser(user.fullName);
         localStorage.setItem("auth-token", response.data.token);
         setIsLoading(false);
-        navigate("/dashboard/user-profile");
         setIsLoggedIn(true);
         setUserIsUser(true);
         setLoggedInUserEmail(user.email);
         setLoggedInUserId(user.examineeId);
         setLoggedInUserPhoneNumber(user.phoneNumber);
         setLoggedInUserRank(user.rank);
+        navigate("/dashboard/overview");
+        setExamineeId("");
+        setPassword("");
       } catch (err) {
         setIsLoading(false);
         if (!err?.response) {
@@ -45,8 +55,6 @@ export const Login = () => {
           setError(err.response.data.message);
         }
       }
-      setExamineeId("");
-      setPassword("");
     }
   };
 

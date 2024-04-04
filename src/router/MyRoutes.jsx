@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import { TakeExam } from "../pages/UserPages/dashboard/TakeExam";
 import { Login } from "../pages/UserPages/auth/Login";
 import { CreateAccount } from "../pages/UserPages/auth/CreateAccount";
@@ -20,46 +20,61 @@ import { Exam } from "../pages/AdminPages/dashboard/Exam";
 import { UploadQuestions } from "../pages/AdminPages/dashboard/UploadQuestions";
 import { QuestionPreview } from "../pages/AdminPages/dashboard/QuestionPreview";
 import { ViewQuestion } from "../pages/AdminPages/dashboard/ViewQuestions";
+import axios from "axios";
 
 export const MyRoutes = () => {
-    return (
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/create-account" element={<CreateAccount />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/admin" element={<AdminLogin />} />
-        {/* <Route path="/search-results" element={<SearchResults />} />
-        <Route path="/search-profile" element={<SearchProfilell />} /> */}
-        <Route
-          path="/dashboard"
-          element={<Dashboard />}
-        >
-          <Route path="overview" element={<DashboardPage />} />
-          <Route path="take-exam" element={<TakeExam />} />
-          <Route path="material" element={<Materials />} />
-          {/* <Route path="practice" element={<DashboardUsers />} /> */}
-          <Route path="result" element={<Results />} />
-          <Route path="user-profile" element={<UserProfile />} />
-        </Route>
-        <Route
-          path="/admin-dashboard"
-          element={<AdminDashboard />}
-        >
-          <Route path="overview" element={<AdminOverview />} />
-          <Route path="checkin" element={<Checkin />} />
-          <Route path="user" element={<User />} />
-          <Route path="materials" element={<UploadMaterials />} />
-          <Route path="result" element={<Result />} />
-          <Route path="exam" element={<Exam />} />
-          {/* <Route path="user-profile" element={<UserProfile />} /> */}
-          <Route path="payment-history" element={<Payment />} />
-          <Route path="upload-question" element={<UploadQuestions />} />
-          <Route path="preview-question" element={<QuestionPreview />} />
-          <Route path="view-question" element={<ViewQuestion />} />
-          {/* <Route path="/dashboard/edit-venue" />
-          <Route path="/dashboard/edit-vendor" /> */}
-        </Route>
-        <Route path="*" />
-      </Routes>
-    );
+  const navigate = useNavigate();
+  const validateLogin = (location) => {
+    const token = localStorage.getItem("auth-token");
+    axios
+      .get("https://ncs-cbt-api.onrender.com/admin/dashboard", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response, err) => {
+        if (err) {
+          console.log(err);
+          navigate("/login");
+        } else {
+          navigate(`/${location}`);
+        }
+      });
   };
+
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/create-account" element={<CreateAccount />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/admin" element={<AdminLogin />} />
+      {/* <Route path="/search-results" element={<SearchResults />} />
+        <Route path="/search-profile" element={<SearchProfilell />} /> */}
+      <Route path="/dashboard" element={<Dashboard />}>
+        <Route path="overview" element={<DashboardPage />} />
+        <Route path="take-exam" element={<TakeExam />} />
+        <Route path="material" element={<Materials />} />
+        {/* <Route path="practice" element={<DashboardUsers />} /> */}
+        <Route path="result" element={<Results />} />
+        <Route path="user-profile" element={<UserProfile />} />
+      </Route>
+      <Route path="/admin-dashboard" element={<AdminDashboard />}>
+        <Route path="overview" element={<AdminOverview />} />
+        <Route path="checkin" element={<Checkin />} />
+        <Route path="user" element={<User />} />
+        <Route path="materials" element={<UploadMaterials />} />
+        <Route path="result" element={<Result />} />
+        <Route path="exam" element={<Exam />} />
+        {/* <Route path="user-profile" element={<UserProfile />} /> */}
+        <Route path="payment-history" element={<Payment />} />
+        <Route path="upload-question" element={<UploadQuestions />} />
+        <Route path="preview-question" element={<QuestionPreview />} />
+        <Route path="view-question" element={<ViewQuestion />} />
+        {/* <Route path="/dashboard/edit-venue" />
+          <Route path="/dashboard/edit-vendor" /> */}
+      </Route>
+      <Route path="*" />
+    </Routes>
+  );
+};
