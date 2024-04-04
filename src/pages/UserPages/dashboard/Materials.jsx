@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Header } from '../../../components/shared/Header';
+import { useUserStore } from '../../../store/userStore';
 
 export const Materials = () => {
     const {materials} = useUserStore();
@@ -15,6 +16,7 @@ export const Materials = () => {
             setDisplayedMaterials(materials)
         }
     }, []);
+    console.log(materials);
 
     const handleSearch = (e) => {
         setIsSearching(true);
