@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 export const AdminOverview = () => {
-    const {users, materials, setUsers, setMaterials} = useUserStore();
+    const {users, materials, setUsers, setMaterials, isLoggedIn} = useUserStore();
     const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
 
@@ -60,9 +60,9 @@ export const AdminOverview = () => {
     ]
 
     useEffect(() => {
-        navigate("/admin-dashboard/overview");
         const token = localStorage.getItem("auth-token")
-        axios.get("https://ncs-cbt-api.onrender.com/admin/getUsers", {
+        if (isLoggedIn) {
+            axios.get("https://ncs-cbt-api.onrender.com/admin/getUsers", {
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json",
@@ -91,6 +91,9 @@ export const AdminOverview = () => {
             .catch((err) => {
                 console.log(err)
             })
+        } else {
+            navigate('/admin')
+        }
     }, []);
     console.log(users, materials);
 

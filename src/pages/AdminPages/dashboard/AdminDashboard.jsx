@@ -1,10 +1,47 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useUserStore } from "../../../store/userStore";
 
 export const AdminDashboard = ({ children }) => {
     const [active, setActive] = useState("dashboardmain");
     const navigate = useNavigate();
+    const {
+        setAdmin,
+        setLoggedInUser,
+        setIsLoggedIn,
+        setUserIsAdmin
+      } = useUserStore();
+      const token = localStorage.getItem("auth-token");
+
+      useEffect(() => {
+            navigate("/admin-dashboard/overview");
+      }, [])
+
+    // useEffect(() => {
+    //     axios
+    //       .get("https://ncs-cbt-api.onrender.com/admin/dashboard", {
+    //         headers: {
+    //           Authorization: `Bearer ${token}`,
+    //           "Content-Type": "application/json",
+    //         },
+    //       })
+    //       .then((response, err) => {
+    //         if (err) {
+    //           navigate("/admin");
+    //         } else {
+    //           const user = response;
+    //           console.log(user)
+    //         //   setAdmin(user)
+    //           setLoggedInUser(user.email);
+    //         console.log(user)
+    //           setIsLoggedIn(true);
+    //           setUserIsAdmin(true);
+    //           navigate("/admin-dashboard/overview");
+    //         }
+    //       });
+    //   }, []);
+    
 
     return (
         <section className='flex bg-vector w-full bg-white h-full transform transition-all duration-300'>
