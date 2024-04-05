@@ -4,7 +4,6 @@ import axios from "axios";
 import { useUserStore } from "../../../store/userStore";
 
 export const Dashboard = ({ children }) => {
-  const [open, setOpen] = useState(true);
   const [active, setActive] = useState("dashboardmain");
   const navigate = useNavigate();
   const {

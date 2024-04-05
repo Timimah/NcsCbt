@@ -12,6 +12,7 @@ export const useUserStore = create((set, get) => ({
   loggedInUserPhoneNumber: "",
   subscriptions: [],
   users: [],
+  admin: [],
   materials: [],
 
   setIsLoggedIn:
@@ -38,10 +39,13 @@ export const useUserStore = create((set, get) => ({
   setLoggedInUserPhoneNumber: (user) =>
     set({ loggedInUserPhoneNumber: user }),
 
-    setUsers: (users) =>
+  setUsers: (users) =>
     set({ users: users}),
+
+  setAdmin: (admin) =>
+    set({ admin: admin}),
     
-    setMaterials: (materials) =>
+  setMaterials: (materials) =>
     set({ materials: materials}),
 
   logoutUser: () => {
