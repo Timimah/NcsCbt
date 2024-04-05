@@ -5,19 +5,26 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import edit from '../../../assets/edit.png';
 import add from '../../../assets/add.png';
 import { Modal } from '../../../components/shared/Modal';
+import axios from 'axios';
+import pdfToText from 'react-pdftotext'
+// import {parse} from 'pdf-parse'
 
 export const UploadQuestions = () => {
     const navigate = useNavigate();
     const [questions, setQuestions] = useState([
-        { id: 1, text: '', options: ['', '', '', ''], type: 'single', correctOptions: [] },
+        { id: 1, text: '', options: ['', '', '', ''], type: 'single', answer: '' },
     ]);
     const [questionCategory, setQuestionCategory] = useState('');
-    const [isPreviewVisible, setIsPreviewVisible] = useState(false);
     const [displayedQuestions, setDisplayedQuestions] = useState([]);
-    const [isEditing, setIsEditing] = useState(false);
     const [editedQuestions, setEditedQuestions] = useState([]);
-    const [editQuestions, setEditQuestions] = useState(false);
     const [selectedQuestion, setSelectedQuestion] = useState('');
+
+    const [uploadError, setUploadError] = useState('');
+    const [isEditing, setIsEditing] = useState(false);
+    const [isPreviewVisible, setIsPreviewVisible] = useState(false);
+    const [editQuestions, setEditQuestions] = useState(false);
+    const [upload, setUpload] = useState(false);
+
     const location = useLocation();
     const selectedCategory = location.state?.selectedCategory;
     const [selectedCategoryData, setSelectedCategoryData] = useState(null);
@@ -38,18 +45,18 @@ export const UploadQuestions = () => {
         'DSC-SC', 'SC-CSC', 'CSC-AC', 'AC-DC', 'DC-CC'
     ];
 
+    const token = localStorage.getItem('auth-token');
+
     const handleQuestionTextChange = (index, event) => {
         const newQuestions = [...questions];
         newQuestions[index].text = event.target.value;
         setQuestions(newQuestions);
     };
 
-    const handleOptionChange = (questionIndex, optionIndex, e) => {
-        setIsEditing(true);
-        setEditedOptions((prevEditedOptions) => ({
-            ...prevEditedOptions,
-            [`${questionIndex}-${optionIndex}`]: e.target.value,
-        }));
+    const handleOptionChange = (index, optionInd, e) => {
+        const newQuestions = [...questions];
+        newQuestions[index].options[optionInd] = e.target.value;
+        setQuestions(newQuestions);
     };
 
     const handleQuestionTypeChange = (index, event) => {
@@ -58,19 +65,9 @@ export const UploadQuestions = () => {
         setQuestions(newQuestions);
     };
 
-    const handleCorrectOptionsChange = (questionIndex, optionIndex, event) => {
+    const handleAnswerChange = (index, event) => {
         const newQuestions = [...questions];
-        const isChecked = event.target.checked;
-        optionIndex = parseInt(event.target.value, 10);
-
-        if (isChecked) {
-            newQuestions[questionIndex].correctOptions.push(optionIndex);
-        } else {
-            newQuestions[questionIndex].correctOptions = newQuestions[questionIndex].correctOptions.filter(
-                (index) => index !== optionIndex
-            );
-        }
-
+        newQuestions[index].answer = event.target.value;
         setQuestions(newQuestions);
     };
 
@@ -86,23 +83,46 @@ export const UploadQuestions = () => {
         setQuestions(newQuestions);
     };
 
-    const handleSaveQuestions = () => {
+    const handleSaveQuestions = async () => {
         // Here, you can handle the logic to save the questions data to a database or API
         const uniqueId = `${questionCategory}-${Math.random().toString(12).substr(2, 4)}`;
-        console.log('Question Category:', questionCategory);
+        if (questionCategory === '' || questions.some((question) => question.text === '')) {
+            alert('Please fill in all the required fields');
+            return;
+        } else {
+            const questionData = {
+                id: uniqueId,
+                category: questionCategory,
+                questions: questions
+            };
+            console.log(questionData);
+            try {
+                const response = await axios.post(
+                    "https://ncs-cbt-api.onrender.com/exam/upload",
+                    questionData,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+                console.log(response);
+            } catch (err) {
+                if (!err?.response) {
+                    console.log(err);
+                    console.log(err.message);
+                } else if (err.response?.status === 409) {
+                    setUploadError(err.response.data.message);
+                } else {
+                    setUploadError("Uplaod Failed");
+                }
+            }
+            // setQuestionCategory(''); 
+            // setQuestions([{ id: 1, text: '', options: ['', '', '', ''], type: 'single', answer: '' }])   
+        }
 
-        const question = JSON.parse(localStorage.getItem('questions')) || [];
-        const questionData = {
-            id: uniqueId,
-            category: questionCategory,
-            questions: questions
-        };
-        question.push(questionData);
-        localStorage.setItem('questions', JSON.stringify(question));
-        addQuestion(question);
-        setQuestionCategory('');
-        setQuestions([{ id: 1, text: '', options: ['', '', '', ''], type: 'single', correctOptions: [] }])
-        setIsPreviewVisible(true);
+        // setIsPreviewVisible(true);
         // navigate('../preview-question')
     };
 
@@ -139,13 +159,13 @@ export const UploadQuestions = () => {
 
     const handleEdit = (category) => {
         setIsEditing(true);
-    
+
         // Find the questions for the selected category
         const allQuestions = JSON.parse(localStorage.getItem('questions')) || [];
         const questionsForSelectedCategory = allQuestions.find(
             (item) => item.category === category
         );
-    
+
         if (questionsForSelectedCategory) {
             setSelectedCategoryData({
                 category: category,
@@ -154,20 +174,117 @@ export const UploadQuestions = () => {
         } else {
             console.error('No questions found for the selected category.');
         }
-    
+
         // Update the form data with the stored data
         const storedQuestions = questionsForSelectedCategory?.questions || [];
         setEditedQuestions(storedQuestions);
     };
-    
+
+    const uploadFile = () => {
+        setUpload(true);
+    }
+
+    // const [pdfText, setPdfText] = useState('');
+    // const [questionss, setQuestionss] = useState([]);
+    // const [text, setText] = useState("")
+
+    // const extractText = async (e) => {
+    //     const file = await e.target.files[0];
+    //     pdfToText(file).then(
+    //         text => {
+    //             console.log(text)
+    //             setText(text);
+    //             const extractedQuestions = extractQuestions(text);
+    //             setQuestionss(extractedQuestions);
+    //             console.log(questionss)
+    //         })
+    //         .catch(error => console.error("Failed to extract text from pdf"));
+    // };
+
+    // const extractQuestions = (text) => {
+    //     const lines = text.split('\n');
+    //     console.log(lines)
+    //     const questions = [];
+
+    //     let currentQuestion = null;
+    //     let currentOptions = [];
+
+    //     for (let i = 0; i < lines.length; i++) {
+    //         const line = lines[i].trim();
+    //         console.log(line)
+
+    //         if (line.endsWith('?')) {
+    //             // New question
+    //             if (currentQuestion !== null) {
+    //                 questions.push({ question: currentQuestion, options: currentOptions });
+    //                 currentOptions = [];
+    //                 console.log(questions)
+    //             }
+    //             currentQuestion = line;
+    //             console.log(currentQuestion)
+    //         } else if (/^[a-d]\)\s/.test(line)) {
+    //             // Option
+    //             currentOptions.push(line.replace(/^\w\)\s*/, ''));
+    //         } else if (line.length === 0) {
+    //             // Skip empty lines
+    //             continue;
+    //         } else {
+    //             // Append to current question
+    //             currentQuestion += ' ' + line;
+    //         }
+    //     }
+
+        // Add the last question and options
+    //     if (currentQuestion !== null) {
+    //         questions.push({ question: currentQuestion, options: currentOptions });
+    //     }
+    // };
 
     return (
         <div className='flex flex-col w-full p-10'>
             <Header title="Upload Questions" />
+            {uploadError && <div className='text-red-500'>{uploadError}</div>}
+            {upload && (
+                <Modal
+                    title="Upload Question"
+                    content={
+                        <div className='flex flex-col gap-6 my-10'>
+                            <div className='flex flex-col gap-4'>
+                                <label htmlFor="questionCategory" className="text-lg">Question Category</label>
+                                <select
+                                    id="questionCategory"
+                                    value={questionCategory}
+                                    onChange={(event) => setQuestionCategory(event.target.value)}
+                                    className={`border py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary w-1/2 bg-gray-200 border-primary`}
+                                >
+                                    <option value="" className='px-4 py-3 text-primary text-lg'>Select a category</option>
+                                    {categories.map((category) => (
+                                        <option key={category} value={category} className='px-4 py-3 text-primary text-lg'>
+                                            {category}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className='border border-primary w-full p-10 rounded-md'>
+                                <input type="file" accept="application/pdf" onChange={extractText} />
+                                <div className="w-full">{pdfText}</div>
+                            </div>
+                        </div>
+                    }
+                    buttons={
+                        <Button title="Upload" btnStyles="px-4 py-3 text-white bg-primary rounded-md" btnClick={uploadFile} />
+                    }
+                    modStyles="w-2/3 bg-secondary h-2/3"
+                    closeModal={() => setUpload(false)}
+                />
+            )}
             {!isPreviewVisible &&
                 <>
-                    <div className='my-4 cursor-pointer text-primary' onClick={() => window.history.back()}>
-                        Back
+                    <div className='flex justify-between'>
+                        <div className='my-4 cursor-pointer text-primary' onClick={() => window.history.back()}>
+                            Back
+                        </div>
+                        <Button title="Select File to Upload" btnStyles="px-4 py-3 text-white bg-primary rounded-md w-1/3" btnClick={uploadFile} />
                     </div>
                     <div className='flex flex-col gap-8 px-4'>
                         <div className='flex flex-col gap-4'>
@@ -206,20 +323,22 @@ export const UploadQuestions = () => {
                                             <input
                                                 type="text"
                                                 value={option}
-                                                onChange={(event) => handleOptionChange(index, optionIndex, event)}
+                                                onChange={(e) => handleOptionChange(index, optionIndex, e)}
                                                 className='border py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary w-full bg-gray-200 border-primary'
                                             />
-                                            <label>
-                                                <input
-                                                    type="checkbox"
-                                                    value={option}
-                                                    checked={question.correctOptions.includes(optionIndex)}
-                                                    onChange={(event) => handleCorrectOptionsChange(index, optionIndex, event)}
-                                                />
-                                                Correct Option
-                                            </label>
                                         </div>
                                     ))}
+                                </div>
+                                <div className='flex flex-col gap-6 w-full'>
+                                    <label className="text-lg">Answer:</label>
+                                    <div className='flex flex-col w-full'>
+                                        <input
+                                            type="text"
+                                            value={question.answer}
+                                            onChange={(event) => handleAnswerChange(index, event)}
+                                            className='border py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary w-full bg-gray-200 border-primary'
+                                        />
+                                    </div>
                                 </div>
                                 <div className='flex flex-col gap-4'>
                                     <label className="text-lg">Question Type:</label>
@@ -322,7 +441,7 @@ export const UploadQuestions = () => {
                                             <div key={i} className='flex gap-2'>
                                                 <input
                                                     type={question.type}
-                                                    value={editedQuestions[index]?.options[i] || ''} 
+                                                    value={editedQuestions[index]?.options[i] || ''}
                                                     placeholder={option}
                                                     onChange={(e) => handleEditOptionChange(index, i, e)}
                                                 />
