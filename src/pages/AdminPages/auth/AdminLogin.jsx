@@ -27,7 +27,6 @@ export const AdminLogin = () => {
           }
         );
         const user = response.data.data;
-        // console.log(user)
         setLoggedInUser(user.email);
         localStorage.setItem("auth-token", response.data.token);
         setIsLoading(false);
