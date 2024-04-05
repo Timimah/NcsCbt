@@ -31,7 +31,7 @@ export const User = () => {
     const {users} = useUserStore();
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
-    const [activeTab, setActiveTab] = useState("admin");
+    // const [activeTab, setActiveTab] = useState("user");
     const [handleCreate, setHandleCreate] = useState(false);
 
     const [name, setName] = useState("");
@@ -104,21 +104,17 @@ export const User = () => {
         {
             icon: user,
             value: users.length,
-            label: 'User',
-            bgColor: 'bg-green-100',
-            textColor: 'text-green-600',
-            iconBgColor: 'bg-green-500',
-            iconTextColor: 'text-white',
+            label: 'Users'
         },
-        {
-            icon: adminn,
-            value: 0,
-            label: 'Admin',
-            bgColor: 'bg-blue-100',
-            textColor: 'text-blue-600',
-            iconBgColor: 'bg-blue-500',
-            iconTextColor: 'text-white',
-        }
+        // {
+        //     icon: adminn,
+        //     value: 0,
+        //     label: 'Admin',
+        //     bgColor: 'bg-blue-100',
+        //     textColor: 'text-blue-600',
+        //     iconBgColor: 'bg-blue-500',
+        //     iconTextColor: 'text-white',
+        // }
     ]
 
     return (
@@ -126,7 +122,7 @@ export const User = () => {
             <Header title="Dashboard" />
             <main className="flex-grow">
                 <section className='flex flex-col gap-4'>
-                    <div className="flex md:flex-row flex-col mb-4 justify-between items-center gap-8 h-14">
+                    <div className="flex md:flex-row flex-col mb-4 justify-between items-center gap-8">
                         <div className="relative flex md:w-2/3 w-full">
                             <input
                                 type="text"
@@ -151,20 +147,20 @@ export const User = () => {
                                 </svg>
                             </div>
                         </div>
-                        <div className="flex  justify-between w-full md:w-2/3 gap-4">
+                        <div className="flex  justify-between w-full md:w-1/3 gap-4">
                             {cards.map((card, index) => (
                                 <div key={index} className='w-full'>
                                     <OverviewCard
                                         cardStyles="justify-center py-3"
-                                        cardClick={() => {
-                                            if (card.label === "Admin") {
-                                                // console.log("Admin")
-                                                setActiveTab("admin");
-                                            } else {
-                                                // console.log("User")
-                                                setActiveTab("user");
-                                            }
-                                        }}
+                                        // cardClick={() => {
+                                        //     if (card.label === "Admin") {
+                                        //         // console.log("Admin")
+                                        //         setActiveTab("admin");
+                                        //     } else {
+                                        //         // console.log("User")
+                                        //         setActiveTab("user");
+                                        //     }
+                                        // }}
                                         label={card.label}
                                         cardValue={card.value}
                                         icon={
@@ -177,12 +173,13 @@ export const User = () => {
                             ))}
                         </div>
                     </div>
-                    <div className='flex md:justify-end'>
-                        {activeTab === "admin" ? <Button title="Create Admin" btnStyles="px-4 py-3 bg-primary rounded-md text-white" btnClick={() => setShowModal(!showModal)} /> : ""}
-                    </div>
+                    {/* // <div className='flex md:justify-end'>
+                    //     {activeTab === "admin" ? <Button title="Create Admin" btnStyles="px-4 py-3 bg-primary rounded-md text-white" btnClick={() => setShowModal(!showModal)} /> : ""}
+                    // </div> */}
                     <div className="px-4 w-full">
-                        {/* {activeTab === "user" && <Table data={users} columns={userHeader} />} */}
-                        {activeTab === "user" && <Table data={users.length > 0 ? users.map((user, index) => ({ ...user, id: index + 1 })) : [{ id: 1, name: 'No users' }]} columns={userHeader} />}
+                        {/* {activeTab === "user" &&  */}
+                        <Table data={users.length > 0 ? users.map((user, index) => ({ ...user, id: index + 1 })) : [{ id: 1, name: 'No users' }]} columns={userHeader} />
+                        {/* } */}
                         {/* {activeTab === "admin" && <Table data={admin.length > 0 ? admin.map((admin, index) => ({ ...admin, id: index + 1 })) : [{ id: 1, name: 'No admins' }]} columns={adminHeader} />} */}
                     </div>
                 </section>
