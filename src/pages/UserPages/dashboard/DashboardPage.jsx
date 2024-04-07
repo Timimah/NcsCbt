@@ -7,21 +7,62 @@ import { Modal } from "../../../components/shared/Modal";
 import { Chart } from "../../../components/user/Chart";
 import { useUserStore } from "../../../store/userStore";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export const DashboardPage = ({ title, username }) => {
   const [showModal, setShowModal] = useState(false);
-  const { isLoggedIn } = useUserStore();
+  const { isLoggedIn,
+    setMaterials,
+    materials,
+    setLoggedInUser,
+    setIsLoggedIn,
+    setUserIsUser,
+    setLoggedInUserId,
+    setLoggedInUserEmail,
+    setLoggedInUserPhoneNumber,
+    setLoggedInUserRank, } = useUserStore();
   // console.log(isLoggedIn)
   const navigate = useNavigate();
-  // Sort materials by rating in descending order
+  const topMaterials = materials.slice(0, 4);
 
-  const sortedMaterials = materials.sort((a, b) => b.rating - a.rating);
-
-  // Get the top 4 materials with the highest rating
-
-  const topMaterials = sortedMaterials.slice(0, 4);
   useEffect(() => {
+    const token = localStorage.getItem("auth-token");
     if (isLoggedIn) {
+      axios.get("https://ncs-cbt-api.onrender.com/material/", {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+        .then((res) => {
+          setMaterials(res.data.data)
+          console.log(materials)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+
+      // axios.get("https://ncs-cbt-api.onrender.com/users/dashboard", {
+      //   headers: {
+      //     "Authorization": `Bearer ${token}`,
+      //     "Content-Type": "application/json"	
+      //   }
+      // })
+      //   .then((res) => {
+      //     console.log(res)
+          // setMaterials(res.data.data)
+          // console.log(u)
+          // setLoggedInUser(user.fullName);
+          // setIsLoggedIn(true);
+          // setUserIsUser(true);
+          // setLoggedInUserEmail(user.email);
+          // setLoggedInUserId(user.examineeId);
+          // setLoggedInUserPhoneNumber(user.phoneNumber);
+          // setLoggedInUserRank(user.rank);
+        // })
+        // .catch((err) => {
+        //   console.log(err)
+        // })
+
     } else {
       navigate("/login");
     }
@@ -32,18 +73,17 @@ export const DashboardPage = ({ title, username }) => {
       <Header title="Dashboard" />
       <main className="flex-grow">
         <section>
-          <h2 className="text-lg mb-4 text-darkgrey">Top Materials to Read</h2>
+          <h2 className="text-lg mb-4 text-darkgrey font-semibold">Top Materials to Read</h2>
           <div className="grid grid-cols-4 gap-4">
             {topMaterials.map((material) => (
-              <div key={material.id} className="p-4 text-darkgrey">
+              <div key={material._id} className="p-4 text-darkgrey">
                 <img
-                  src={material.coverImage}
-                  alt={material.title}
+                  src={material.name}
+                  alt={material.name}
                   className="w-full h-40 object-cover rounded-md mb-2"
                 />
-                <h3 className="mb-1">{material.title}</h3>
-                <div className="flex items-center"></div>
-                {/* <span>{material.rating}/5</span> */}
+                <h3 className="mb-1">{material.name}</h3>
+                <div className="text-xs"> Rank: {material.rank}</div>
               </div>
             ))}
           </div>
@@ -55,7 +95,7 @@ export const DashboardPage = ({ title, username }) => {
             <Button
               title="Take Exam"
               btnStyles="bg-primary text-white py-2 px-4 rounded-md w-fit"
-              btnClick={() => setShowModal(true)}
+              btnClick={() => navigate("/dashboard/practice")}
             />
           </div>
           <img className="object-contain" src={quiz} alt="Quiz" />
