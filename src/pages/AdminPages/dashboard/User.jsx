@@ -119,7 +119,7 @@ export const User = () => {
 
     return (
         <div className="flex flex-col w-full p-10 gap-4">
-            <Header title="Dashboard" />
+            <Header title="Users" />
             <main className="flex-grow">
                 <section className='flex flex-col gap-4'>
                     <div className="flex md:flex-row flex-col mb-4 justify-between items-center gap-8">

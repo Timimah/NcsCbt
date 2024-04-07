@@ -34,7 +34,7 @@ export const Results = () => {
 
     return (
         <div className="flex flex-col w-full p-10 gap-4">
-            <Header title="Dashboard" username="Bedlam" />
+            <Header title="Result" />
             <main className="flex-grow">
                 <section className='flex flex-col gap-4'>
                     <div className="flex mb-4 bg-slate-300">

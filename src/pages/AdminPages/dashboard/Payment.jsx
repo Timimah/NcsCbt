@@ -101,7 +101,7 @@ export const Payment = () => {
 
     return (
         <div className="flex flex-col w-full p-10 gap-4">
-            <Header title="Dashboard" username="Bedlam" />
+            <Header title="Payment" />
             <main className="flex-grow">
                 <section className='flex flex-col gap-4'>
                     <div className="flex mb-4 justify-between gap-8 h-14">

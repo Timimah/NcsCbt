@@ -4,10 +4,12 @@ import { Table } from '../../../components/shared/Table'
 import { Button } from '../../../components/shared/Button';
 import { useNavigate } from 'react-router-dom';
 import { Modal } from '../../../components/shared/Modal';
+import { useUserStore } from '../../../store/userStore';
 
 
 export const Exam = () => {
   const navigate = useNavigate();
+  const {questions} = useUserStore();
 
   const showQuestions = (questionCategory) => {
     // console.log(chosenCategory);
@@ -58,16 +60,13 @@ export const Exam = () => {
     {
       id: 11,
       questionCategory: "DC-CC"
-    },
-    {
-      id: 12,
-      questionCategory: "Practice"
     }
   ];
 
+  console.log(questions);
   return (
-    <div className='px-8'>
-      <Header title="Exam" />
+    <div className='p-10'>
+      <Header title="Exam/Practice" />
       <div className='w-full flex justify-end py-4'>
         <Button title="Upload Questions" btnStyles="px-4 py-3 rounded-md bg-primary text-white" btnClick={() => navigate("../upload-question")} />
       </div>
