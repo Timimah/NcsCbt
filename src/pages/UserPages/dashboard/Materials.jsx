@@ -37,7 +37,7 @@ export const Materials = () => {
 
     return (
         <div className="flex flex-col w-full p-10 gap-4">
-            <Header title="Dashboard" username="Bedlam" />
+            <Header title="Materials" />
             <main className="flex-grow">
                 <section className='flex flex-col gap-4'>
                     <div className="flex mb-4">
@@ -70,13 +70,13 @@ export const Materials = () => {
                         {!isSearching && 
                             (
                                 displayedMaterials.map((material) => (
-                                    <div key={material.rank} className="p-4">
+                                    <div key={material._id} className="p-4">
                                         <img
-                                            src={material.coverImage}
-                                            alt={material.materialName}
+                                            src={material.name}
+                                            alt={material.name}
                                             className="w-full h-40 object-cover rounded-md mb-2"
                                         />
-                                        <h3 className="text-lg font-semibold mb-1">{material.materialName}</h3>
+                                        <h3 className="text-lg font-semibold mb-1">{material.name}</h3>
                                         <div className='text-xs font-light'>Rank: {material.rank}</div>
                                     </div>
                                 ))
