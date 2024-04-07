@@ -12,11 +12,10 @@ import { OverviewCard } from '../../../components/admin/OverviewCard';
 import { useUserStore } from '../../../store/userStore';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-// import useStore from './store'; // Import your Zustand store
 
 
 export const AdminOverview = () => {
-    const {users, materials, setUsers, setMaterials, isLoggedIn} = useUserStore();
+    const {users, materials, questions, setUsers, setMaterials, setQuestions,  isLoggedIn} = useUserStore();
     const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
 
@@ -70,9 +69,7 @@ export const AdminOverview = () => {
             }
         })
             .then((res) => {
-                console.log("Getting details...")
                 setUsers(res.data.data)
-                // console.log(users)
             })
             .catch((err) => {
                 console.log(err)
@@ -84,8 +81,20 @@ export const AdminOverview = () => {
             }
         })
             .then((res) => {
-                // console.log(res.data)
                 setMaterials(res.data.data)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+
+        axios.get("https://ncs-cbt-api.onrender.com/exam/", {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then((res) => {
+                // console.log(res.data)
+                setQuestions(res.data.data)
                 // console.log(materials)
             })
             .catch((err) => {
@@ -95,7 +104,7 @@ export const AdminOverview = () => {
             navigate('/admin')
         }
     }, []);
-    console.log(users, materials);
+    console.log(users, materials, questions);
 
     const sortedMaterials = materials.sort((a, b) => b.rating - a.rating);
 
@@ -130,33 +139,6 @@ export const AdminOverview = () => {
                     </div>
                 </section>
             </main>
-            {showModal &&
-                <Modal
-                    title="Quiz Settings"
-                    closeModal={() => setShowModal(false)}
-                    content={
-                        <div className='text-left mt-4'>
-                            <div>
-                                <label className="block py-1 -mb-1">Number of Questions</label>
-                                <input type="tel" className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary" placeholder="30" />
-                                <p className="text-sm mt-2 px-2 hidden text-gray-600">Text helper</p>
-                            </div>
-                            <div>
-                                <label className="block py-1 -mb-1">Set Time</label>
-                                <input type="text" className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary" placeholder="5 min" />
-                                <p className="text-sm mt-2 px-2 hidden text-gray-600">Text helper</p>
-                            </div>
-                            <div>
-                                <label className="block py-1 -mb-1">Select Rank</label>
-                                <input type="text" className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary" placeholder="Select Rank" />
-                                <p className="text-sm mt-2 px-2 hidden text-gray-600">Text helper</p>
-                            </div>
-                        </div>
-                    }
-                    modStyles="w-1/3 h-fit bg-secondary text-center"
-                    buttons={<Button title="Start Quiz" btnStyles="bg-primary text-white py-2 px-4 rounded-md mt-4 w-full" btnClick={() => setShowModal(false)} />}
-                />
-            }
         </div>
     );
 };
