@@ -6,17 +6,18 @@ import edit from '../../../assets/edit.png';
 import add from '../../../assets/add.png';
 import { Modal } from '../../../components/shared/Modal';
 import axios from 'axios';
-import pdfToText from 'react-pdftotext'
+// import pdfToText from 'react-pdftotext'
 // import {parse} from 'pdf-parse'
 
 export const UploadQuestions = () => {
     const navigate = useNavigate();
-    const [questions, setQuestions] = useState([
-        { id: 1, text: '', options: ['', '', '', ''], type: 'single', answer: '' },
-    ]);
-    const [questionCategory, setQuestionCategory] = useState('');
+    const [questionDetails, setQuestionDetails] = useState([]);
+    const [question, setQuestion] = useState('');
+    const [category, setCategory] = useState('');
+    const [options, setOptions] = useState(['']);
+    const [answer, setAnswer] = useState('');
+    const [type, setType] = useState('');
     const [displayedQuestions, setDisplayedQuestions] = useState([]);
-    const [editedQuestions, setEditedQuestions] = useState([]);
     const [selectedQuestion, setSelectedQuestion] = useState('');
 
     const [uploadError, setUploadError] = useState('');
@@ -29,76 +30,76 @@ export const UploadQuestions = () => {
     const selectedCategory = location.state?.selectedCategory;
     const [selectedCategoryData, setSelectedCategoryData] = useState(null);
 
-    useEffect(() => {
-        setDisplayedQuestions(JSON.parse(localStorage.getItem('questions')) || []);
-        const allQuestions = JSON.parse(localStorage.getItem('questions')) || [];
-        const questionsForSelectedCategory = allQuestions.filter(
-            (question) => question.category === selectedCategory
-        );
-        setEditQuestions(questionsForSelectedCategory);
+    // useEffect(() => {
+    //     setDisplayedQuestions(JSON.parse(localStorage.getItem('questions')) || []);
+    //     const allQuestions = JSON.parse(localStorage.getItem('questions')) || [];
+    //     const questionsForSelectedCategory = allQuestions.filter(
+    //         (question) => question.category === selectedCategory
+    //     );
+    //     setEditQuestions(questionsForSelectedCategory);
 
-        // setDisplayedQuestions(JSON.parse(localStorage.getItem('questions')) || []);
-    }, [questions, selectedCategory]);
+    //     // setDisplayedQuestions(JSON.parse(localStorage.getItem('questions')) || []);
+    // }, [questions, selectedCategory]);
 
     const categories = [
-        "Practice", 'CAI-CAII', 'CAII-AIC', 'AIC-IC', 'IC-ASCII', 'ASCII-ASCI', 'ASCI-DSC',
+        'CAI-CAII', 'CAII-AIC', 'AIC-IC', 'IC-ASCII', 'ASCII-ASCI', 'ASCI-DSC',
         'DSC-SC', 'SC-CSC', 'CSC-AC', 'AC-DC', 'DC-CC'
     ];
 
     const token = localStorage.getItem('auth-token');
-
-    const handleQuestionTextChange = (index, event) => {
-        const newQuestions = [...questions];
-        newQuestions[index].text = event.target.value;
-        setQuestions(newQuestions);
+    // const handleOptionChange = (index, value) => {
+    //     const newQuestions = [...questions];
+    //     newQuestions[index].options[optionInd] = e.target.value;
+    //     setQuestions(newQuestions);
+    // };
+    const handleOptionChange = (index, value) => {
+        const newOptionsArray = [...options];
+        newOptionsArray[index] = value;
+        setOptions(newOptionsArray);
     };
 
-    const handleOptionChange = (index, optionInd, e) => {
-        const newQuestions = [...questions];
-        newQuestions[index].options[optionInd] = e.target.value;
-        setQuestions(newQuestions);
+    const handleAddOption = () => {
+        setOptions([...options, '']);
     };
 
-    const handleQuestionTypeChange = (index, event) => {
-        const newQuestions = [...questions];
-        newQuestions[index].type = event.target.value;
-        setQuestions(newQuestions);
-    };
-
-    const handleAnswerChange = (index, event) => {
-        const newQuestions = [...questions];
-        newQuestions[index].answer = event.target.value;
-        setQuestions(newQuestions);
+    const handleRemoveOption = (index) => {
+        const newOptionsArray = [...options];
+        newOptionsArray.splice(index, 1);
+        setOptions(newOptionsArray);
     };
 
     const handleAddQuestion = () => {
-        const newQuestions = [...questions];
-        newQuestions.push({
-            id: newQuestions.length + 1,
-            text: '',
-            options: ['', '', '', ''],
-            type: 'single',
-            correctOptions: [],
-        });
-        setQuestions(newQuestions);
-    };
+        console.log(questionDetails)
+        const newQuestionObj = {
+            question: question,
+            answer: answer,
+            options: options,
+            type: type,
+            category: category
+        };
+        // console.log(newOptions)
+        setQuestionDetails([...questionDetails, newQuestionObj]);
+        setQuestion('');
+        setAnswer('');
+        setOptions(['']);
+        setCategory('');
+        setType('');
+    }
 
     const handleSaveQuestions = async () => {
         // Here, you can handle the logic to save the questions data to a database or API
-        const uniqueId = `${questionCategory}-${Math.random().toString(12).substr(2, 4)}`;
-        if (questionCategory === '' || questions.some((question) => question.text === '')) {
+        // const uniqueId = `${questionCategory}-${Math.random().toString(12).substr(2, 4)}`;
+        if (questionCategory === '' || questionDetails.some((question) => question.text === '')) {
             alert('Please fill in all the required fields');
             return;
         } else {
             const questionData = {
-                id: uniqueId,
-                category: questionCategory,
-                questions: questions
+                questionDetails
             };
             console.log(questionData);
             try {
                 const response = await axios.post(
-                    "https://ncs-cbt-api.onrender.com/exam/upload",
+                    "https://ncs-cbt-api.onrender.com/exam/uploadMultiple",
                     questionData,
                     {
                         headers: {
@@ -234,7 +235,7 @@ export const UploadQuestions = () => {
     //         }
     //     }
 
-        // Add the last question and options
+    // Add the last question and options
     //     if (currentQuestion !== null) {
     //         questions.push({ question: currentQuestion, options: currentOptions });
     //     }
@@ -286,13 +287,33 @@ export const UploadQuestions = () => {
                         </div>
                         <Button title="Select File to Upload" btnStyles="px-4 py-3 text-white bg-primary rounded-md w-1/3" btnClick={uploadFile} />
                     </div>
+                    {
+                        questionDetails.length >= 0 ? (
+                            <div className="mb-4">
+                                <h2 className="text-xl font-bold mb-2">Questions</h2>
+                                {questionDetails.map((question, index) => (
+                                    <div key={index} className="mb-4">
+                                        <h3 className="text-lg font-bold">Question {index + 1}: {question.question}</h3>
+                                        <p>Answer: <span className='font-semibold'>{question.answer}</span></p>
+                                        <p>Options:</p>
+                                        <div className='grid grid-cols-4'>
+                                            {question.options.map((option, i) => (
+                                                <div className="ml-2">{option}</div>
+                                            ))}
+                                        </div>
+                                        <hr className='mt-6' />
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (<div>No questions added yet</div>)
+                    }
                     <div className='flex flex-col gap-8 px-4'>
                         <div className='flex flex-col gap-4'>
                             <label htmlFor="questionCategory" className="text-lg">Question Category</label>
                             <select
                                 id="questionCategory"
-                                value={questionCategory}
-                                onChange={(event) => setQuestionCategory(event.target.value)}
+                                value={category}
+                                onChange={(event) => setCategory(event.target.value)}
                                 className={`border py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary w-1/2 bg-gray-200 border-primary`}
                             >
                                 <option value="" className='px-4 py-3 text-primary text-lg'>Select a category</option>
@@ -303,70 +324,76 @@ export const UploadQuestions = () => {
                                 ))}
                             </select>
                         </div>
-                        {questions.map((question, index) => (
-                            <div key={question.id} className='flex flex-col gap-8'>
-                                <div className='flex flex-col gap-4'>
-                                    <div className='text-xl font-semibold'>Question {question.id}</div>
-                                    <label htmlFor={`questionText-${question.id}`} className="text-lg">Question Text:</label>
-                                    <textarea
-                                        id={`questionText-${question.id}`}
-                                        value={question.text}
-                                        onChange={(event) => handleQuestionTextChange(index, event)}
-                                        rows={3}
+                        <div className='flex flex-col gap-8'>
+                            <div className='flex flex-col gap-4'>
+                                <div className='text-xl font-semibold'>Question</div>
+                                <label htmlFor="question" className="text-lg">Question:</label>
+                                <textarea
+                                    value={question}
+                                    onChange={(e) => setQuestion(e.target.value)}
+                                    rows={3}
+                                    className='border py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary w-full bg-gray-200 border-primary'
+                                />
+                            </div>
+                            <div className='flex flex-col gap-6 w-full'>
+                                <label className="text-lg" htmlFor='answer'>Answer:</label>
+                                <div className='flex flex-col w-full'>
+                                    <input
+                                        type="text"
+                                        value={answer}
+                                        onChange={(e) => setAnswer(e.target.value)}
                                         className='border py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary w-full bg-gray-200 border-primary'
                                     />
                                 </div>
-                                <div className='flex flex-col gap-6 w-full'>
-                                    <label className="text-lg">Options:</label>
-                                    {question.options.map((option, optionIndex) => (
-                                        <div key={optionIndex} className='flex flex-col w-full'>
-                                            <input
-                                                type="text"
-                                                value={option}
-                                                onChange={(e) => handleOptionChange(index, optionIndex, e)}
-                                                className='border py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary w-full bg-gray-200 border-primary'
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className='flex flex-col gap-6 w-full'>
-                                    <label className="text-lg">Answer:</label>
-                                    <div className='flex flex-col w-full'>
+                            </div>
+                            <div className='flex flex-col gap-6 w-full'>
+                                <label className="text-lg">Options:</label>
+                                {options.map((option, index) => (
+                                    <div key={index} className="mb-2 flex">
                                         <input
                                             type="text"
-                                            value={question.answer}
-                                            onChange={(event) => handleAnswerChange(index, event)}
-                                            className='border py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary w-full bg-gray-200 border-primary'
+                                            value={option}
+                                            onChange={(e) => handleOptionChange(index, e.target.value)}
+                                            className="border border-primary rounded-md bg-gray-200 py-2 px-4 flex-grow mr-2"
                                         />
+                                        <Button title="Remove" btnStyles="px-4 py-3 bg-yellow rounded-md" btnClick={() => handleRemoveOption(index)} />
                                     </div>
-                                </div>
-                                <div className='flex flex-col gap-4'>
-                                    <label className="text-lg">Question Type:</label>
-                                    <div className='flex gap-4'>
-                                        <label >
-                                            <input
-                                                type="radio"
-                                                value="single"
-                                                checked={question.type === 'single'}
-                                                onChange={(event) => handleQuestionTypeChange(index, event)}
-                                                className='mx-3'
-                                            />
-                                            Single Choice
-                                        </label>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                value="multiple"
-                                                checked={question.type === 'multiple'}
-                                                onChange={(event) => handleQuestionTypeChange(index, event)}
-                                                className='mx-3'
-                                            />
-                                            Multiple Choice
-                                        </label>
+                                ))}
+                                <Button title={
+                                    <div className='flex gap-2 text-white'>
+                                        <img src={add} alt="" />
+                                        <div>
+                                            Add Option
+                                        </div>
                                     </div>
+                                } btnStyles="px-4 py-3 bg-cardgreen rounded-md" btnClick={handleAddOption} />
+                            </div>
+                            <div className='flex flex-col gap-4'>
+                                <label className="text-lg">Question Type:</label>
+                                <div className='flex gap-4'>
+                                    <label >
+                                        <input
+                                            type="radio"
+                                            value="exam"
+                                            checked={type === 'exam'}
+                                            onChange={(e) => setType(e.target.value)}
+                                            className='mx-3'
+                                        />
+                                        Exam
+                                    </label>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            value="practice"
+                                            checked={type === 'practice'}
+                                            onChange={(e) => setType(e.target.value)}
+                                            className='mx-3'
+                                        />
+                                        Practice
+                                    </label>
                                 </div>
                             </div>
-                        ))}
+                        </div>
                     </div>
                     <div className="flex w-full justify-between gap-4 my-10">
                         <div className='text-xl flex gap-4 items-center w-1/3 cursor-pointer' onClick={handleAddQuestion}>
