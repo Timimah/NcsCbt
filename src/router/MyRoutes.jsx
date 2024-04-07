@@ -21,6 +21,7 @@ import { UploadQuestions } from "../pages/AdminPages/dashboard/UploadQuestions";
 import { QuestionPreview } from "../pages/AdminPages/dashboard/QuestionPreview";
 import { ViewQuestion } from "../pages/AdminPages/dashboard/ViewQuestions";
 import axios from "axios";
+import { Practice } from "../pages/UserPages/dashboard/Practice";
 
 export const MyRoutes = () => {
   const navigate = useNavigate();
@@ -55,7 +56,7 @@ export const MyRoutes = () => {
         <Route path="overview" element={<DashboardPage />} />
         <Route path="take-exam" element={<TakeExam />} />
         <Route path="material" element={<Materials />} />
-        {/* <Route path="practice" element={<DashboardUsers />} /> */}
+        <Route path="practice" element={<Practice />} />
         <Route path="result" element={<Results />} />
         <Route path="user-profile" element={<UserProfile />} />
       </Route>
