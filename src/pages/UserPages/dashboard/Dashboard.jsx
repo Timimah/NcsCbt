@@ -6,40 +6,9 @@ import { useUserStore } from "../../../store/userStore";
 export const Dashboard = ({ children }) => {
   const [active, setActive] = useState("dashboardmain");
   const navigate = useNavigate();
-  const {
-    setLoggedInUser,
-    setIsLoggedIn,
-    setUserIsUser,
-    setLoggedInUserId,
-    setLoggedInUserEmail,
-    setLoggedInUserPhoneNumber,
-    setLoggedInUserRank,
-  } = useUserStore();
-  const token = localStorage.getItem("auth-token");
 
   useEffect(() => {
-    axios
-      .get("https://ncs-cbt-api.onrender.com/users/dashboard", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response, err) => {
-        if (err) {
-          navigate("/login");
-        } else {
-          const user = response.data.data;
-          setLoggedInUser(user.fullName);
-          setIsLoggedIn(true);
-          setUserIsUser(true);
-          setLoggedInUserEmail(user.email);
-          setLoggedInUserId(user.examineeId);
-          setLoggedInUserPhoneNumber(user.phoneNumber);
-          setLoggedInUserRank(user.rank);
-          navigate("/dashboard/overview");
-        }
-      });
+    navigate("/dashboard/overview");
   }, []);
 
   return (
@@ -105,7 +74,7 @@ export const Dashboard = ({ children }) => {
           }
           onClick={() => {
             setActive("practice");
-            // navigate("/dashboard/overview");
+            navigate("/dashboard/practice");
           }}
         >
           <svg
