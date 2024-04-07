@@ -34,18 +34,6 @@ export const CreateAccount = () => {
       setIdError("ID is required");
       isValid = false;
     } 
-    // else {
-      // Check if the id already exists in the users array
-      // const userExists = users.some((u) => u.examineeId === examineeId);
-      // if (userExists) {
-      //   setIdError("ID already exists");
-      //   isValid = false;
-      // }
-    // }
-    // if (!email.trim()) {
-    //   setUserEmailError("Email is required");
-    //   isValid = false;
-    // }
     if (!phoneNumber.trim()) {
       setPhoneNumberError("Phone Number is required");
       isValid = false;
