@@ -1,7 +1,4 @@
-import { useEffect } from 'react';
 import { MyRoutes } from './router/MyRoutes'
-import { useUserStore } from './store/userStore';
-import axios from 'axios';
 
 const App = () => {
 
