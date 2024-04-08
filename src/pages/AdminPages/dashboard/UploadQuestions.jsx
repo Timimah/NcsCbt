@@ -6,11 +6,13 @@ import edit from '../../../assets/edit.png';
 import add from '../../../assets/add.png';
 import { Modal } from '../../../components/shared/Modal';
 import axios from 'axios';
+import { useUserStore } from '../../../store/userStore';
 // import pdfToText from 'react-pdftotext'
 // import {parse} from 'pdf-parse'
 
 export const UploadQuestions = () => {
     const navigate = useNavigate();
+    const { questions, setQuestions } = useUserStore();
     const [questionDetails, setQuestionDetails] = useState([]);
     const [question, setQuestion] = useState('');
     const [category, setCategory] = useState('');
@@ -18,40 +20,46 @@ export const UploadQuestions = () => {
     const [answer, setAnswer] = useState('');
     const [type, setType] = useState('');
     const [displayedQuestions, setDisplayedQuestions] = useState([]);
-    const [selectedQuestion, setSelectedQuestion] = useState('');
+    const token = localStorage.getItem('auth-token');
 
     const [uploadError, setUploadError] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [isPreviewVisible, setIsPreviewVisible] = useState(false);
     const [editQuestions, setEditQuestions] = useState(false);
+    const [editedQuestions, setEditedQuestions] = useState([]);
     const [upload, setUpload] = useState(false);
 
     const location = useLocation();
     const selectedCategory = location.state?.selectedCategory;
+    console.log(selectedCategory, location)
     const [selectedCategoryData, setSelectedCategoryData] = useState(null);
 
-    // useEffect(() => {
-    //     setDisplayedQuestions(JSON.parse(localStorage.getItem('questions')) || []);
-    //     const allQuestions = JSON.parse(localStorage.getItem('questions')) || [];
-    //     const questionsForSelectedCategory = allQuestions.filter(
-    //         (question) => question.category === selectedCategory
-    //     );
-    //     setEditQuestions(questionsForSelectedCategory);
-
-    //     // setDisplayedQuestions(JSON.parse(localStorage.getItem('questions')) || []);
-    // }, [questions, selectedCategory]);
+    useEffect(() => {
+        axios.get("https://ncs-cbt-api.onrender.com/exam/", {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            }
+        })
+            .then((res) => {
+                console.log(res)
+                setQuestions(res.data.data || [])
+                setDisplayedQuestions(questions)
+                const questionsForSelectedCategory = questions.filter(
+                    (question) => question.category === selectedCategory
+                );
+                console.log(questions, questionsForSelectedCategory)
+                setEditQuestions(questionsForSelectedCategory);
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }, [selectedCategory]);
 
     const categories = [
         'CAI-CAII', 'CAII-AIC', 'AIC-IC', 'IC-ASCII', 'ASCII-ASCI', 'ASCI-DSC',
         'DSC-SC', 'SC-CSC', 'CSC-AC', 'AC-DC', 'DC-CC'
     ];
 
-    const token = localStorage.getItem('auth-token');
-    // const handleOptionChange = (index, value) => {
-    //     const newQuestions = [...questions];
-    //     newQuestions[index].options[optionInd] = e.target.value;
-    //     setQuestions(newQuestions);
-    // };
     const handleOptionChange = (index, value) => {
         const newOptionsArray = [...options];
         newOptionsArray[index] = value;
@@ -82,8 +90,27 @@ export const UploadQuestions = () => {
         setQuestion('');
         setAnswer('');
         setOptions(['']);
-        setCategory('');
+        // setCategory('');
         setType('');
+    }
+
+    const updateQuestions = async () => {
+        axios.get("https://ncs-cbt-api.onrender.com/exam/", {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            }
+        }).then((res) => {
+            setQuestions(res.data.data || [])
+            setDisplayedQuestions(questions)
+            const questionsForSelectedCategory = questions.filter(
+                (question) => question.category === selectedCategory
+            );
+            console.log(questions, questionsForSelectedCategory)
+            setEditQuestions(questionsForSelectedCategory);
+        })
+        .catch((err) => {
+            console.log(err)
+        })
     }
 
     const handleSaveQuestions = async () => {
@@ -109,6 +136,7 @@ export const UploadQuestions = () => {
                     }
                 );
                 console.log(response);
+                updateQuestions();
             } catch (err) {
                 if (!err?.response) {
                     console.log(err);
@@ -159,15 +187,14 @@ export const UploadQuestions = () => {
 
 
     const handleEdit = (category) => {
+        console.log(category);
         setIsEditing(true);
-
-        // Find the questions for the selected category
-        const allQuestions = JSON.parse(localStorage.getItem('questions')) || [];
-        const questionsForSelectedCategory = allQuestions.find(
+        const questionsForSelectedCategory = editQuestions.find(
             (item) => item.category === category
         );
 
         if (questionsForSelectedCategory) {
+            console.log(questionsForSelectedCategory);
             setSelectedCategoryData({
                 category: category,
                 questions: questionsForSelectedCategory.questions,
@@ -413,27 +440,29 @@ export const UploadQuestions = () => {
                     {displayedQuestions.map((question, index) => (
                         <>
                             <div key={question.id} className='my-10'>
-                                <div className='text-lg font-semibold my-2'>Question Category: {question.id}</div>
-                                {question.questions.map((q, i) => (
-                                    <div key={q.id} className='flex flex-col gap-4 mb-10'>
-                                        <div className="flex gap-4 font-bold text-lg">
-                                            <div className=''>Question {i + 1}:</div>
-                                            <div>{q.text}</div>
-                                        </div>
-                                        <div className='grid grid-cols-2 space-y-4'>
-                                            {q.options.map((option, i) => (
-                                                <div key={i} className='flex gap-4 items-center'>
-                                                    <div>{option}</div>
-                                                </div>
-                                            ))}
-                                        </div>
+                                <div className='text-lg font-semibold my-2'>Question Category: {question.category}</div>
+                                <div className='flex flex-col gap-4 mb-10'>
+                                    <div className="flex gap-4 font-bold text-lg">
+                                        <div className=''>Question {index + 1}:</div>
+                                        <div>{question.question}</div>
                                     </div>
-                                ))}
+                                    <div className='flex flex-col gap-4'>
+                                        Options:
+                                        {question.options === "" ?
+                                            (<div>No options added yet</div>) :
+                                            (
+                                                <div className=''>{question.options}</div>
+                                            )
+                                        }
+                                    </div>
+                                </div>
                             </div>
                             <Button
                                 title="Edit"
                                 btnStyles="px-4 py-3 text-white bg-primary rounded-md my-4 w-full"
-                                btnClick={() => handleEdit(question.category)}
+                                btnClick={() => {
+                                    // handleEdit(question.category);
+                                    console.log(question.category)}}
                             />
                         </>
                     ))}
@@ -441,54 +470,54 @@ export const UploadQuestions = () => {
                 </div>
             )}
             {isEditing && selectedCategoryData && (
-                <Modal
-                    title={`Edit Questions - ${selectedCategoryData.category}`}
-                    closeModal={() => {
-                        setIsEditing(false);
-                        setSelectedCategoryData(null);
-                    }}
-                    modStyles="w-2/3 bg-secondary h-2/3 overflow-y-scroll"
-                    content={
-                        <div className='flex flex-col gap-8 my-6'>
-                            <p>Category: {selectedCategoryData.category}</p>
-                            {selectedCategoryData.questions.map((question, index) => (
-                                <div key={index} className='flex flex-col gap-4'>
-                                    <div className='text-xl font-semibold'>
-                                        Question {index + 1}
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <div className='font-semibold'>
-                                            Question Text:
-                                        </div>
-                                        <div>{question.text}</div>
-                                    </div>
-                                    <div className='flex flex-col gap-2'>
-                                        <div className='font-semibold'>Options:</div>
-                                        {question.options.map((option, i) => (
-                                            <div key={i} className='flex gap-2'>
-                                                <input
-                                                    type={question.type}
-                                                    value={editedQuestions[index]?.options[i] || ''}
-                                                    placeholder={option}
-                                                    onChange={(e) => handleEditOptionChange(index, i, e)}
-                                                />
-                                                {/* {option} */}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    }
-                    buttons={
-                        <Button
-                            title="Save"
-                            btnStyles="px-4 py-3 text-white bg-primary rounded-md"
-                            btnClick={handleSaveEditedQuestions}
-                        />
-                    }
-                />
-            )}
+                // <Modal
+                //     title={`Edit Questions - ${selectedCategoryData.category}`}
+                //     closeModal={() => {
+                //         setIsEditing(false);
+                //         setSelectedCategoryData(null);
+                //     }}
+                //     modStyles="w-2/3 bg-secondary h-2/3 overflow-y-scroll"
+                //     content={
+                //         <div className='flex flex-col gap-8 my-6'>
+                //             <p>Category: {selectedCategoryData.category}</p>
+                //             {selectedCategoryData.questions.map((question, index) => (
+                //                 <div key={index} className='flex flex-col gap-4'>
+                //                     <div className='text-xl font-semibold'>
+                //                         Question {index + 1}
+                //                     </div>
+                //                     <div className='flex flex-col gap-2'>
+                //                         <div className='font-semibold'>
+                //                             Question Text:
+                //                         </div>
+                //                         <div>{question.text}</div>
+                //                     </div>
+                //                     <div className='flex flex-col gap-2'>
+                //                         <div className='font-semibold'>Options:</div>
+                //                         {question.options.map((option, i) => (
+                //                             <div key={i} className='flex gap-2'>
+                //                                 <input
+                //                                     type={question.type}
+                //                                     value={editedQuestions[index]?.options[i] || ''}
+                //                                     placeholder={option}
+                //                                     onChange={(e) => handleEditOptionChange(index, i, e)}
+                //                                 />
+                //                                 {/* {option} */}
+                //                             </div>
+                //                         ))}
+                //                     </div>
+                //                 </div>
+                //             ))}
+                //         </div>
+                //     }
+                //     buttons={
+                //         <Button
+                //             title="Save"
+                //             btnStyles="px-4 py-3 text-white bg-primary rounded-md"
+                //             btnClick={handleSaveEditedQuestions}
+                //         />
+                //     }
+                // />
+                "")}
         </div>
     );
 };
