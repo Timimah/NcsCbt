@@ -62,7 +62,6 @@ export const Exam = () => {
       questionCategory: "DC-CC"
     }
   ];
-
   console.log(questions);
   return (
     <div className='p-10'>

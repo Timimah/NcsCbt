@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 export const AdminOverview = () => {
-    const {users, materials, questions, setUsers, setMaterials, setQuestions,  isLoggedIn} = useUserStore();
+    const { users, materials, questions, setUsers, setMaterials, setQuestions, isLoggedIn } = useUserStore();
     const navigate = useNavigate();
     const [showModal, setShowModal] = useState(false);
 
@@ -62,44 +62,45 @@ export const AdminOverview = () => {
         const token = localStorage.getItem("auth-token")
         if (isLoggedIn) {
             axios.get("https://ncs-cbt-api.onrender.com/admin/getUsers", {
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
-        })
-            .then((res) => {
-                setUsers(res.data.data)
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                }
             })
-            .catch((err) => {
-                console.log(err)
-            })
+                .then((res) => {
+                    setUsers(res.data.data)
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
 
             axios.get("https://ncs-cbt-api.onrender.com/material/", {
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
-        })
-            .then((res) => {
-                setMaterials(res.data.data)
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             })
-            .catch((err) => {
-                console.log(err)
-            })
+                .then((res) => {
+                    console.log(res)
+                    setMaterials(res.data.data)
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
 
-        axios.get("https://ncs-cbt-api.onrender.com/exam/", {
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
-        })
-            .then((res) => {
-                // console.log(res.data)
-                setQuestions(res.data.data)
-                // console.log(materials)
+            axios.get("https://ncs-cbt-api.onrender.com/exam/", {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             })
-            .catch((err) => {
-                console.log(err)
-            })
+                .then((res) => {
+                    // console.log(res.data)
+                    setQuestions(res.data.data)
+                    // console.log(materials)
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
         } else {
             navigate('/admin')
         }

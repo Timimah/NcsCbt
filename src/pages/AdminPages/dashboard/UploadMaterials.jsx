@@ -6,8 +6,21 @@ import upload from "../../../assets/upload-cloud.png";
 import success from "../../../assets/upload.png";
 import axios from "axios";
 import { useUserStore } from "../../../store/userStore";
+import { Document, Page, pdfjs } from "react-pdf";
+import { Viewer } from '@react-pdf-viewer/core'; // install this library
+// Plugins
+import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout'; // install this library
+// Import the styles
+import '@react-pdf-viewer/core/lib/styles/index.css';
+import '@react-pdf-viewer/default-layout/lib/styles/index.css';
+// Worker
+import { Worker } from '@react-pdf-viewer/core'; // install this library
 
 export const UploadMaterials = () => {
+  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/build/pdf.worker.min.js',
+    import.meta.url,
+  ).toString();
   const { materials } = useUserStore();
   const [name, setName] = useState("");
   const [author, setAuthor] = useState("");
@@ -34,9 +47,9 @@ export const UploadMaterials = () => {
     } else {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => {
-        setBook(reader.result);
-        console.log(reader.result);
+      reader.onloadend = (e) => {
+        setBook(e.target.result);
+        console.log(e.target.result);
         setBookName(file.name);
         setUploadError("");
       };
@@ -111,10 +124,32 @@ export const UploadMaterials = () => {
     setSearchTerm("");
   };
 
+  const [viewing, setViewing] = useState(false);
+  const [materialSrc, setMaterialSrc] = useState("");
+  const [pageNumber, setPageNumber] = useState(1);
+  const [NumPages, setNumPages] = useState(null);
+
+  const viewMaterial = (url) => {
+    setViewing(true);
+    setMaterialSrc(url);
+  }
+
+  // const onDocLoad = ({ numPages }) => {
+  //   setNumPages(numPages);
+  // }
+
   return (
     <div className="flex flex-col w-full p-10 gap-4">
       <Header title="Materials" />
       <main className="flex-grow">
+      {viewing && (
+              <div>
+                <Document file={materialSrc} >
+                {/* <Page pageNumber={pageNumber} /> */}
+              </Document>
+              {/* <div>{pageNumber} of {NumPages}</div> */}
+              </div>
+            )}
         <section className="flex flex-col gap-4">
           <div className="flex mb-4 justify-between">
             <div className="relative w-2/3 flex">
@@ -157,7 +192,8 @@ export const UploadMaterials = () => {
             {!isSearching &&
               (displayedMaterials.length > 0 ? (
                 displayedMaterials.map((material) => (
-                  <div key={material._id} className="p-4">
+                  <div className="p-4">
+                    <div key={material._id} className="p-4 bg-cardgreen rounded-md mb-2">
                     <img
                       src={material.name}
                       alt={material.name}
@@ -169,6 +205,11 @@ export const UploadMaterials = () => {
                     <div className="text-xs font-light">
                       Rank: {material.rank}
                     </div>
+                  </div>
+                  <div>
+                    <Button title="View" btnStyles="text-white bg-yellow px-2 py-1" btnClick={viewMaterial(material.url)} />
+                    <Button title="Download" btnStyles="text-white bg-yellow px-2 py-1" />
+                  </div>
                   </div>
                 ))
               ) : (
@@ -192,7 +233,7 @@ export const UploadMaterials = () => {
                   </div>
                 </div>
               ))}
-            {}
+            
           </div>
           {isSearching && (
             <div
