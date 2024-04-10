@@ -2,18 +2,50 @@ import React, { useEffect, useState } from 'react'
 import { Modal } from '../../../components/shared/Modal';
 import { Button } from '../../../components/shared/Button';
 import { Header } from '../../../components/shared/Header';
+import axios from 'axios' 
 
 export const Practice = () => {
     const [showModal, setShowModal] = useState(false);
     const [rank, setRank] = useState("");
     const [time, setTime] = useState("5 min");
     const [error, setError] = useState("");
+    const token = localStorage.getItem("auth-token")
 
     useEffect(() => {
         console.log('Practice Page')
         setShowModal(true);
+    }, []);
+
+    const getPracticeQuestions = async () => {
+        axios.get(
+                "https://ncs-cbt-api.onrender.com/exam/getExamQuestions",
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            )
+            .then((res) => {
+                console.log(res);
+                // setQuestions(res.data.data || []);
+                // setDisplayedQuestions(questions);
+                // const questionsForSelectedCategory =
+                //     questions.filter(
+                //         (question) =>
+                //             question.category === selectedCategory
+                //     );
+                // console.log(
+                //     questions,
+                //     questionsForSelectedCategory
+                // );
+                // setEditQuestions(
+                //     questionsForSelectedCategory
+                // );
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
-        , []);
     return (
         <div className='flex items-center justify-center px-8'>
             <Header title="Practice" />
@@ -59,6 +91,7 @@ export const Practice = () => {
                         <Button
                             title="Start Quiz"
                             btnStyles="bg-primary text-white py-2 px-4 rounded-md mt-4 w-full"
+                            btnClick={getPracticeQuestions}
                         />
                     }
                 />
