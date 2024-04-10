@@ -13,6 +13,7 @@ import { useUserStore } from '../../../store/userStore';
 export const UploadQuestions = () => {
     const navigate = useNavigate();
     const { questions, setQuestions } = useUserStore();
+    const [questionCounter, setQuestionCounter] = useState(1);
     const [questionDetails, setQuestionDetails] = useState([]);
     const [question, setQuestion] = useState('');
     const [category, setCategory] = useState('');
@@ -28,10 +29,11 @@ export const UploadQuestions = () => {
     const [editQuestions, setEditQuestions] = useState(false);
     const [editedQuestions, setEditedQuestions] = useState([]);
     const [upload, setUpload] = useState(false);
+    const [activeTab, setActiveTab] = useState('practice');
 
     const location = useLocation();
     const selectedCategory = location.state?.selectedCategory;
-    console.log(selectedCategory, location)
+    // console.log(selectedCategory, location)
     const [selectedCategoryData, setSelectedCategoryData] = useState(null);
 
     useEffect(() => {
@@ -53,7 +55,7 @@ export const UploadQuestions = () => {
             .catch((err) => {
                 console.log(err)
             })
-    }, [selectedCategory]);
+    }, []);
 
     const categories = [
         'CAI-CAII', 'CAII-AIC', 'AIC-IC', 'IC-ASCII', 'ASCII-ASCI', 'ASCI-DSC',
@@ -77,22 +79,37 @@ export const UploadQuestions = () => {
     };
 
     const handleAddQuestion = () => {
-        console.log(questionDetails)
-        const newQuestionObj = {
-            question: question,
-            answer: answer,
-            options: options,
-            type: type,
-            category: category
-        };
-        // console.log(newOptions)
-        setQuestionDetails([...questionDetails, newQuestionObj]);
-        setQuestion('');
-        setAnswer('');
-        setOptions(['']);
-        // setCategory('');
-        setType('');
+        if (category === "" || question === "" || answer === "" || options === "") {
+            setUploadError("Input valid values!")
+        } else {
+            console.log(questionDetails)
+            const newQuestionObj = {
+                question: question,
+                answer: answer,
+                options: options,
+                type: type,
+                category: category
+            };
+            // console.log(newOptions)
+            setQuestionDetails([...questionDetails, newQuestionObj]);
+            setQuestion('');
+            setAnswer('');
+            setOptions(['']);
+            // setCategory('');
+            setType('');
+        }
     }
+
+    const handleEditOptionChange = (questionIndex, optionIndex, event) => {
+        const updatedQuestions = [...editedQuestions];
+        const updatedOptions = [...updatedQuestions[questionIndex].options];
+        updatedOptions[optionIndex] = event.target.value;
+        updatedQuestions[questionIndex] = {
+            ...updatedQuestions[questionIndex],
+            options: updatedOptions,
+        };
+        setEditedQuestions(updatedQuestions);
+    };
 
     const updateQuestions = async () => {
         axios.get("https://ncs-cbt-api.onrender.com/exam/", {
@@ -100,17 +117,18 @@ export const UploadQuestions = () => {
                 "Authorization": `Bearer ${token}`,
             }
         }).then((res) => {
+            console.log(res)
             setQuestions(res.data.data || [])
             setDisplayedQuestions(questions)
             const questionsForSelectedCategory = questions.filter(
                 (question) => question.category === selectedCategory
             );
-            console.log(questions, questionsForSelectedCategory)
+            console.log(displayedQuestions, questionsForSelectedCategory)
             setEditQuestions(questionsForSelectedCategory);
         })
-        .catch((err) => {
-            console.log(err)
-        })
+            .catch((err) => {
+                console.log(err)
+            })
     }
 
     const handleSaveQuestions = async () => {
@@ -130,13 +148,14 @@ export const UploadQuestions = () => {
                     questionData,
                     {
                         headers: {
-                            Authorization: `Bearer ${token}`,
+                            "Authorization": `Bearer ${token}`,
                             "Content-Type": "application/json",
                         },
                     }
                 );
                 console.log(response);
                 updateQuestions();
+                setQuestionDetails([]);
             } catch (err) {
                 if (!err?.response) {
                     console.log(err);
@@ -153,17 +172,6 @@ export const UploadQuestions = () => {
 
         // setIsPreviewVisible(true);
         // navigate('../preview-question')
-    };
-
-    const handleEditOptionChange = (questionIndex, optionIndex, event) => {
-        const updatedQuestions = [...editedQuestions];
-        const updatedOptions = [...updatedQuestions[questionIndex].options];
-        updatedOptions[optionIndex] = event.target.value;
-        updatedQuestions[questionIndex] = {
-            ...updatedQuestions[questionIndex],
-            options: updatedOptions,
-        };
-        setEditedQuestions(updatedQuestions);
     };
 
     const handleSaveEditedQuestions = () => {
@@ -184,7 +192,6 @@ export const UploadQuestions = () => {
         setSelectedCategoryData(null);
         setEditedQuestions([]);
     };
-
 
     const handleEdit = (category) => {
         console.log(category);
@@ -211,6 +218,25 @@ export const UploadQuestions = () => {
     const uploadFile = () => {
         setUpload(true);
     }
+
+    const deleteQuestion = async (id) => {
+        try {
+            const response = await axios.post(
+                'https://ncs-cbt-api.onrender.com/exam/delete',
+                id,
+                {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                    },
+                }
+            );
+            console.log(response);
+            updateQuestions();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
 
     // const [pdfText, setPdfText] = useState('');
     // const [questionss, setQuestionss] = useState([]);
@@ -271,7 +297,6 @@ export const UploadQuestions = () => {
     return (
         <div className='flex flex-col w-full p-10'>
             <Header title="Upload Questions" />
-            {uploadError && <div className='text-red-500'>{uploadError}</div>}
             {upload && (
                 <Modal
                     title="Upload Question"
@@ -331,16 +356,23 @@ export const UploadQuestions = () => {
                                         <hr className='mt-6' />
                                     </div>
                                 ))}
+                                <div className='flex justify-end'>
+                                    <Button title="Save Questions" btnStyles="px-4 py-3 text-white bg-primary rounded-md w-1/3" btnClick={handleSaveQuestions} />
+                                </div>
                             </div>
                         ) : (<div>No questions added yet</div>)
                     }
+                    {uploadError && <div className='text-red-500 font-bold text-xl'>{uploadError}</div>}
                     <div className='flex flex-col gap-8 px-4'>
                         <div className='flex flex-col gap-4'>
                             <label htmlFor="questionCategory" className="text-lg">Question Category</label>
                             <select
                                 id="questionCategory"
                                 value={category}
-                                onChange={(event) => setCategory(event.target.value)}
+                                onChange={(event) => {
+                                    setUploadError('');
+                                    setCategory(event.target.value)
+                                }}
                                 className={`border py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary w-1/2 bg-gray-200 border-primary`}
                             >
                                 <option value="" className='px-4 py-3 text-primary text-lg'>Select a category</option>
@@ -357,7 +389,10 @@ export const UploadQuestions = () => {
                                 <label htmlFor="question" className="text-lg">Question:</label>
                                 <textarea
                                     value={question}
-                                    onChange={(e) => setQuestion(e.target.value)}
+                                    onChange={(e) => {
+                                        setUploadError('');
+                                        setQuestion(e.target.value)
+                                    }}
                                     rows={3}
                                     className='border py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary w-full bg-gray-200 border-primary'
                                 />
@@ -368,7 +403,10 @@ export const UploadQuestions = () => {
                                     <input
                                         type="text"
                                         value={answer}
-                                        onChange={(e) => setAnswer(e.target.value)}
+                                        onChange={(e) => {
+                                            setUploadError('');
+                                            setAnswer(e.target.value)
+                                        }}
                                         className='border py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary w-full bg-gray-200 border-primary'
                                     />
                                 </div>
@@ -380,7 +418,10 @@ export const UploadQuestions = () => {
                                         <input
                                             type="text"
                                             value={option}
-                                            onChange={(e) => handleOptionChange(index, e.target.value)}
+                                            onChange={(e) => {
+                                                setUploadError('');
+                                                handleOptionChange(index, e.target.value)
+                                            }}
                                             className="border border-primary rounded-md bg-gray-200 py-2 px-4 flex-grow mr-2"
                                         />
                                         <Button title="Remove" btnStyles="px-4 py-3 bg-yellow rounded-md" btnClick={() => handleRemoveOption(index)} />
@@ -429,21 +470,69 @@ export const UploadQuestions = () => {
                                 Add More
                             </div>
                         </div>
-                        <Button title="Save Questions" btnStyles="px-4 py-3 text-white bg-primary rounded-md w-1/3" btnClick={handleSaveQuestions} />
-                        <Button title="View Saved Questions" btnStyles="px-4 py-3 text-white bg-primary rounded-md w-1/3" btnClick={() => setIsPreviewVisible(true)} />
+                        <Button title="View Saved Questions" btnStyles="px-4 py-3 text-white bg-primary rounded-md w-1/3" btnClick={() => {
+                            updateQuestions();
+                            setIsPreviewVisible(true)
+                        }} />
                     </div>
                 </>
             }
             {isPreviewVisible && (
                 <div className='my-10'>
                     <div className='text-2xl font-bold'>Preview Questions</div>
+                    <div className='flex gap-4'>
+                        <div className={`${activeTab === "practice" ? 'bg-secondary' : 'bg-story'} px-4 py-3 rounded-t-md cursor-pointer`} onClick={() => setActiveTab("practice")}>Practice</div>
+                        <div className={`${activeTab === "exam" ? 'bg-secondary' : 'bg-story'} px-4 py-3 rounded-t-md cursor-pointer`} onClick={() => setActiveTab("exam")}>Exam</div>
+                    </div>
                     {displayedQuestions.map((question, index) => (
                         <>
-                            <div key={question.id} className='my-10'>
+                            {(activeTab === "practice" && question.type === "practice") && (
+                                <div key={question.id} className='my-10'>
+                                    <div className='text-lg font-semibold my-2'>Question Category: {question.category}</div>
+                                    <div className='flex flex-col gap-4 mb-10'>
+                                        <div className="flex gap-4 font-bold text-lg">
+                                            <div className=''>Question {questionCounter}:</div>
+                                            <div>{question.question}</div>
+                                        </div>
+                                        <div className='flex flex-col gap-4'>
+                                            Options:
+                                            {question.options === "" ?
+                                                (<div>No options added yet</div>) :
+                                                (
+                                                    <div className=''>{question.options}</div>
+                                                )
+                                            }
+                                        </div>
+                                    </div>
+                                    <div className='flex gap-4 w-1/2'>
+                                        <Button
+                                            title="Edit"
+                                            btnStyles="px-4 py-3 text-white bg-primary rounded-md my-4 w-full"
+                                            btnClick={() => {
+                                                const getOptions = (option) => {
+                                                    console.log(option)
+                                                    return option
+                                                }
+                                                question.options.forEach(getOptions)                                    // handleEdit(question.category); 
+                                            }}
+                                        />
+                                        <Button
+                                            title="Delete"
+                                            btnStyles="px-4 py-3 text-white bg-primary rounded-md my-4 w-full"
+                                            btnClick={() => {
+                                                deleteQuestion(question.id)
+                                                console.log(question.id)
+                                            }}
+                                        />
+                                    </div>
+                            </div>
+                            )}
+                            {(activeTab === "exam" && question.type === "exam") && (
+                                <div key={question.id} className='my-10'>
                                 <div className='text-lg font-semibold my-2'>Question Category: {question.category}</div>
                                 <div className='flex flex-col gap-4 mb-10'>
                                     <div className="flex gap-4 font-bold text-lg">
-                                        <div className=''>Question {index + 1}:</div>
+                                        <div className=''>Question {questionCounter}:</div>
                                         <div>{question.question}</div>
                                     </div>
                                     <div className='flex flex-col gap-4'>
@@ -456,68 +545,83 @@ export const UploadQuestions = () => {
                                         }
                                     </div>
                                 </div>
-                            </div>
-                            <Button
-                                title="Edit"
-                                btnStyles="px-4 py-3 text-white bg-primary rounded-md my-4 w-full"
-                                btnClick={() => {
-                                    // handleEdit(question.category);
-                                    console.log(question.category)}}
-                            />
-                        </>
-                    ))}
-                    <Button title="Done" btnStyles="px-4 py-3 text-white bg-primary rounded-md my-4 w-full" btnClick={() => setIsPreviewVisible(false)} />
-                </div>
+                                <div className='flex gap-4 w-1/2'>
+                                    <Button
+                                        title="Edit"
+                                        btnStyles="px-4 py-3 text-white bg-primary rounded-md my-4 w-full"
+                                        btnClick={() => {
+                                            const getOptions = (option) => {
+                                                console.log(option)
+                                                return option
+                                            }
+                                            question.options.forEach(getOptions)                                    // handleEdit(question.category); 
+                                        }}
+                                    />
+                                    <Button
+                                        title="Delete"
+                                        btnStyles="px-4 py-3 text-white bg-primary rounded-md my-4 w-full"
+                                        btnClick={() => {
+                                            deleteQuestion(question.id)
+                                            console.log(question.id)
+                                        }}
+                                    />
+                                </div>
+                        </div>
+                            )}
+                                </>
+                            ))}
+                            <Button title="Done" btnStyles="px-4 py-3 text-white bg-primary rounded-md my-4 w-full" btnClick={() => setIsPreviewVisible(false)} />
+                        </div >
             )}
-            {isEditing && selectedCategoryData && (
-                // <Modal
-                //     title={`Edit Questions - ${selectedCategoryData.category}`}
-                //     closeModal={() => {
-                //         setIsEditing(false);
-                //         setSelectedCategoryData(null);
-                //     }}
-                //     modStyles="w-2/3 bg-secondary h-2/3 overflow-y-scroll"
-                //     content={
-                //         <div className='flex flex-col gap-8 my-6'>
-                //             <p>Category: {selectedCategoryData.category}</p>
-                //             {selectedCategoryData.questions.map((question, index) => (
-                //                 <div key={index} className='flex flex-col gap-4'>
-                //                     <div className='text-xl font-semibold'>
-                //                         Question {index + 1}
-                //                     </div>
-                //                     <div className='flex flex-col gap-2'>
-                //                         <div className='font-semibold'>
-                //                             Question Text:
-                //                         </div>
-                //                         <div>{question.text}</div>
-                //                     </div>
-                //                     <div className='flex flex-col gap-2'>
-                //                         <div className='font-semibold'>Options:</div>
-                //                         {question.options.map((option, i) => (
-                //                             <div key={i} className='flex gap-2'>
-                //                                 <input
-                //                                     type={question.type}
-                //                                     value={editedQuestions[index]?.options[i] || ''}
-                //                                     placeholder={option}
-                //                                     onChange={(e) => handleEditOptionChange(index, i, e)}
-                //                                 />
-                //                                 {/* {option} */}
-                //                             </div>
-                //                         ))}
-                //                     </div>
-                //                 </div>
-                //             ))}
-                //         </div>
-                //     }
-                //     buttons={
-                //         <Button
-                //             title="Save"
-                //             btnStyles="px-4 py-3 text-white bg-primary rounded-md"
-                //             btnClick={handleSaveEditedQuestions}
-                //         />
-                //     }
-                // />
-                "")}
-        </div>
-    );
+                    {isEditing && selectedCategoryData && (
+                        // <Modal
+                        //     title={`Edit Questions - ${selectedCategoryData.category}`}
+                        //     closeModal={() => {
+                        //         setIsEditing(false);
+                        //         setSelectedCategoryData(null);
+                        //     }}
+                        //     modStyles="w-2/3 bg-secondary h-2/3 overflow-y-scroll"
+                        //     content={
+                        //         <div className='flex flex-col gap-8 my-6'>
+                        //             <p>Category: {selectedCategoryData.category}</p>
+                        //             {selectedCategoryData.questions.map((question, index) => (
+                        //                 <div key={index} className='flex flex-col gap-4'>
+                        //                     <div className='text-xl font-semibold'>
+                        //                         Question {index + 1}
+                        //                     </div>
+                        //                     <div className='flex flex-col gap-2'>
+                        //                         <div className='font-semibold'>
+                        //                             Question Text:
+                        //                         </div>
+                        //                         <div>{question.text}</div>
+                        //                     </div>
+                        //                     <div className='flex flex-col gap-2'>
+                        //                         <div className='font-semibold'>Options:</div>
+                        //                         {question.options.map((option, i) => (
+                        //                             <div key={i} className='flex gap-2'>
+                        //                                 <input
+                        //                                     type={question.type}
+                        //                                     value={editedQuestions[index]?.options[i] || ''}
+                        //                                     placeholder={option}
+                        //                                     onChange={(e) => handleEditOptionChange(index, i, e)}
+                        //                                 />
+                        //                                 {/* {option} */}
+                        //                             </div>
+                        //                         ))}
+                        //                     </div>
+                        //                 </div>
+                        //             ))}
+                        //         </div>
+                        //     }
+                        //     buttons={
+                        //         <Button
+                        //             title="Save"
+                        //             btnStyles="px-4 py-3 text-white bg-primary rounded-md"
+                        //             btnClick={handleSaveEditedQuestions}
+                        //         />
+                        //     }
+                        // />
+                        "")}
+                </div>
+            );
 };
