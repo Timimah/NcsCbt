@@ -3,7 +3,8 @@ import { Header } from '../../../components/shared/Header'
 import { Table } from '../../../components/shared/Table'
 import { Button } from '../../../components/shared/Button';
 import { useNavigate } from 'react-router-dom';
-import { Modal } from '../../../components/shared/Modal';
+import del from '../../../assets/delete.png';
+import view from '../../../assets/open.png';
 import { useUserStore } from '../../../store/userStore';
 
 
@@ -72,13 +73,13 @@ export const Exam = () => {
       <div className='text-3xl font-light'>Question Categories</div>
         {tableData.map((item, index) => (
           <div key={item.questionCategory} className='my-2'>
-            <div className='flex justify-between items-center hover:bg-primary hover:text-white px-4 py-3'>
+            <div className='flex justify-between items-center hover:bg-primary hover:text-white px-4 py-3 w-1/2'>
               {/* <div>{index + 1}</div> */}
               <div>{item.questionCategory}</div>
               <div className='flex justify-between gap-4 hover:textwhite'>
-                <Button title="View Questions" btnStyles="text-primary bg-secondary px-4 py-2 rounded-md shadow-md"
+                <Button title={<img src={view} alt='delete' className='w-7 h-7' />} btnStyles="text-primary bg-secondary px-4 py-2 rounded-md shadow-md"
                   btnClick={() => showQuestions(item.questionCategory)} />
-                <Button title="Set Exam" btnStyles="text-primary bg-secondary px-4 py-2 rounded-md shadow-md" />
+                {/* <Button title={<img src={del} alt='delete' />} btnStyles="text-primary bg-secondary px-4 py-2 rounded-md shadow-md" /> */}
               </div>
             </div>
           </div>
