@@ -18,7 +18,7 @@ export const Practice = () => {
 
     const getPracticeQuestions = async () => {
         axios.get(
-                "https://ncs-cbt-api.onrender.com/exam/getExamQuestions",
+                "https://ncs-cbt-api.onrender.com/exam/getPracticeQuestions",
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -70,18 +70,17 @@ export const Practice = () => {
                                 <label htmlFor="rank" className="block py-1 -mb-1">Select Rank</label>
                                 <select id="rank" name="rank" value={rank} onChange={(e) => { setRank(e.target.value); setError("") }} className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${error ? 'border-red-500' : ''}`}>
                                     <option value="">Select a category</option>
-                                    <option value="CAI">CAI</option>
-                                    <option value="CAII">CAII</option>
-                                    <option value="AIC">AIC</option>
-                                    <option value="IC">IC</option>
-                                    <option value="ASCII">ASCII</option>
-                                    <option value="ASCI">ASCI</option>
-                                    <option value="DSC">DSC</option>
-                                    <option value="SC">SC</option>
-                                    <option value="CSC">CSC</option>
-                                    <option value="AC">AC</option>
-                                    <option value="DC">DC</option>
-                                    <option value="CC">CC</option>
+                                    <option value="CAI-CAII">CAI-CAII</option>
+                                    <option value="CAII-AIC">CAII-AIC</option>
+                                    <option value="AIC-IC">AIC-IC</option>
+                                    <option value="IC-ASCII">IC-ASCII</option>
+                                    <option value="ASCII-ASCI">ASCII-ASCI</option>
+                                    <option value="ASCI-DSC">ASCI-DSC</option>
+                                    <option value="DSC-SC">DSC-SC</option>
+                                    <option value="SC-CSC">SC-CSC</option>
+                                    <option value="CSC-AC">CSC-AC</option>
+                                    <option value="AC-DC">AC-DC</option>
+                                    <option value="DC-CC">DC-CC</option>
                                 </select>
                                 {error && <div className="text-sm text-red-500">{error}</div>}
                             </div>
