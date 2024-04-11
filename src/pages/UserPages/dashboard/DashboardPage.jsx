@@ -89,8 +89,8 @@ export const DashboardPage = ({ title, username }) => {
           </div>
         </section>
 
-        <section className="bg-yellow rounded-lg p-6 mt-8 flex items-center justify-center">
-          <div className="w-1/2 flex flex-col gap-4 text-left">
+        <section className="bg-yellow rounded-lg p-10 mt-8 flex items-center justify-between">
+          <div className="w-1/2 flex flex-col gap-4 text-left justify-start">
             <h2 className="text-3xl mb-4">Take Quiz to Test Your Knowledge</h2>
             <Button
               title="Take Exam"
@@ -107,57 +107,6 @@ export const DashboardPage = ({ title, username }) => {
           </div>
         </section>
       </main>
-      {showModal && (
-        <Modal
-          closeModal={() => setShowModal(false)}
-          title="Quiz Settings"
-          content={
-            <div className="text-left mt-4">
-              <div>
-                <label className="block py-1 -mb-1">Number of Questions</label>
-                <input
-                  type="tel"
-                  className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary"
-                  placeholder="30"
-                />
-                <p className="text-sm mt-2 px-2 hidden text-gray-600">
-                  Text helper
-                </p>
-              </div>
-              <div>
-                <label className="block py-1 -mb-1">Set Time</label>
-                <input
-                  type="text"
-                  className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary"
-                  placeholder="5 min"
-                />
-                <p className="text-sm mt-2 px-2 hidden text-gray-600">
-                  Text helper
-                </p>
-              </div>
-              <div>
-                <label className="block py-1 -mb-1">Select Rank</label>
-                <input
-                  type="text"
-                  className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary"
-                  placeholder="Select Rank"
-                />
-                <p className="text-sm mt-2 px-2 hidden text-gray-600">
-                  Text helper
-                </p>
-              </div>
-            </div>
-          }
-          modStyles="w-1/3 h-fit bg-secondary text-center"
-          buttons={
-            <Button
-              title="Start Quiz"
-              btnStyles="bg-primary text-white py-2 px-4 rounded-md mt-4 w-full"
-              btnClick={() => setShowModal(false)}
-            />
-          }
-        />
-      )}
     </div>
   );
 };
