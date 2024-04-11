@@ -263,9 +263,18 @@ export const UploadMaterials = () => {
                                             }}
                                             className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary`}
                                         >
-                                            <option value="rank1">Rank 1</option>
-                                            <option value="rank2">Rank 2</option>
-                                            <option value="rank3">Rank 3</option>
+                                            <option value="">Select a category</option>
+                                    <option value="CAI-CAII">CAI-CAII</option>
+                                    <option value="CAII-AIC">CAII-AIC</option>
+                                    <option value="AIC-IC">AIC-IC</option>
+                                    <option value="IC-ASCII">IC-ASCII</option>
+                                    <option value="ASCII-ASCI">ASCII-ASCI</option>
+                                    <option value="ASCI-DSC">ASCI-DSC</option>
+                                    <option value="DSC-SC">DSC-SC</option>
+                                    <option value="SC-CSC">SC-CSC</option>
+                                    <option value="CSC-AC">CSC-AC</option>
+                                    <option value="AC-DC">AC-DC</option>
+                                    <option value="DC-CC">DC-CC</option>
                                         </select>
                                     </div>
                                     <div className="w-full flex flex-col gap-10">
