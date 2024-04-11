@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import edit from "../../../assets/edit.png";
 import add from "../../../assets/add.png";
+import del from "../../../assets/delete.png";
 import { Modal } from "../../../components/shared/Modal";
 import axios from "axios";
 import { useUserStore } from "../../../store/userStore";
@@ -268,7 +269,7 @@ export const UploadQuestions = () => {
                                     id='questionCategory'
                                     value={questionCategory}
                                     onChange={(event) =>
-                                        setQuestionCategory(event.target.value)
+                                        setCategory(event.target.value)
                                     }
                                     className={`border py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary w-1/2 bg-gray-200 border-primary`}>
                                     <option
@@ -316,7 +317,7 @@ export const UploadQuestions = () => {
                 <Button
                     title='Select File to Upload'
                     btnStyles='px-4 py-3 text-white bg-primary rounded-md w-1/3'
-                    btnClick={uploadFile}
+                // btnClick={uploadFile}
                 />
             </div>
             {uploadError && (
@@ -325,45 +326,73 @@ export const UploadQuestions = () => {
                 </div>
             )}
             <div className='flex flex-col gap-8 px-4'>
-                <div className='flex flex-col gap-4'>
-                    <label
-                        htmlFor='questionCategory'
-                        className='text-lg'>
-                        Question Category
-                    </label>
-                    <select
-                        id='questionCategory'
-                        value={category}
-                        onChange={(event) => {
-                            setUploadError("");
-                            setCategory(event.target.value);
-                        }}
-                        className={`border py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary w-1/2 bg-gray-200 border-primary`}>
-                        <option
-                            value=''
-                            className='px-4 py-3 text-primary text-lg'>
-                            Select a category
-                        </option>
-                        {categories.map((category) => (
+                <div className="flex items-center gap-6 w-full">
+                    <div className='flex flex-col gap-4 w-full'>
+                        <label
+                            htmlFor='questionCategory'
+                            className='text-lg'>
+                            Question Category
+                        </label>
+                        <select
+                            id='questionCategory'
+                            value={category}
+                            onChange={(event) => {
+                                setUploadError("");
+                                setCategory(event.target.value);
+                            }}
+                            className={`border py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary bg-gray-200 border-primary`}>
                             <option
-                                key={category}
-                                value={category}
+                                value=''
                                 className='px-4 py-3 text-primary text-lg'>
-                                {category}
+                                Select a category
                             </option>
-                        ))}
-                    </select>
+                            {categories.map((category) => (
+                                <option
+                                    key={category}
+                                    value={category}
+                                    className='px-4 py-3 text-primary text-lg'>
+                                    {category}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className='flex flex-col gap-4 w-full'>
+                        <label className='text-lg'>
+                            Question Type:
+                        </label>
+                        <div className='flex gap-4'>
+                            <label className="w-full">
+                                <input
+                                    type='radio'
+                                    value='exam'
+                                    checked={type === "exam"}
+                                    onChange={(e) =>
+                                        setType(e.target.value)
+                                    }
+                                    className='mx-3'
+                                />
+                                Exam
+                            </label>
+                            <label className="w-full">
+                                <input
+                                    type='radio'
+                                    value='practice'
+                                    checked={type === "practice"}
+                                    onChange={(e) =>
+                                        setType(e.target.value)
+                                    }
+                                    className='mx-3'
+                                />
+                                Practice
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 <div className='flex flex-col gap-8'>
                     <div className='flex flex-col gap-4'>
                         <div className='text-xl font-semibold'>
                             Question
                         </div>
-                        <label
-                            htmlFor='question'
-                            className='text-lg'>
-                            Question:
-                        </label>
                         <textarea
                             value={question}
                             onChange={(e) => {
@@ -389,14 +418,14 @@ export const UploadQuestions = () => {
                             />
                         </div>
                     </div>
-                    <div className='flex flex-col gap-6 w-full'>
-                        <label className='text-lg'>
-                            Options:
-                        </label>
+                    <label className='text-lg'>
+                        Options:
+                    </label>
+                    <div className='grid grid-cols-2 gap-6 w-full'>
                         {options.map((option, index) => (
                             <div
                                 key={index}
-                                className='mb-2 flex items-center gap-4'>
+                                className='mb-2 flex items-center gap-2'>
                                 <span>{String.fromCharCode(65 + index)}</span>
                                 <input
                                     type='text'
@@ -413,8 +442,8 @@ export const UploadQuestions = () => {
                                     className='border border-primary rounded-md bg-gray-200 py-2 px-4 flex-grow mr-2'
                                 />
                                 <Button
-                                    title='Remove'
-                                    btnStyles='px-4 py-3 bg-yellow rounded-md'
+                                    title={<img src={del} alt='delete' className="" />}
+                                    btnStyles='rounded-md'
                                     btnClick={() =>
                                         handleRemoveOption(index)
                                     }
@@ -434,37 +463,6 @@ export const UploadQuestions = () => {
                             btnStyles='px-4 py-3 bg-cardgreen rounded-md'
                             btnClick={handleAddOption}
                         />
-                    </div>
-                    <div className='flex flex-col gap-4'>
-                        <label className='text-lg'>
-                            Question Type:
-                        </label>
-                        <div className='flex gap-4'>
-                            <label>
-                                <input
-                                    type='radio'
-                                    value='exam'
-                                    checked={type === "exam"}
-                                    onChange={(e) =>
-                                        setType(e.target.value)
-                                    }
-                                    className='mx-3'
-                                />
-                                Exam
-                            </label>
-                            <label>
-                                <input
-                                    type='radio'
-                                    value='practice'
-                                    checked={type === "practice"}
-                                    onChange={(e) =>
-                                        setType(e.target.value)
-                                    }
-                                    className='mx-3'
-                                />
-                                Practice
-                            </label>
-                        </div>
                     </div>
                 </div>
             </div>
