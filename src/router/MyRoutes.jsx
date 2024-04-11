@@ -18,7 +18,6 @@ import { Result } from "../pages/AdminPages/dashboard/Result";
 import { AdminOverview } from "../pages/AdminPages/dashboard/AdminOverview";
 import { Exam } from "../pages/AdminPages/dashboard/Exam";
 import { UploadQuestions } from "../pages/AdminPages/dashboard/UploadQuestions";
-import { QuestionPreview } from "../pages/AdminPages/dashboard/QuestionPreview";
 import { ViewQuestion } from "../pages/AdminPages/dashboard/ViewQuestions";
 import axios from "axios";
 import { Practice } from "../pages/UserPages/dashboard/Practice";
@@ -70,7 +69,6 @@ export const MyRoutes = () => {
         {/* <Route path="user-profile" element={<UserProfile />} /> */}
         <Route path="payment-history" element={<Payment />} />
         <Route path="upload-question" element={<UploadQuestions />} />
-        <Route path="preview-question" element={<QuestionPreview />} />
         <Route path="view-question" element={<ViewQuestion />} />
         {/* <Route path="/dashboard/edit-venue" />
           <Route path="/dashboard/edit-vendor" /> */}
