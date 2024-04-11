@@ -154,18 +154,18 @@ export const CreateAccount = () => {
             <label htmlFor="rank" className="block py-1 -mb-1">Select Rank</label>
             <select id="rank" name="rank" value={rank} onChange={(e) => { setRank(e.target.value); setRankError("") }} className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${rankError ? 'border-red-500' : ''}`}>
             <option value="">Select a category</option>
-              <option value="CAI">CAI</option>
-              <option value="CAII">CAII</option>
-              <option value="AIC">AIC</option>
-              <option value="IC">IC</option>
-              <option value="ASCII">ASCII</option>
-              <option value="ASCI">ASCI</option>
-              <option value="DSC">DSC</option>
-              <option value="SC">SC</option>
-              <option value="CSC">CSC</option>
-              <option value="AC">AC</option>
-              <option value="DC">DC</option>
-              <option value="CC">CC</option>
+              <option value="Comptroller">Comptroller</option>
+              <option value="Deputy Comptroller">Deputy Comptroller</option>
+              <option value="Assistant Comptroller">Assistant Comptroller</option>
+              <option value="Superintendent of Customs">Superintendent of Customs</option>
+              <option value="Deputy Superintendent of Customs">Deputy Superintendent of Customs</option>
+              <option value="Assistant Superintendent of Customs I">Assistant Superintendent of Customs I</option>
+              <option value="Assistant Superintendent of Customs II">Assistant Superintendent of Customs II</option>
+              <option value="Inspector of Customs">Inspector of Customs</option>
+              <option value="Assistant Inspector of Customs">Assistant Inspector of Customs</option>
+              <option value="Customs Assistant II">Customs Assistant II</option>
+              <option value="Customs Assistant I">Customs Assistant I</option>
+              {/* <option value="CC">CC</option> */}
             </select>
             {rankError && <div className="text-sm text-red-500">{rankError}</div>}
           </div>
