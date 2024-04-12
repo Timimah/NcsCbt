@@ -2,7 +2,7 @@ import React from 'react';
 
 export const Table = ({ data, columns }) => {
   return (
-      <div className="flex flex-col table-container w-full text-darkgrey">
+      <div className="flex flex-col table-container w-full text-darkgrey overflow-x-scroll">
         <div className="table-header flex justify-between w-full font-semibold text-lg">
           <div className={`bg-secondary w-full grid grid-cols-${columns.length}`}>
             {columns.map((column) => (

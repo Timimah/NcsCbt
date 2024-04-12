@@ -74,13 +74,13 @@ export const DashboardPage = ({ title, username }) => {
       <main className="flex-grow">
         <section>
           <h2 className="text-lg mb-4 text-darkgrey font-semibold">Top Materials to Read</h2>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 justify-center md:grid-cols-4 gap-4">
             {topMaterials.map((material) => (
-              <div key={material._id} className="p-4 text-darkgrey">
+              <div key={material._id} className="p-4 text-darkgrey w-full">
                 <img
                   src={material.name}
                   alt={material.name}
-                  className="w-full h-40 object-cover rounded-md mb-2"
+                  className="w-full h-40 object-cover rounded-md mb-2 bg-grey"
                 />
                 <h3 className="mb-1">{material.name}</h3>
                 <div className="text-xs"> Rank: {material.rank}</div>
@@ -89,12 +89,12 @@ export const DashboardPage = ({ title, username }) => {
           </div>
         </section>
 
-        <section className="bg-yellow rounded-lg p-10 mt-8 flex items-center justify-between">
-          <div className="w-1/2 flex flex-col gap-4 text-left justify-start">
-            <h2 className="text-3xl mb-4">Take Quiz to Test Your Knowledge</h2>
+        <section className="bg-yellow rounded-lg p-10 mt-8 flex md:flex-row flex-col-reverse gap-6 items-center justify-between">
+          <div className="w-full md:w-1/2 flex flex-col gap-4 md:text-left md:justify-start">
+            <h2 className="text-2xl md:text-3xl mb-4">Take Quiz to Test Your Knowledge</h2>
             <Button
               title="Take Exam"
-              btnStyles="bg-primary text-white py-2 px-4 rounded-md w-fit"
+              btnStyles="bg-primary text-white py-2 px-4 rounded-md md:w-fit"
               btnClick={() => navigate("/dashboard/practice")}
             />
           </div>

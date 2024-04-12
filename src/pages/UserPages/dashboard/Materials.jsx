@@ -20,7 +20,7 @@ export const Materials = () => {
 
     const handleSearch = (e) => {
         setIsSearching(true);
-        csetIsSearching(true);
+        setIsSearching(true);
         const filteredMaterials = materials.filter((material) => {
             const regex = new RegExp(searchTerm, 'i');
             const searchProperties = [material.name, material.rank, material.author];
@@ -41,7 +41,7 @@ export const Materials = () => {
             <main className="flex-grow">
                 <section className='flex flex-col gap-4'>
                     <div className="flex mb-4">
-                        <div className="relative w-2/3 flex">
+                        <div className="relative w-full md:w-2/3 flex">
                             <input
                                 type="text"
                                 className="border rounded-md py-2 px-4 pr-10 w-full"
@@ -66,15 +66,15 @@ export const Materials = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="grid grid-cols-5 gap-8">
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
                         {!isSearching && 
                             (
                                 displayedMaterials.map((material) => (
-                                    <div key={material._id} className="p-4">
+                                    <div key={material._id} className="p-4 w-full">
                                         <img
                                             src={material.name}
                                             alt={material.name}
-                                            className="w-full h-40 object-cover rounded-md mb-2"
+                                            className="w-full h-40 object-cover rounded-md mb-2 bg-cardgreen"
                                         />
                                         <h3 className="text-lg font-semibold mb-1">{material.name}</h3>
                                         <div className='text-xs font-light'>Rank: {material.rank}</div>
@@ -84,15 +84,15 @@ export const Materials = () => {
                         }
                         {isSearching && 
                         (searchedMaterials.map((material) => (
-                            <div key={material.rank} className="p-4">
-                                <img
-                                    src={material.coverImage}
-                                    alt={material.materialName}
-                                    className="w-full h-40 object-cover rounded-md mb-2"
-                                />
-                                <h3 className="text-lg font-semibold mb-1">{material.materialName}</h3>
-                                <div className='text-xs font-light'>Rank: {material.rank}</div>
-                            </div>
+                            <div key={material._id} className="p-4 w-full">
+                            <img
+                                src={material.name}
+                                alt={material.name}
+                                className="w-full h-40 object-cover rounded-md mb-2 bg-cardgreen"
+                            />
+                            <h3 className="text-lg font-semibold mb-1">{material.name}</h3>
+                            <div className='text-xs font-light'>Rank: {material.rank}</div>
+                        </div>
                         )))}
                     </div>
                     {isSearching && <div className="text-primary cursor-pointer text-lg" onClick={() => {setIsSearching(false); setSearchTerm("")}}>See all materials</div>}

@@ -52,7 +52,7 @@ export const Practice = () => {
                 <Modal
                     title="Quiz Settings"
                     closeModal={() => setShowModal(false)}
-                    modStyles="bg-secondary w-1/2 h-fit"
+                    modStyles="bg-secondary md:w-1/2 h-fit"
                     content={
                         <div className='my-10'>
                             <div>

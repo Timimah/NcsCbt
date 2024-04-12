@@ -37,8 +37,8 @@ export const Results = () => {
             <Header title="Result" />
             <main className="flex-grow">
                 <section className='flex flex-col gap-4'>
-                    <div className="flex mb-4 bg-slate-300">
-                        <div className="relative w-2/3 flex">
+                    <div className="flex mb-4">
+                        <div className="relative w-full md:w-2/3 flex">
                             <input
                                 type="text"
                                 className="border rounded-md py-2 px-4 pr-10 w-full"
@@ -63,7 +63,7 @@ export const Results = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="px-4 w-full">
+                    <div className="md:px-4 md:w-full">
                         <Table data={results} columns={columns} />
                     </div>
                 </section>

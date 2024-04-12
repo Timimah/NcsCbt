@@ -25,7 +25,7 @@ export const Header = ({ title }) => {
                 <h1 className="text-3xl font-bold text-darkgrey">{title}</h1>
                 <p className="text-sm text-grey">Welcome, <span>{userName}</span></p>
             </div>
-            <div className="flex items-center cursor-pointer" onClick={handleProfile}>
+            <div className="hidden md:flex items-center cursor-pointer" onClick={handleProfile}>
                 <img alt="User Avatar" className="w-8 h-8 rounded-full mr-2" />
                 <div>
                     <span className='font-bold text-darkgrey'>{userName}</span>
