@@ -17,11 +17,12 @@ export const Practice = () => {
     }, []);
 
     const getPracticeQuestions = async () => {
-       await axios.get("https://ncs-cbt-api.onrender.com/exam/getExamQuestions",
+       await axios.get("https://ncs-cbt-api.onrender.com/exam/getPracticeQuestions",
                 { rank },
                 {
                     headers: {
-                        "Authorization": `Bearer ${token}`
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
                     },
                 }).then((res) => {
                 console.log(res);

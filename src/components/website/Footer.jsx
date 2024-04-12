@@ -65,7 +65,7 @@ export const Footer = ({ abtClick, contactClick, acctClick }) => {
                     </div>
                 </div>
             </footer>
-            <div className='font-semibold -mb-10 pt-10 pb-5'>NCSCBT 2024.</div>
+            <div className='font-semibold -mb-10 pt-10 pb-5'>&copy; Enda Rae 2024.</div>
         </div>
     );
 };

@@ -113,7 +113,7 @@ export const Home = () => {
         </nav>
         {isMenuOpen &&
           <div
-            className={`absolute right-5 left-5 top-16 px-10 py-5 shadow-md rounded-b-lg bg-white mt-4 transition-all duration-300 ${isMenuOpen ? 'max-h-screen' : 'max-h-0 overflow-hidden'
+            className={`absolute right-5 left-5 top-16 px-10 py-5 shadow-md rounded-b-lg bg-white mt-4 transition-all duration-300 ease-out z-10 ${isMenuOpen ? 'max-h-screen' : ''
               }`}
           >
             <div className="grid grid-cols-2">
@@ -133,6 +133,10 @@ export const Home = () => {
                 scrollToSection('contact')
               }}
                 className="py-3 px-4 font-semibold text-primary hover:bg-primary hover:text-white text-center rounded-md">Contact</Link>
+            </div>
+            <div className="gap-4 w-2/3 flex flex-col mx-auto my-6">
+              <Button title="Create Account" btnStyles="px-4 py-3 border border-primary rounded-md text-primary hover:bg-primary hover:text-white font-semibold w-full" btnClick={() => navigate('create-account')} />
+              <Button title="Sign In" btnStyles="px-4 py-3 bg-primary rounded-md text-primary hover:animate-pulse text-white font-semibold w-full" btnClick={() => navigate('/login')} />
             </div>
           </div>
         }
@@ -206,19 +210,6 @@ export const Home = () => {
             <div className='md:-ml-24 md:-mt-12 -mt-8'>
               <div className="text-3xl md:text-6xl font-bold">Real stories from real customers</div>
               <span className='text-sm font-normal'>Get inspired by these stories</span></div>
-            {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {testimonials.map((testimonial, index) => (
-                <div key={index} className={`${index === 1 ? 'col-span-2' : ''}`}>
-                  <TestimonialCard
-                    key={index}
-                    name={testimonial.name}
-                    title={testimonial.title}
-                    testimonial={testimonial.testimonial}
-                    isLarge={index === 1}
-                  />
-                </div>
-              ))}
-            </div> */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-10">
               {testimonials.map((testimonial, index) => {
                 if (index === 0) {
@@ -247,20 +238,101 @@ export const Home = () => {
           </div>
         </section>
 
-        <section id='pricing' className="py-20 px-6">
+        <section id='pricing' className="py-10 md:py-20 px-6">
           <div className="max-w-3xl mx-auto text-center">
             <div className="text-2xl md:text-4xl font-bold text-primary">Pricing</div>
             <span className='text-sm font-normal'>Editor share clip share pencil distribute content component. Undo duplicate bold strikethrough flatten invite selection duplicate main. Asset font shadow select follower.</span>
-            <div>
+            <div className='hidden md:block'>
               <PricingTable />
+            </div>
+            {/* mobile pricing */}
+            <div className='md:hidden text-grey py-10 flex flex-col gap-10'>
+              <div className='flex flex-col gap-4'>
+                <label htmlFor="free" className='font-semibold text-lg text-primary'>Free</label>
+                <div className='bg-story border border-darkgrey rounded-md p-6'>
+                  <div className='flex justify-start border-b border-b-darkgrey py-3 text-lg font-bold'>Benefits</div>
+                  <div className='my-4'>
+                    <div className='flex'>
+                      <div className='flex w-full justify-start text-left'>
+                        <ul className="space-y-10">
+                          <li>Past Questions</li>
+                          <li>Manage Your Time</li>
+                          <li>Less Data</li>
+                          <li>Reading Materials</li>
+                          <li>Result History</li>
+                        </ul>
+                      </div>
+                      <div className='flex justify-end'>
+                        <ul className="space-y-10">
+                          <li>Limited</li>
+                          <li>
+                            <span className="text-primary">&#10003;</span>
+                          </li>
+                          <li>
+                            <span className="text-primary">&#10003;</span>
+                          </li>
+                          <li>No</li>
+                          <li>No</li>
+                        </ul>
+                      </div>
+                      <div></div>
+                      <div></div>
+
+                    </div>
+                  </div>
+                  <div className='flex justify-end pt-4'>
+                    <Button title="Subscribe" btnStyles="px-4 py-3 bg-primary text-white rounded-md w-2/3" btnClick={() => navigate('create-account')} />
+                  </div>
+                </div>
+              </div>
+              <div className='flex flex-col gap-4'>
+                <label htmlFor="free" className='font-semibold text-lg text-primary'>Paid <br /> N1000/Month</label>
+                <div className='bg-story border border-darkgrey rounded-md p-6'>
+                  <div className='flex justify-start border-b border-b-darkgrey py-3 text-lg font-bold'>Benefits</div>
+                  <div className='my-4'>
+                    <div className='flex'>
+                      <div className='flex w-full justify-start text-left'>
+                        <ul className="space-y-10">
+                          <li>Past Questions</li>
+                          <li>Manage Your Time</li>
+                          <li>Less Data</li>
+                          <li>Reading Materials</li>
+                          <li>Result History</li>
+                        </ul>
+                      </div>
+                      <div className='flex justify-end'>
+                        <ul className="space-y-10">
+                          <li>
+                            <span className="text-primary">&#10003;</span>
+                          </li>
+                          <li>
+                            <span className="text-primary">&#10003;</span>
+                          </li>
+                          <li>
+                            <span className="text-primary">&#10003;</span>
+                          </li>
+                          <li>
+                            <span className="text-primary">&#10003;</span>
+                          </li>
+                          <li>
+                            <span className="text-primary">&#10003;</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div className='flex justify-end pt-4'>
+                    <Button title="Subscribe" btnStyles="px-4 py-3 bg-primary text-white rounded-md w-2/3" btnClick={() => navigate('create-account')} />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        <section id='contact' className="py-20 w-full">
+        <section id='contact' className="md:py-20 mb-10 w-full">
           <Contact />
         </section>
-
       </main>
 
       {/* <footer className="bg-gray-800 text-white py-4 px-6">
