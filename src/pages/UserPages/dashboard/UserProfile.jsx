@@ -6,6 +6,8 @@ import add from '../../../assets/add.png';
 import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '../../../store/userStore';
 import { User } from '../../AdminPages/dashboard/User';
+import { PaystackButton } from 'react-paystack';
+// import { usePaystackPayment } from 'react-paystack';
 
 export const UserProfile = () => {
     const navigate = useNavigate();
@@ -26,21 +28,50 @@ export const UserProfile = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isValid, setIsValid] = useState(false);
     const token = localStorage.getItem("auth-token");
+    const [amount, setAmount] = useState(10000);
+    const [phone, setPhone] = useState('');
 
-    useEffect(() => {
-        const script = document.createElement('script');
-        script.src = 'https://sdk.monnify.com/plugin/monnify.js';
-        script.async = true;
-        document.body.appendChild(script);
+    const publicKey = "pk_test_5a7a500ef3e348364affb01be5cd3f14960c1113"
 
-        return () => {
-            document.body.removeChild(script);
-        };
-    }, []);
+    const config = {
+        reference: (new Date()).getTime().toString(),
+        email,
+        amount, //Amount is in the country's lowest currency. E.g Kobo, so 20000 kobo = N200
+        publicKey,
+    };
+
+    const onSuccess = (reference) => {
+        console.log("Success!")
+        paymentSuccess();
+        // Implementation for whatever you want to do with reference and after success call.
+        // console.log(reference);
+    };
+
+    const paymentSuccess = async () => {
+        const examineeId = userId;
+        const plan = 'Monthly'
+        let userData = { plan, examineeId }
+        try {
+            const response = await axios.post(
+                "https://ncs-cbt-api.onrender.com/users/subscribe",
+                userData,
+                {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                }
+            );
+            console.log(response);
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     useEffect(() => {
         getUserDetails();
         setUserAvatar(userImage);
+        setPhone(phoneNumber)
         // setFullName(fullName);
         // setEmail(email);
         // setRank(rank);
@@ -141,80 +172,28 @@ export const UserProfile = () => {
         }
     };
 
-    // const payWithMonnify = () => {
-    //     if (window.MonnifySDK) {
-    //         MonnifySDK.initialize({
-    //             amount: 100,
-    //             currency: "NGN",
-    //             reference: new String((new Date()).getTime()),
-    //             customerFullName: 'Blessed-Agboola',
-    //             customerEmail: 'timimah0117@gmail.com',
-    //             apiKey: "MK_TEST_2GBH9XRSH0",
-    //             contractCode: "5254936728",
-    //             paymentDescription: "NCS-CBT Subscription Payment",
-    //             metadata: {
-    //                 "name": 'Blessed-Agboola',
-    //                 "age": 45
-    //             },
-    //             incomeSplitConfig: [{
-    //                 "subAccountCode": "MFY_SUB_342113621921",
-    //                 "feePercentage": 50,
-    //                 "splitAmount": 1900,
-    //                 "feeBearer": true
-    //             }, {
-    //                 "subAccountCode": "MFY_SUB_342113621922",
-    //                 "feePercentage": 50,
-    //                 "splitAmount": 2100,
-    //                 "feeBearer": true
-    //             }],
-    //             onLoadStart: () => {
-    //                 console.log("loading has started");
-    //             },
-    //             onLoadComplete: () => {
-    //                 console.log("SDK is UP");
-    //             },
-    //             onComplete: function(response) {
-    //                 //Implement what happens when the transaction is completed.
-    //                 console.log(response);
-    //             },
-    //             onClose: function(data) {
-    //                 //Implement what should happen when the modal is closed here
-    //                 console.log(data);
-    //             }
-    //         });
-    //     } else {
-    //         console.log("Monnify SDK not available");
-    //     }
-    // }
-    const subscribe = async () => {
-        console.log(userId, "User ID")
-        const examineeId = userId;
-        const plan = "paid";
-        const subscriptionData = { plan, examineeId };
-        try {
-            const response = await axios.post(
-                "https://ncs-cbt-api.onrender.com/users/subscribe",
-                subscriptionData,
-                {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    }
-                }
-            );
-            console.log(response);
-            if (response.status === 201) {
-                alert("Subscription successful");
-            }
-        }
-        catch (err) {
-            console.log(err.message);
-        }
+
+    const handlePaystackSuccessAction = (reference) => {
+        // Implementation for whatever you want to do with reference and after success call.
+        console.log(reference);
+    };
+
+    // you can call this function anything
+    const handlePaystackCloseAction = () => {
+        // implementation for  whatever you want to do when the Paystack dialog closed.
+        console.log('closed')
     }
 
-    const subscriptionExpiryDate = new Date('2023-06-30');
-    const daysUntilExpiry = Math.ceil((subscriptionExpiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-    const isSubscriptionExpiringSoon = daysUntilExpiry <= 30;
+    const componentProps = {
+        ...config,
+        text: 'Paystack Button Implementation',
+        onSuccess: (reference) => {
+            console.log("Success!")
+            paymentSuccess();
+            handlePaystackSuccessAction(reference)
+        },
+        onClose: handlePaystackCloseAction,
+    };
 
     return (
         <div className="flex flex-col w-full p-10">
@@ -240,16 +219,10 @@ export const UserProfile = () => {
                             <img src={add} alt="add avatar" className='opacity-60 absolute -mt-2' />
                         </div>
                     </div>
-                    <div className='flex flex-col gap-4'>
-                        <p>Last subscription: {subscriptionExpiryDate.toLocaleDateString()}</p>
-                        <button
-                            className={`px-4 py-2 rounded-md ${isSubscriptionExpiringSoon ? 'bg-primary text-white' : 'bg-grey text-white cursor-not-allowed'}`}
-                            disabled={!isSubscriptionExpiringSoon}
-                            onClick={subscribe}
-                        >
-                            Subscribe
-                        </button>
-                    </div>
+                    {/* <button className='px-4 py-3 rounded-md bg-primary text-white cursor-pointer' onClick={() => { initializePayment(onSuccess, onClose) }}>
+                        Subscribe
+                    </button> */}
+                    <PaystackButton {...componentProps} />
                 </div>
 
                 <div className="mb-6">

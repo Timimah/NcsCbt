@@ -17,15 +17,13 @@ export const Practice = () => {
     }, []);
 
     const getPracticeQuestions = async () => {
-        axios.get(
-                "https://ncs-cbt-api.onrender.com/exam/getPracticeQuestions",
+       await axios.get("https://ncs-cbt-api.onrender.com/exam/getExamQuestions",
+                { rank },
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`,
+                        "Authorization": `Bearer ${token}`
                     },
-                }
-            )
-            .then((res) => {
+                }).then((res) => {
                 console.log(res);
                 // setQuestions(res.data.data || []);
                 // setDisplayedQuestions(questions);
@@ -68,7 +66,7 @@ export const Practice = () => {
                             </div>
                             <div>
                                 <label htmlFor="rank" className="block py-1 -mb-1">Select Rank</label>
-                                <select id="rank" name="rank" value={rank} onChange={(e) => { setRank(e.target.value); setError("") }} className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${error ? 'border-red-500' : ''}`}>
+                                <select id="rank" name="rank" value={rank} onChange={(e) => { setRank(e.target.value); setError(""); }} className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${error ? 'border-red-500' : ''}`}>
                                     <option value="">Select a category</option>
                                     <option value="CAI-CAII">CAI-CAII</option>
                                     <option value="CAII-AIC">CAII-AIC</option>
