@@ -6,8 +6,7 @@ import add from '../../../assets/add.png';
 import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '../../../store/userStore';
 import { User } from '../../AdminPages/dashboard/User';
-import { PaystackButton } from 'react-paystack';
-// import { usePaystackPayment } from 'react-paystack';
+import { PaystackButton } from 'react-paystack'
 
 export const UserProfile = () => {
     const navigate = useNavigate();
