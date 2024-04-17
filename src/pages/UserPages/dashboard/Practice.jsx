@@ -8,6 +8,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 export const Practice = () => {
 	const navigate = useNavigate();
 	const [showModal, setShowModal] = useState(false);
+    const [showInstructions, setShowInstructions] = useState(false);
 	const [rank, setRank] = useState("");
 	const [time, setTime] = useState(60);
 	const [error, setError] = useState("");
