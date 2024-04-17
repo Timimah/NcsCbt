@@ -151,10 +151,9 @@ export const Practice = () => {
 				<Modal
 					title='Instructions'
 					closeModal={() => setShowInstructions(false)}
-					modStyles='bg-secondary md:w-1/2 h-fit oveflow-y-auto'
+					modStyles='bg-white w-2/3 my-10 oveflow-y-scroll'
 					content={
-						<div className='fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50'>
-							<div className='bg-white rounded-lg p-8 max-w-xl mx-auto relative'>
+							<div className='rounded-lg p-8 mx-auto relative'>
 								<button className='absolute top-4 right-4 text-gray-500 hover:text-gray-700'>
 									<svg
 										xmlns='http://www.w3.org/2000/svg'
@@ -229,7 +228,6 @@ export const Practice = () => {
 										</span>
 									</li>
 								</ol>
-							</div>
 						</div>
 					}
                     buttons={
