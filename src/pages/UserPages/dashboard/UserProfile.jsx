@@ -6,7 +6,7 @@ import add from '../../../assets/add.png';
 import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '../../../store/userStore';
 import { User } from '../../AdminPages/dashboard/User';
-import { PaystackButton } from 'react-paystack'
+// import { PaystackButton } from 'react-paystack'
 
 export const UserProfile = () => {
     const navigate = useNavigate();
@@ -32,40 +32,40 @@ export const UserProfile = () => {
 
     const publicKey = "pk_test_5a7a500ef3e348364affb01be5cd3f14960c1113"
 
-    const config = {
-        reference: (new Date()).getTime().toString(),
-        email,
-        amount, //Amount is in the country's lowest currency. E.g Kobo, so 20000 kobo = N200
-        publicKey,
-    };
+    // const config = {
+    //     reference: (new Date()).getTime().toString(),
+    //     email,
+    //     amount, //Amount is in the country's lowest currency. E.g Kobo, so 20000 kobo = N200
+    //     publicKey,
+    // };
 
-    const onSuccess = (reference) => {
-        console.log("Success!")
-        paymentSuccess();
-        // Implementation for whatever you want to do with reference and after success call.
-        // console.log(reference);
-    };
+    // const onSuccess = (reference) => {
+    //     console.log("Success!")
+    //     paymentSuccess();
+    //     // Implementation for whatever you want to do with reference and after success call.
+    //     // console.log(reference);
+    // };
 
-    const paymentSuccess = async () => {
-        const examineeId = userId;
-        const plan = 'Monthly'
-        let userData = { plan, examineeId }
-        try {
-            const response = await axios.post(
-                "https://ncs-cbt-api.onrender.com/users/subscribe",
-                userData,
-                {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    },
-                }
-            );
-            console.log(response);
-        } catch (err) {
-            console.log(err);
-        }
-    }
+    // const paymentSuccess = async () => {
+    //     const examineeId = userId;
+    //     const plan = 'Monthly'
+    //     let userData = { plan, examineeId }
+    //     try {
+    //         const response = await axios.post(
+    //             "https://ncs-cbt-api.onrender.com/users/subscribe",
+    //             userData,
+    //             {
+    //                 headers: {
+    //                     "Authorization": `Bearer ${token}`,
+    //                     "Content-Type": "application/json"
+    //                 },
+    //             }
+    //         );
+    //         console.log(response);
+    //     } catch (err) {
+    //         console.log(err);
+    //     }
+    // }
 
     useEffect(() => {
         getUserDetails();
@@ -171,28 +171,54 @@ export const UserProfile = () => {
         }
     };
 
-
-    const handlePaystackSuccessAction = (reference) => {
-        // Implementation for whatever you want to do with reference and after success call.
-        console.log(reference);
-    };
-
-    // you can call this function anything
-    const handlePaystackCloseAction = () => {
-        // implementation for  whatever you want to do when the Paystack dialog closed.
-        console.log('closed')
+    const subscribe = async () => {
+        const examineeId = userId;
+        const plan = 'Monthly'
+        let userData = { plan, examineeId }
+        try {
+            const response = await axios.post(
+                "https://ncs-cbt-api.onrender.com/users/subscribe",
+                userData,
+                {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                }
+            );
+            console.log(response);
+            const payment_url = response.data.data.authorization_url;
+            if (confirm("You'll be redirected to the payment page") === true) {
+                // window.location.href = payment_url;
+                window.open(payment_url, "_blank");
+            };
+            Link
+        } catch (err) {
+            console.log(err);
+        }
     }
 
-    const componentProps = {
-        ...config,
-        text: 'Paystack Button Implementation',
-        onSuccess: (reference) => {
-            console.log("Success!")
-            paymentSuccess();
-            handlePaystackSuccessAction(reference)
-        },
-        onClose: handlePaystackCloseAction,
-    };
+    // const handlePaystackSuccessAction = (reference) => {
+    //     // Implementation for whatever you want to do with reference and after success call.
+    //     console.log(reference);
+    // };
+
+    // // you can call this function anything
+    // const handlePaystackCloseAction = () => {
+    //     // implementation for  whatever you want to do when the Paystack dialog closed.
+    //     console.log('closed')
+    // }
+
+    // const componentProps = {
+    //     ...config,
+    //     text: 'Paystack Button Implementation',
+    //     onSuccess: (reference) => {
+    //         console.log("Success!")
+    //         paymentSuccess();
+    //         handlePaystackSuccessAction(reference)
+    //     },
+    //     onClose: handlePaystackCloseAction,
+    // };
 
     return (
         <div className="flex flex-col w-full p-10">
@@ -218,10 +244,10 @@ export const UserProfile = () => {
                             <img src={add} alt="add avatar" className='opacity-60 absolute -mt-2' />
                         </div>
                     </div>
-                    {/* <button className='px-4 py-3 rounded-md bg-primary text-white cursor-pointer' onClick={() => { initializePayment(onSuccess, onClose) }}>
+                    <button className='px-4 py-3 rounded-md bg-primary text-white cursor-pointer' onClick={subscribe}>
                         Subscribe
-                    </button> */}
-                    <PaystackButton {...componentProps} />
+                    </button>
+                    {/* <PaystackButton {...componentProps} /> */}
                 </div>
 
                 <div className="mb-6">
