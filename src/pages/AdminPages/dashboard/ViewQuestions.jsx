@@ -35,7 +35,7 @@ export const ViewQuestion = () => {
                 "https://ncs-cbt-api.onrender.com/exam/",
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`,
+                        "Authorization": `Bearer ${token}`,
                     },
                 }
             )
@@ -55,7 +55,7 @@ export const ViewQuestion = () => {
     };
 
     const deleteQuestion = async (id) => {
-        const updatedQuestions = displayedQuestions.filter((question) => question.id !== id);
+        const updatedQuestions = displayedQuestions.filter((question) => question._id !== id);
         setDisplayedQuestions(updatedQuestions)
         try {
             const response = await axios.post(
@@ -63,7 +63,7 @@ export const ViewQuestion = () => {
                 { id },
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`,
+                        "Authorization": `Bearer ${token}`,
                     },
                 }
             );
@@ -157,6 +157,56 @@ export const ViewQuestion = () => {
                 <div className='text-2xl font-semibold text-center'>{selectedCategory}</div>
                 {displayedQuestions.map((question, index) => (
                     <>
+                    {activeTab === "practice" &&
+                            question.type === "" && (
+                                <div
+                                    key={question.id}
+                                    className='my-10'>
+                                    <div className='flex flex-col gap-4 mb-10'>
+                                        <div className='flex gap-4 font-bold text-lg'>
+                                            <div className=''>
+                                                {index + 1}.
+                                            </div>
+                                            <div>{question.question}</div>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <div className='flex flex-col gap-4'>
+                                                {question.options === "" ? (
+                                                    <div>No options added yet</div>
+                                                ) : (
+                                                    <div className=''>
+                                                        {question.options.map((option, i) => (
+                                                            <div key={i} className="flex items-center">
+                                                                <span>{String.fromCharCode(65 + i)}. {option}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className=''>
+                                                <Button
+                                                    title={
+                                                    <img src={del} alt="delete" />
+                                                    }
+                                                    btnStyles='px-4 py-3 text-white bg-yellow rounded-md my-4 w-full'
+                                                    btnClick={() => {
+                                                        deleteQuestion(question._id);
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {/* <div className='flex gap-4 w-1/2'> */}
+                                    {/* <Button
+                                            title='Edit'
+                                            btnStyles='px-4 py-3 text-white bg-primary rounded-md my-4 w-full'
+                                            btnClick={() => {
+                                                handleEdit(question.category);
+                                            }}
+                                        /> */}
+                                    {/* </div> */}
+                                </div>
+                            )}
                         {activeTab === "practice" &&
                             question.type === "practice" && (
                                 <div
@@ -190,7 +240,7 @@ export const ViewQuestion = () => {
                                                     }
                                                     btnStyles='px-4 py-3 text-white bg-yellow rounded-md my-4 w-full'
                                                     btnClick={() => {
-                                                        deleteQuestion(question.id);
+                                                        deleteQuestion(question._id);
                                                     }}
                                                 />
                                             </div>
@@ -240,7 +290,7 @@ export const ViewQuestion = () => {
                                                     }
                                                     btnStyles='px-4 py-3 text-white bg-yellow rounded-md my-4 w-full'
                                                     btnClick={() => {
-                                                        deleteQuestion(question.id);
+                                                        deleteQuestion(question._id);
                                                     }}
                                                 />
                                             </div>
