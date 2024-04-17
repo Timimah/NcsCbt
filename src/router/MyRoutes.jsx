@@ -49,11 +49,9 @@ export const MyRoutes = () => {
       <Route path="/create-account" element={<CreateAccount />} />
       <Route path="/login" element={<Login />} />
       <Route path="/admin" element={<AdminLogin />} />
-      {/* <Route path="/search-results" element={<SearchResults />} />
-        <Route path="/search-profile" element={<SearchProfilell />} /> */}
+      <Route path="/take-exam" element={<TakeExam />} />
       <Route path="/dashboard" element={<Dashboard />}>
         <Route path="overview" element={<DashboardPage />} />
-        <Route path="take-exam" element={<TakeExam />} />
         <Route path="material" element={<Materials />} />
         <Route path="practice" element={<Practice />} />
         <Route path="result" element={<Results />} />
