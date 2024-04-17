@@ -134,7 +134,6 @@ export const Practice = () => {
 									<option value='AC-DC'>AC-DC</option>
 									<option value='DC-CC'>DC-CC</option>
 								</select>
-								{error && <div className='text-sm text-red-500'>{error}</div>}
 							</div>
 						</div>
 					}
@@ -151,25 +150,9 @@ export const Practice = () => {
 				<Modal
 					title='Instructions'
 					closeModal={() => setShowInstructions(false)}
-					modStyles='bg-secondary md:w-1/2 h-fit oveflow-y-auto'
+					modStyles='bg-white w-2/3 my-10 oveflow-y-scroll'
 					content={
-						<div className='fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50'>
-							<div className='bg-white rounded-lg p-8 max-w-xl mx-auto relative'>
-								<button className='absolute top-4 right-4 text-gray-500 hover:text-gray-700'>
-									<svg
-										xmlns='http://www.w3.org/2000/svg'
-										className='h-6 w-6'
-										fill='none'
-										viewBox='0 0 24 24'
-										stroke='currentColor'>
-										<path
-											strokeLinecap='round'
-											strokeLinejoin='round'
-											strokeWidth={2}
-											d='M6 18L18 6M6 6l12 12'
-										/>
-									</svg>
-								</button>
+							<div className='rounded-lg p-8 mx-auto relative'>
 								<h2 className='text-2xl font-bold mb-4'>Instruction</h2>
 								<p className='mb-4'>
 									Welcome to the [Exam Name] CBT platform. Please read the following
@@ -229,7 +212,6 @@ export const Practice = () => {
 										</span>
 									</li>
 								</ol>
-							</div>
 						</div>
 					}
                     buttons={
