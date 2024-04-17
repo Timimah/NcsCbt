@@ -1,13 +1,7 @@
-import React, {
-    useEffect,
-    useState,
-} from "react";
+import React, { useEffect, useState } from "react";
 import { Header } from "../../../components/shared/Header";
 import { Button } from "../../../components/shared/Button";
-import {
-    useLocation,
-    useNavigate,
-} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import edit from "../../../assets/edit.png";
 import add from "../../../assets/add.png";
 import del from "../../../assets/delete.png";
@@ -19,6 +13,7 @@ import { useUserStore } from "../../../store/userStore";
 
 export const UploadQuestions = () => {
     const navigate = useNavigate();
+    const [allQuestions, setAllQuestions] = useState([]);
     const { questions, setQuestions } =
         useUserStore();
     const [questionCounter, setQuestionCounter] =
@@ -50,12 +45,14 @@ export const UploadQuestions = () => {
         location.state?.selectedCategory;
 
     useEffect(() => {
+        setAllQuestions(localStorage.getItem("questions") || []);
+        console.log(allQuestions);
         axios
             .get(
                 "https://ncs-cbt-api.onrender.com/exam/",
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`,
+                        "Authorization": `Bearer ${token}`,
                     },
                 }
             )
@@ -137,9 +134,36 @@ export const UploadQuestions = () => {
             setAnswer("");
             setOptions([""]);
             // setCategory('');
-            setType("");
+            // setType("");
         }
     };
+
+const updateQuestions = async () => {
+    try {
+        const response = await axios.get(
+            "https://ncs-cbt-api.onrender.com/exam/",
+            {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                },
+            }
+        )
+        console.log(response);
+        setQuestions(response.data.data || []);
+        setDisplayedQuestions(questions);
+        const questionsForSelectedCategory =
+            questions.filter(
+                (question) =>
+                    question.category === selectedCategory
+            );
+        console.log( questions, questionsForSelectedCategory );
+        setEditQuestions(questionsForSelectedCategory);
+
+    } catch (err) {
+        console.log(err);
+    }
+
+    }
 
     const handleSaveQuestions = async () => {
         // Here, you can handle the logic to save the questions data to a database or API
@@ -159,6 +183,7 @@ export const UploadQuestions = () => {
                 questionDetails,
             };
             console.log(questionData);
+            localStorage.setItem("questions", JSON.stringify(questionData));
             try {
                 const response = await axios.post(
                     "https://ncs-cbt-api.onrender.com/exam/uploadMultiple",
@@ -414,7 +439,7 @@ export const UploadQuestions = () => {
                                 type='text'
                                 value={answer}
                                 className='border py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary w-full bg-gray-200 border-primary'
-                                onChange={() => setAnswer(e.target.value)}
+                                onChange={(e) => setAnswer(e.target.value)}
                             />
                         </div>
                     </div>
