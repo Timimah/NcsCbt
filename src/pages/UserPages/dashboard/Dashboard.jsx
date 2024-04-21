@@ -117,11 +117,11 @@ export const Dashboard = ({ children }) => {
             }
             onClick={() => {
               setActive("exam");
-              // navigate("/dashboard/overview");
+              navigate("/dashboard/exam");
             }}
           >
             <svg
-              width="21"
+          width="21"
               height="16"
               viewBox="0 0 21 16"
               fill="none"
@@ -307,7 +307,7 @@ export const Dashboard = ({ children }) => {
           onClick={() => {
             setActive("exam");
             setIsMenuOpen(false);
-            // navigate("/dashboard/overview");
+            navigate("/dashboard/exam");
           }}
         >
           <svg

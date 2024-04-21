@@ -41,28 +41,6 @@ export const DashboardPage = ({ title, username }) => {
           console.log(err)
         })
 
-      // axios.get("https://ncs-cbt-api.onrender.com/users/dashboard", {
-      //   headers: {
-      //     "Authorization": `Bearer ${token}`,
-      //     "Content-Type": "application/json"	
-      //   }
-      // })
-      //   .then((res) => {
-      //     console.log(res)
-          // setMaterials(res.data.data)
-          // console.log(u)
-          // setLoggedInUser(user.fullName);
-          // setIsLoggedIn(true);
-          // setUserIsUser(true);
-          // setLoggedInUserEmail(user.email);
-          // setLoggedInUserId(user.examineeId);
-          // setLoggedInUserPhoneNumber(user.phoneNumber);
-          // setLoggedInUserRank(user.rank);
-        // })
-        // .catch((err) => {
-        //   console.log(err)
-        // })
-
     } else {
       navigate("/login");
     }

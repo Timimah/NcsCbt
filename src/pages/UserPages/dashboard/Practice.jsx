@@ -45,16 +45,13 @@ export const Practice = () => {
 		} else {
 			getQuestions();
 			localStorage.setItem("practiceQuestionsDetails", JSON.stringify({ rank, time }));
-			const category = rank;
-			console.log(category);
 			// navigate("/take-exam");
-			await axios
-				.get(
+			await axios.get(
 					"https://ncs-cbt-api.onrender.com/exam/getPracticeQuestions",
-					// { type: "practice" },
+					{ rank },
 					{
 						headers: {
-							Authorization: `Bearer ${token}`,
+							"Authorization": `Bearer ${token}`,
 						},
 					}
 				)
@@ -150,12 +147,11 @@ export const Practice = () => {
 				<Modal
 					title='Instructions'
 					closeModal={() => setShowInstructions(false)}
-					modStyles='bg-white w-2/3 my-10 oveflow-y-scroll'
+					modStyles='bg-secondary w-2/3 h-2/3 my-10 overflow-y-scroll'
 					content={
 							<div className='rounded-lg p-8 mx-auto relative'>
-								<h2 className='text-2xl font-bold mb-4'>Instruction</h2>
 								<p className='mb-4'>
-									Welcome to the [Exam Name] CBT platform. Please read the following
+									Welcome to the NCS CBT platform. Please read the following
 									instructions carefully before starting the exam.
 								</p>
 								<p className='mb-4'>
@@ -166,49 +162,49 @@ export const Practice = () => {
 									<li>
 										<strong>Time Reminder:</strong>{" "}
 										<span className='font-normal'>
-											"You will have [Time Limit] to complete the exam. A timer will be
-											displayed on the screen to help you manage your time effectively."
+											You will have {time} minutes to complete the exam. A timer will be
+											displayed on the screen to help you manage your time effectively.
 										</span>
 									</li>
 									<li>
 										<strong>Navigation Instructions:</strong>{" "}
 										<span className='font-normal'>
-											"Use the navigation buttons provided to move between questions. You
-											can go back and forth as needed."
+											Use the navigation buttons provided to move between questions. You
+											can go back and forth as needed.
 										</span>
 									</li>
 									<li>
 										<strong>Answering Format:</strong>{" "}
 										<span className='font-normal'>
-											"Answer each question by selecting the appropriate option."
+											Answer each question by selecting the appropriate option.
 										</span>
 									</li>
 									<li>
 										<strong>Marking for Review:</strong>{" "}
 										<span className='font-normal'>
-											"If you're unsure about an answer, you can mark the question for
-											review and return to it later."
+											If you're unsure about an answer, you can mark the question for
+											review and return to it later.
 										</span>
 									</li>
 									<li>
 										<strong>Technical Support Information:</strong>{" "}
 										<span className='font-normal'>
-											"If you encounter any technical issues during the exam, please raise
-											your hand or contact the invigilator for assistance."
+											If you encounter any technical issues during the exam, please raise
+											your hand or contact the invigilator for assistance.
 										</span>
 									</li>
 									<li>
 										<strong>Academic Integrity Reminder:</strong>{" "}
 										<span className='font-normal'>
-											"Maintain academic integrity throughout the exam. Any form of
-											cheating or unauthorized assistance is strictly prohibited."
+											Maintain academic integrity throughout the exam. Any form of
+											cheating or unauthorized assistance is strictly prohibited.
 										</span>
 									</li>
 									<li>
 										<strong>Exam Duration Notice:</strong>{" "}
 										<span className='font-normal'>
-											"Once the exam starts, it cannot be paused or extended. Ensure that
-											you manage your time effectively to complete all questions."
+											Once the exam starts, it cannot be paused or extended. Ensure that
+											you manage your time effectively to complete all questions.
 										</span>
 									</li>
 								</ol>
@@ -216,8 +212,8 @@ export const Practice = () => {
 					}
                     buttons={
                         <Button
-                            title="Start Practice"
-                            btnStyles="bg-primary text-white py-2 px-4 rounded-md mt-4 w-full"
+                            title="Start Exam"
+                            btnStyles="bg-primary text-white py-2 px-4 rounded-md mt-4 w-fit mx-auto"
                             btnClick={() => {
                                 setShowInstructions(false);
                                 navigate("/take-exam");
