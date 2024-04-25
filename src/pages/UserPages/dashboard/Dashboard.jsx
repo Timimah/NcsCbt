@@ -16,10 +16,24 @@ export const Dashboard = ({ children }) => {
         if (userName === "") {
             navigate('/')
         } else {
-          navigate("/dashboard/overview")
+          if (active === "dashboardmain") {
+            navigate("/dashboard/overview");
+          }
+          if (active === "material") {
+            navigate("/dashboard/material");
+          }
+          if (active === "practice") {
+            navigate("/dashboard/practice");
+          }
+          if (active === "exam") {
+            navigate("/dashboard/exam");
+          }
+          if (active === "result") {
+            navigate("/dashboard/result");
+          }
         }
-    }, [userName])
-
+    }, [])
+ 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   }
