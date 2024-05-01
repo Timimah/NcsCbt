@@ -4,17 +4,17 @@ import { Button } from "../../../components/shared/Button";
 import { Header } from "../../../components/shared/Header";
 import axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
+import { useUserStore } from "../../../store/userStore";
 
 export const Practice = () => {
   const navigate = useNavigate();
+  const { questions, setQuestions } = useUserStore();
   const [showModal, setShowModal] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [rank, setRank] = useState("");
   const [time, setTime] = useState(60);
   const [error, setError] = useState("");
-  const [allQuestions, setAllQuestions] = useState(
-    JSON.parse(localStorage.getItem("questions")) || []
-  );
+  const [allQuestions, setAllQuestions] = useState();
   const token = localStorage.getItem("auth-token");
   let practiceQuestions;
 
@@ -36,7 +36,7 @@ export const Practice = () => {
   useEffect(() => {
     console.log("Practice Page");
     setShowModal(true);
-    getQuestions();
+    // getQuestions();
   }, []);
 
   const getPracticeQuestions = async () => {
@@ -46,11 +46,11 @@ export const Practice = () => {
     if (!rank) {
       setError("Please select a category");
     } else {
-      getQuestions();
-      localStorage.setItem(
-        "practiceQuestionsDetails",
-        JSON.stringify({ rank, time })
-      );
+      // getQuestions();
+      // localStorage.setItem(
+      //   "practiceQuestionsDetails",
+      //   JSON.stringify({ rank, time })
+      // );
       console.log(rank);
       // navigate("/take-exam");
 
@@ -60,16 +60,17 @@ export const Practice = () => {
           { rank },
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              "Authorization": `Bearer ${token}`,
             },
           }
         )
         .then((res) => {
           console.log(res);
+          setQuestions(res.data.data);
+          setAllQuestions(questions);
+          console.log(questions, "Questions", allQuestions, "All Questions");
           setShowModal(false);
           setShowInstructions(true);
-          // setQuestions(res.data.data || []);
-          // setDisplayedQuestions(questions);
           // const questionsForSelectedCategory =
           //     questions.filter(
           //         (question) =>
@@ -155,7 +156,7 @@ export const Practice = () => {
         <Modal
           title="Instructions"
           closeModal={() => setShowInstructions(false)}
-          modStyles="bg-secondary w-2/3 h-2/3 my-10 overflow-y-scroll"
+          modStyles="bg-secondary w-full h-full my-10 overflow-y-scroll"
           content={
             <div className="rounded-lg p-8 mx-auto relative">
               <p className="mb-4">

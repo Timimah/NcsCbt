@@ -8,21 +8,24 @@ import { Button } from "../../../components/shared/Button";
 import { Modal } from "../../../components/shared/Modal";
 import { Header } from "../../../components/shared/Header";
 import { Navigate, useNavigate } from "react-router-dom";
+import { useUserStore } from "../../../store/userStore";
+import axios from "axios";
 
 export const TakeExam = () => {
   const navigate = useNavigate();
+  const { loggedInUserId, questions } = useUserStore();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answered, setAnswered] = useState(false);
   const [answers, setAnswers] = useState([]);
   const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [timeRemaining, setTimeRemaining] = useState(); // 10 minutes in seconds
   const [showModal, setShowModal] = useState(false);
-  const [questions, setQuestions] = useState(JSON.parse(localStorage.getItem("questions")).questionDetails || []);
+  // const [questions, setQuestions] = useState(JSON.parse(localStorage.getItem("questions")).questionDetails || []);
   let timer;
 
   useEffect(() => {
     const quizDetails = JSON.parse(localStorage.getItem("practiceQuestionsDetails"));
-    setSelectedAnswers(new Array(questions.length).fill(null))
+    // setAnswers([]);
     setTimeRemaining(quizDetails.time * 60)
     timer = setInterval(() => {
       setTimeRemaining((prevTime) => {
@@ -44,16 +47,34 @@ export const TakeExam = () => {
     }
   }, [timeRemaining]);
 
-  const handleOptionChange = (value) => {
+  // const handleOptionChange = (value) => {
+  //   setAnswered(true);
+  //   setAnswers((prevAnswers) => [
+  //     ...prevAnswers.slice(0, currentQuestion),
+  //     value,
+  //     ...prevAnswers.slice(currentQuestion + 1),
+  //   ]);
+  //   setSelectedAnswers((prevSelectedAnswers) => {
+  //     const newSelectedAnswers = [...prevSelectedAnswers];
+  //     newSelectedAnswers[currentQuestion] = value;
+  //     return newSelectedAnswers;
+  //   });
+  //   console.log(answers, selectedAnswers);
+  // };
+
+  const handleOptionChange = (value, questionId) => {
     setAnswered(true);
+    const answer = value;
+    const question_Id = questionId;
     setAnswers((prevAnswers) => [
-      ...prevAnswers.slice(0, currentQuestion),
-      value,
-      ...prevAnswers.slice(currentQuestion + 1),
-    ]);
+          ...prevAnswers.slice(0, currentQuestion),
+          value,
+          ...prevAnswers.slice(currentQuestion + 1),
+        ]);
+    const newAnswer = { answer, question_Id };
     setSelectedAnswers((prevSelectedAnswers) => {
       const newSelectedAnswers = [...prevSelectedAnswers];
-      newSelectedAnswers[currentQuestion] = value;
+      newSelectedAnswers[currentQuestion] = newAnswer;
       return newSelectedAnswers;
     });
     console.log(answers, selectedAnswers);
@@ -67,10 +88,36 @@ export const TakeExam = () => {
     setCurrentQuestion((prevQuestion) => prevQuestion + 1);
   };
 
-  const handleSubmit = () => {
+  const token = localStorage.getItem("auth-token");
+
+  const handleSubmit = async () => {
     // setShowModal(true);
-    console.log(answers);
-  };
+    console.log(selectedAnswers);
+    const practiceData = {
+      "answers": selectedAnswers,
+      "userId": loggedInUserId,
+      "type": "practice",
+      "date": new Date().toLocaleDateString(),
+    };
+    console.log(practiceData);
+    try {
+      const response = await axios.post(
+        "https://ncs-cbt-api.onrender.com/exam/mark",
+        practiceData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      )
+      console.log(response);
+      // navigate('/dashboard/result')
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <section className="flex flex-col bg-vector w-full bg-white h-full transform transition-all duration-300">
@@ -104,7 +151,7 @@ export const TakeExam = () => {
                     ? "bg-primary text-white"
                     : ""
                   }`}
-                onClick={(e) => handleOptionChange(option, e)}
+                onClick={() => handleOptionChange(option, questions[currentQuestion].id)}
               >
                 <span className="mr-3">{String.fromCharCode(65 + index)}. </span>
                 {option}
@@ -190,8 +237,11 @@ export const TakeExam = () => {
           }
           modStyles="w-1/2 my-auto justify-center bg-secondary"
           buttons={
-            <div className="flex justify-between w-2/3 mx-auto my-4">
-              <Button title="Yes, Quit" btnClick={() => navigate('/dashboard/result')} btnStyles="bg-yellow text-primary px-4 py-3 rounded-md" />
+            <div className="flex justify-between w-full p-4 my-4">
+              <Button title="Yes, Quit"
+              btnClick={() => navigate('/dashboard/result')}
+              btnStyles="bg-yellow text-primary px-4 py-3 rounded-md"
+              />
               <Button
                 title="No, Continue"
                 btnClick={() => setShowModal(false)}

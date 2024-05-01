@@ -169,7 +169,7 @@ export const ViewQuestion = () => {
                                             </div>
                                             <div>{question.question}</div>
                                         </div>
-                                        <div className="flex justify-between">
+                                        <div className="flex md:flex-row flex-col justify-between">
                                             <div className='flex flex-col gap-4'>
                                                 {question.options === "" ? (
                                                     <div>No options added yet</div>
@@ -219,7 +219,7 @@ export const ViewQuestion = () => {
                                             </div>
                                             <div>{question.question}</div>
                                         </div>
-                                        <div className="flex justify-between">
+                                        <div className="flex md:flex-row flex-col justify-between">
                                             <div className='flex flex-col gap-4'>
                                                 {question.options === "" ? (
                                                     <div>No options added yet</div>
@@ -240,6 +240,7 @@ export const ViewQuestion = () => {
                                                     }
                                                     btnStyles='px-4 py-3 text-white bg-yellow rounded-md my-4 w-full'
                                                     btnClick={() => {
+                                                        console.log(question._id);
                                                         deleteQuestion(question._id);
                                                     }}
                                                 />
@@ -265,7 +266,7 @@ export const ViewQuestion = () => {
                                     <div className='flex flex-col gap-4 mb-10'>
                                         <div className='flex gap-4 font-bold text-lg'>
                                             <div className=''>
-                                                Question {questionCounter}:
+                                                {index + 1}.
                                             </div>
                                             <div>{question.question}</div>
                                         </div>

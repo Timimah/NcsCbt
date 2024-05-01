@@ -15,6 +15,7 @@ export const useUserStore = create((set, get) => ({
   admin: [],
   materials: [],
   questions: [],
+  examQuestions: [],
 
   setIsLoggedIn:
     (arg) => set({ isLoggedIn: arg }),
@@ -41,16 +42,19 @@ export const useUserStore = create((set, get) => ({
     set({ loggedInUserPhoneNumber: user }),
 
   setUsers: (users) =>
-    set({ users: users}),
+    set({ users: users }),
 
   setAdmin: (admin) =>
-    set({ admin: admin}),
-    
+    set({ admin: admin }),
+
   setMaterials: (materials) =>
-    set({ materials: materials}),
+    set({ materials: materials }),
 
   setQuestions: (questions) =>
-    set({ questions: questions}),
+    set({ questions: questions }),
+
+  setExamQuestions: (examQuestions) =>
+    set({ examQuestions: examQuestions }),
 
   logoutUser: () => {
     set((state) => ({ ...state, isLoggedIn: false, loggedInUser: null }));

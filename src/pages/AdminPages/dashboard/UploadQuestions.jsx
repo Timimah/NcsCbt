@@ -422,7 +422,8 @@ const updateQuestions = async () => {
                             value={question}
                             onChange={(e) => {
                                 setUploadError("");
-                                setQuestion(e.target.value);
+                                setQuestion(e.target.value.trim());
+                                console.log(question)
                             }}
                             rows={3}
                             className='border py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary w-full bg-gray-200 border-primary'
@@ -439,7 +440,7 @@ const updateQuestions = async () => {
                                 type='text'
                                 value={answer}
                                 className='border py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary w-full bg-gray-200 border-primary'
-                                onChange={(e) => setAnswer(e.target.value)}
+                                onChange={(e) => setAnswer(e.target.value.trim())}
                             />
                         </div>
                     </div>
@@ -460,7 +461,7 @@ const updateQuestions = async () => {
                                         setUploadError("");
                                         handleOptionChange(
                                             index,
-                                            e.target.value
+                                            e.target.value.trim()
                                         );
                                         selectedAnswer && setAnswer(option)
                                     }}
@@ -504,13 +505,13 @@ const updateQuestions = async () => {
             </div>
             {questionDetails.length >= 0 ? (
                 <div className='mb-4'>
-                    <h2 className='text-xl font-bold mb-2'>
+                    <h2 className='text-2xl font-bold mb-2'>
                         Questions
                     </h2>
                     {questionDetails.map((question, index) => (
                         <div
                             key={index}
-                            className='mb-4'>
+                            className='mb-4 flex flex-col gap-4'>
                             <h3 className='text-lg font-bold'>
                                 Question {index + 1}:{" "}
                                 {question.question}
@@ -521,10 +522,9 @@ const updateQuestions = async () => {
                                     {question.answer}
                                 </span>
                             </p>
-                            <p>Options:</p>
-                            <div className='grid grid-cols-4'>
+                            <div className='flex flex-col'>
                                 {question.options.map((option, i) => (
-                                    <div className='ml-2'>{option}</div>
+                                    <div key={i} className='ml-2'>{String.fromCharCode(65 + i)}. {option}</div>
                                 ))}
                             </div>
                             <hr className='mt-6' />
