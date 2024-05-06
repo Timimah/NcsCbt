@@ -25,6 +25,7 @@ export const TakeExam = () => {
 
   useEffect(() => {
     const quizDetails = JSON.parse(localStorage.getItem("practiceQuestionsDetails"));
+    console.log(quizDetails);
     // setAnswers([]);
     setTimeRemaining(quizDetails.time * 60)
     timer = setInterval(() => {

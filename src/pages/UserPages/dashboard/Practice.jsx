@@ -46,14 +46,7 @@ export const Practice = () => {
     if (!rank) {
       setError("Please select a category");
     } else {
-      // getQuestions();
-      // localStorage.setItem(
-      //   "practiceQuestionsDetails",
-      //   JSON.stringify({ rank, time })
-      // );
       console.log(rank);
-      // navigate("/take-exam");
-
       axios
         .post(
           "https://ncs-cbt-api.onrender.com/exam/getPracticeQuestions",
@@ -69,6 +62,7 @@ export const Practice = () => {
           setQuestions(res.data.data);
           setAllQuestions(questions);
           console.log(questions, "Questions", allQuestions, "All Questions");
+      localStorage.setItem("practiceQuestionsDetails", JSON.stringify({ rank, time }));
           setShowModal(false);
           setShowInstructions(true);
           // const questionsForSelectedCategory =

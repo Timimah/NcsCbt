@@ -70,6 +70,14 @@ export const CreateAccount = () => {
           }
         );
         console.log(response.data.status);
+        setFullName("");
+      setExamineeId("");
+      setEmail("");
+      setPhoneNumber("");
+      setRank("");
+      setPassword("");
+      setConfirmPassword("");
+      console.log("User created successfully");
       navigate("/login");
         } catch (err) {
         if (!err?.response) {
@@ -83,16 +91,6 @@ export const CreateAccount = () => {
       }
     };
     sendRequest();
-
-      // createUser(userData);
-      setFullName("");
-      setExamineeId("");
-      setEmail("");
-      setPhoneNumber("");
-      setRank("");
-      setPassword("");
-      setConfirmPassword("");
-      console.log("User created successfully");
     }
   };
  
@@ -152,20 +150,20 @@ export const CreateAccount = () => {
           </div>
           <div>
             <label htmlFor="rank" className="block py-1 -mb-1">Select Rank</label>
-            <select id="rank" name="rank" value={rank} onChange={(e) => { setRank(e.target.value); setRankError("") }} className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${rankError ? 'border-red-500' : ''}`}>
+            <select id="rank" name="rank" value={rank} onChange={(e) => { setRank(e.target.value); console.log(rank); setRankError("") }} className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${rankError ? 'border-red-500' : ''}`}>
             <option value="">Select a category</option>
-              <option value="Comptroller">Comptroller</option>
-              <option value="Deputy Comptroller">Deputy Comptroller</option>
-              <option value="Assistant Comptroller">Assistant Comptroller</option>
-              <option value="Superintendent of Customs">Superintendent of Customs</option>
-              <option value="Deputy Superintendent of Customs">Deputy Superintendent of Customs</option>
-              <option value="Assistant Superintendent of Customs I">Assistant Superintendent of Customs I</option>
-              <option value="Assistant Superintendent of Customs II">Assistant Superintendent of Customs II</option>
-              <option value="Inspector of Customs">Inspector of Customs</option>
-              <option value="Assistant Inspector of Customs">Assistant Inspector of Customs</option>
-              <option value="Customs Assistant II">Customs Assistant II</option>
-              <option value="Customs Assistant I">Customs Assistant I</option>
-              {/* <option value="CC">CC</option> */}
+              <option value="CC">Comptroller (CC)</option>
+              <option value="DC">Deputy Comptroller (DC)</option>
+              <option value="AC">Assistant Comptroller (AC)</option>
+              <option value="CSC">Chief Superintendent of Customs (CSC)</option>
+              <option value="SC">Superintendent of Customs (SC)</option>
+              <option value="DSC">Deputy Superintendent of Customs (DSC)</option>
+              <option value="ASCI">Assistant Superintendent of Customs I (ASCI)</option>
+              <option value="ASCII">Assistant Superintendent of Customs II (ASCII)</option>
+              <option value="IC">Inspector of Customs (IC)</option>
+              <option value="AIC">Assistant Inspector of Customs (AIC)</option>
+              <option value="CAII">Customs Assistant II (CAII)</option>
+              <option value="CAI">Customs Assistant I (CAI)</option>
             </select>
             {rankError && <div className="text-sm text-red-500">{rankError}</div>}
           </div>
