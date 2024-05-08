@@ -7,18 +7,12 @@ import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../../../store/userStore";
 import { User } from "../../AdminPages/dashboard/User";
 import { imageStorage } from "../../../../config";
-import {
-  ref,
-  uploadBytes,
-  listAll,
-  getDownloadURL,
-  getMetadata,
-  uploadBytesResumable,
-} from "firebase/storage";
-import { v4 } from "uuid";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+// import { v4 } from "uuid";
 
 export const UserProfile = () => {
   const navigate = useNavigate();
+  const { userImage, setUserImage } = useUserStore();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -26,10 +20,9 @@ export const UserProfile = () => {
   const [userId, setUserId] = useState("");
   const [rank, setRank] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [userAvatar, setUserAvatar] = useState("");
-  const [imgUrl, setImgUrl] = useState("");
-  const [imgId, setImgId] = useState("");
-  const [profileImage, setProfileImage] = useState("");
+  const [userAvatar, setUserAvatar] = useState(null);
+  const [img, setImg] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
   const [error, setError] = useState("");
 
   const [isEditing, setIsEditing] = useState(false);
@@ -41,54 +34,41 @@ export const UserProfile = () => {
 
   useEffect(() => {
     getUserDetails();
-    // listAll(imageStorage, "images");
-  setPhone(phoneNumber);
+    setPhone(phoneNumber);
+    getAvatar();
   }, []);
 
-  useEffect(() => {
-    listAll(ref(imageStorage, "images")).then((imgs) => {
-      imgs.items.forEach((img) => {
-        getMetadata(img).then((metadata) => {
-          if (metadata.customMetadata.imageId === imgId) {
-            console.log("IDs match!", imgUrl)
-              // setProfileImage(imgUrl);
-              // console.log(profileImage);
-          }
-        });
-        getDownloadURL(img).then((url) => {
-          setProfileImage(url);
-          // console.log(url);
-        });
-      });
-    });
-  }, []);
-
-
-  const generateRandomId = () => {
-    return setImgId(
-      Math.random().toString(36).substring(2, 15) +
-        Math.random().toString(36).substring(2, 15)
-    );
-  };
-
-  const metadata = {
-    // contentType: 'image/*',
-    customMetadata: {
-      name: fullName,
-      imageId: imgId,
-    },
-  };
-
-  const uploadImage = async () => {
-    generateRandomId();
-    console.log(imgId);
-    alert("Uploading image");
-    // console.log(userAvatar)
-    if (userAvatar !== null) {
-      const imageRef = ref(imageStorage, `images/${v4()}`);
-      const uploadTask = uploadBytes(imageRef, userAvatar, metadata);
+  const getAvatar = () => {
+    const avatar = localStorage.getItem("userAvatar");
+    console.log(avatar);
+    if (avatar) {
+      console.log(avatar);
+      setProfileImage(avatar);
+    } else if (userImage !== "") {
+      console.log(userImage);
+      setProfileImage(userImage);
     }
-    
+  };
+
+  const uploadImage = () => {
+    const imageRef = ref(imageStorage, `images/${img}`);
+    uploadBytes(imageRef, userAvatar)
+      .then(() => {
+        getDownloadURL(imageRef)
+          .then((url) => {
+            setProfileImage(url);
+            localStorage.setItem("userAvatar", profileImage);
+            setUserImage(profileImage);
+            console.log(userImage);
+          })
+          .catch((error) => {
+            console.log(error.message, "error getting the image url");
+          });
+        // setUserAvatar(null);
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
   };
 
   const getUserDetails = async () => {
@@ -96,9 +76,9 @@ export const UserProfile = () => {
     axios
       .get("https://ncs-cbt-api.onrender.com/users/dashboard", {
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
-          "Accept": "application/json",
+          Accept: "application/json",
         },
       })
       .then((res) => {
@@ -135,7 +115,7 @@ export const UserProfile = () => {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
-          }
+          },
         );
         console.log(response);
         if (response.status === 201) {
@@ -171,16 +151,16 @@ export const UserProfile = () => {
         userData,
         {
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       console.log(response);
       const payment_url = response.data.data.authorization_url;
       if (
         confirm(
-          "You'll be redirected to the payment page. If a new tab does not open immediately, allow pop-ups and redirect from this site in your browser"
+          "You'll be redirected to the payment page. If a new tab does not open immediately, allow pop-ups and redirect from this site in your browser",
         ) === true
       ) {
         window.open(payment_url, "_blank");
@@ -201,7 +181,7 @@ export const UserProfile = () => {
         <div className="flex items-center justify-between my-10">
           <div className="flex flex-col">
             <div className="rounded-md h-44 w-52 relative">
-              {profileImage !== "" ? (
+              {profileImage !== null ? (
                 <img
                   src={profileImage}
                   alt="user avatar"
@@ -221,7 +201,9 @@ export const UserProfile = () => {
                 accept=".png, .jpg, .jpeg, .svg"
                 onChange={(e) => {
                   setUserAvatar(e.target.files[0]);
+                  setImg(e.target.files[0].name);
                   uploadImage();
+                  console.log(userAvatar, img);
                 }}
                 className="opacity-0 z-10 cursor-pointer"
               />
