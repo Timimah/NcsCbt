@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import axios from 'axios'
+import { create } from "zustand";
+import axios from "axios";
 
 export const useUserStore = create((set, get) => ({
   isLoggedIn: false,
@@ -16,58 +16,53 @@ export const useUserStore = create((set, get) => ({
   materials: [],
   questions: [],
   examQuestions: [],
+  userImage: null,
 
-  setIsLoggedIn:
-    (arg) => set({ isLoggedIn: arg }),
+  setIsLoggedIn: (arg) => set({ isLoggedIn: arg }),
 
-  setUserIsUser:
-    (arg) => set({ userIsUser: arg }),
+  setUserIsUser: (arg) => set({ userIsUser: arg }),
 
-  setUserIsAdmin:
-    (arg) => set({ userIsAdmin: arg }),
+  setUserIsAdmin: (arg) => set({ userIsAdmin: arg }),
 
-  setLoggedInUser: (user) =>
-    set({ loggedInUser: user }),
+  setLoggedInUser: (user) => set({ loggedInUser: user }),
 
-  setLoggedInUserEmail: (user) =>
-    set({ loggedInUserEmail: user }),
+  setLoggedInUserEmail: (user) => set({ loggedInUserEmail: user }),
 
-  setLoggedInUserId: (user) =>
-    set({ loggedInUserId: user }),
+  setLoggedInUserId: (user) => set({ loggedInUserId: user }),
 
-  setLoggedInUserRank: (user) =>
-    set({ loggedInUserRank: user }),
+  setLoggedInUserRank: (user) => set({ loggedInUserRank: user }),
 
-  setLoggedInUserPhoneNumber: (user) =>
-    set({ loggedInUserPhoneNumber: user }),
+  setLoggedInUserPhoneNumber: (user) => set({ loggedInUserPhoneNumber: user }),
 
-  setUsers: (users) =>
-    set({ users: users }),
+  setUsers: (users) => set({ users: users }),
 
-  setAdmin: (admin) =>
-    set({ admin: admin }),
+  setAdmin: (admin) => set({ admin: admin }),
 
-  setMaterials: (materials) =>
-    set({ materials: materials }),
+  setMaterials: (materials) => set({ materials: materials }),
 
-  setQuestions: (questions) =>
-    set({ questions: questions }),
+  setQuestions: (questions) => set({ questions: questions }),
 
-  setExamQuestions: (examQuestions) =>
-    set({ examQuestions: examQuestions }),
+  setExamQuestions: (examQuestions) => set({ examQuestions: examQuestions }),
+
+  setUserImage: (image) => set({ userImage: image }),
 
   logoutUser: () => {
     set((state) => ({ ...state, isLoggedIn: false, loggedInUser: null }));
   },
 
   setSubscription: (subscriptionData) => {
-    set((state) => ({ ...state, subscriptions: [...state.subscriptions, subscriptionData] }));
+    set((state) => ({
+      ...state,
+      subscriptions: [...state.subscriptions, subscriptionData],
+    }));
   },
 
   cancelSubscription: (subscriptionId) => {
     set((state) => ({
       ...state,
-      subscriptions: state.subscriptions.filter((subscription) => subscription.id !== subscriptionId),
+      subscriptions: state.subscriptions.filter(
+        (subscription) => subscription.id !== subscriptionId,
+      ),
     }));
   },
 
@@ -80,7 +75,7 @@ export const useUserStore = create((set, get) => ({
       ...state,
       quizzes: state.quizzes.filter((quiz) => quiz.id !== quizId),
     }));
-  }
+  },
 }));
 
 // Initialize the store
