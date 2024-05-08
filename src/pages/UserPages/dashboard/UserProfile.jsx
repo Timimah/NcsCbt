@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Header } from "../../../components/shared/Header";
 import { Button } from "../../../components/shared/Button";
 import axios from "axios";
@@ -6,8 +6,9 @@ import add from "../../../assets/add.png";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../../../store/userStore";
 import { User } from "../../AdminPages/dashboard/User";
-import { imageStorage } from "../../../../config";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { imageStorage, db } from "../../../../config";
+import { ref, uploadBytes, getDownloadURL, list } from "firebase/storage";
+import { collection, addDoc } from "firebase/firestore"; 
 // import { v4 } from "uuid";
 
 export const UserProfile = () => {
@@ -21,7 +22,6 @@ export const UserProfile = () => {
   const [rank, setRank] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [userAvatar, setUserAvatar] = useState(null);
-  const [img, setImg] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
   const [error, setError] = useState("");
 
@@ -31,35 +31,53 @@ export const UserProfile = () => {
   const [isValid, setIsValid] = useState(false);
   const token = localStorage.getItem("auth-token");
   const [phone, setPhone] = useState("");
+  let currentImage = useRef(profileImage)
+
+const listRef = ref(imageStorage, `images/${fullName}`);
 
   useEffect(() => {
     getUserDetails();
-    setPhone(phoneNumber);
-    getAvatar();
+    // setPhone(phoneNumber); 
+    // setProfileImage(currentImage)
+    // getAvatar();
+    // list(listRef).then((res) =>
+    // {
+    //   console.log(response)
+    // })
   }, []);
 
-  const getAvatar = () => {
-    const avatar = localStorage.getItem("userAvatar");
-    console.log(avatar);
-    if (avatar) {
-      console.log(avatar);
-      setProfileImage(avatar);
-    } else if (userImage !== "") {
-      console.log(userImage);
-      setProfileImage(userImage);
-    }
-  };
+  // const getAvatar = () => {
+  //   const avatar = localStorage.getItem("userAvatar");
+  //   console.log(avatar);
+  //   if (avatar) {
+  //   currentImage.current = avatar;
+  //   console.log(currentImage, "Current Image")
+  //     setProfileImage(avatar);
+  //   } else if (userImage !== "") {
+  //   currentImage.current = userImage
+  //     console.log(userImage);
+  //     setProfileImage(userImage);
+  //   }
+  // };
 
   const uploadImage = () => {
-    const imageRef = ref(imageStorage, `images/${img}`);
+    // const
+    const imageRef = ref(imageStorage, `images/${fullName}`);
     uploadBytes(imageRef, userAvatar)
       .then(() => {
         getDownloadURL(imageRef)
-          .then((url) => {
+          .then(async (url) => {
             setProfileImage(url);
-            localStorage.setItem("userAvatar", profileImage);
-            setUserImage(profileImage);
-            console.log(userImage);
+            try {
+              const docRef = await addDoc(collection(db, "users"), {
+                name: fullName,
+                id: userId,
+                profileImage: url
+              });
+              console.log("Document written with ID: ", docRef.id);
+            } catch (e) {
+              console.error("Error adding document: ", e);
+            };
           })
           .catch((error) => {
             console.log(error.message, "error getting the image url");
@@ -181,11 +199,11 @@ export const UserProfile = () => {
         <div className="flex items-center justify-between my-10">
           <div className="flex flex-col">
             <div className="rounded-md h-44 w-52 relative">
-              {profileImage !== null ? (
+              {profileImage !== null || userImage !== null ? (
                 <img
-                  src={profileImage}
+                  src={profileImage || userImage}
                   alt="user avatar"
-                  className="absolute h-44 w-52 rounded-md object-cover mt-1 border border-primary"
+                  className="absolute h-44 w-52 rounded-xl object-cover mt-1 border border-primary"
                 />
               ) : (
                 <img
@@ -201,9 +219,9 @@ export const UserProfile = () => {
                 accept=".png, .jpg, .jpeg, .svg"
                 onChange={(e) => {
                   setUserAvatar(e.target.files[0]);
-                  setImg(e.target.files[0].name);
+                  // setImg(e.target.files[0].name);
                   uploadImage();
-                  console.log(userAvatar, img);
+                  console.log(userAvatar);
                 }}
                 className="opacity-0 z-10 cursor-pointer"
               />

@@ -6,7 +6,7 @@ import { useUserStore } from "../../store/userStore";
 export const Header = ({ title }) => {
   const navigate = useNavigate();
   const { loggedInUser, userIsUser, userIsAdmin, userImage } = useUserStore();
-  console.log(loggedInUser);
+  // console.log(loggedInUser);
   let userName = loggedInUser ? loggedInUser : "";
 
   console.log(userImage);
