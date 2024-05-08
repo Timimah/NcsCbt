@@ -9,11 +9,11 @@ const firebaseConfig = {
   storageBucket: "ncs-prep.appspot.com",
   messagingSenderId: "122676239504",
   appId: "1:122676239504:web:6faa47f0c9d39de8428c15",
-  measurementId: "G-BZM10J6BBH"
+  measurementId: "G-BZM10J6BBH",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app);
-export const materialsStorage = getStorage(app);
 export const imageStorage = getStorage(app);
+export const materialStorage = getStorage(app);
