@@ -241,7 +241,7 @@ return (
                     className="w-full h-40 object-cover"
                   />
                   <div className="flex flex-col justify-between my-2">
-                  <div className="text-lg font-bold w-full">
+                  <div className="text-lg font-bold text-primary w-full">
                     {material.materialDetails.current.customMetadata.name}
                   </div>
                   <div className="text-xs font-light">
