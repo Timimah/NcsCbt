@@ -3,27 +3,27 @@ import { Header } from '../../../components/shared/Header';
 import { useUserStore } from '../../../store/userStore';
 
 export const Materials = () => {
-    const {materials} = useUserStore();
+    const { userMaterials } = useUserStore();
     const [searchTerm, setSearchTerm] = useState('');
     const [displayedMaterials, setDisplayedMaterials] = useState([]);
     const [searchedMaterials, setSearchedMaterials] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
 
     useEffect(() => {
-        if (materials.length > 10) {
-            setDisplayedMaterials(materials.slice(0, 8))
+        if (userMaterials.length > 10) {
+            setDisplayedMaterials(userMaterials.slice(0, 8))
         } else {
-            setDisplayedMaterials(materials)
+            setDisplayedMaterials(userMaterials)
         }
     }, []);
-    console.log(materials);
+    console.log(userMaterials);
 
     const handleSearch = (e) => {
         setIsSearching(true);
         setIsSearching(true);
-        const filteredMaterials = materials.filter((material) => {
+        const filteredMaterials = userMaterials.filter((material) => {
             const regex = new RegExp(searchTerm, 'i');
-            const searchProperties = [material.name, material.rank, material.author];
+            const searchProperties = [material.materialDetails.customMetadata.name, material.materialDetails.customMetadata.rank, material.materialDetails.customMetadata.author];
             return searchProperties.some((property) => regex.test(property));
         });
 
@@ -66,40 +66,40 @@ export const Materials = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
-                        {!isSearching && 
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                        {!isSearching &&
                             (
-                                displayedMaterials.map((material) => (
-                                    <div key={material._id} className="p-4 w-full">
+                                displayedMaterials.map((material, index) => (
+                                    <div key={index} className="p-4 text-darkgrey w-full">
                                         <img
-                                            src={material.name}
-                                            alt={material.name}
-                                            className="w-full h-40 object-cover rounded-md mb-2 bg-cardgreen"
+                                            src={material.materialDetails.customMetadata.materialCover}
+                                            alt={material.materialDetails.customMetadata.name}
+                                            className="w-full h-32 object-cover border-4 border-yellow rounded-md mb-2 bg-grey"
                                         />
-                                        <h3 className="text-lg font-semibold mb-1">{material.name}</h3>
-                                        <div className='text-xs font-light'>Rank: {material.rank}</div>
+                                        <h3 className="mb-1">{material.materialDetails.customMetadata.name}</h3>
+                                        <div className="text-xs"> Rank: {material.materialDetails.customMetadata.rank}</div>
                                     </div>
                                 ))
                             )
                         }
-                        {isSearching && 
-                        (searchedMaterials.map((material) => (
-                            <div key={material._id} className="p-4 w-full">
-                            <img
-                                src={material.name}
-                                alt={material.name}
-                                className="w-full h-40 object-cover rounded-md mb-2 bg-cardgreen"
-                            />
-                            <h3 className="text-lg font-semibold mb-1">{material.name}</h3>
-                            <div className='text-xs font-light'>Rank: {material.rank}</div>
-                        </div>
-                        )))}
+                        {isSearching &&
+                            (searchedMaterials.map((material, index) => (
+                                <div key={index} className="p-4 text-darkgrey w-full">
+                                    <img
+                                        src={material.materialDetails.customMetadata.materialCover}
+                                        alt={material.materialDetails.customMetadata.name}
+                                        className="w-full h-40 object-cover border-4 border-yellow rounded-md mb-2 bg-grey"
+                                    />
+                                    <h3 className="mb-1">{material.materialDetails.customMetadata.name}</h3>
+                                    <div className="text-xs"> Rank: {material.materialDetails.customMetadata.rank}</div>
+                                </div>
+                            )))}
                     </div>
-                    {isSearching && <div className="text-primary cursor-pointer text-lg" onClick={() => {setIsSearching(false); setSearchTerm("")}}>See all materials</div>}
+                    {isSearching && <div className="text-primary cursor-pointer text-lg" onClick={() => { setIsSearching(false); setSearchTerm("") }}>See all materials</div>}
                     {displayedMaterials.length > 10 && (
                         <button
                             className="hover:text-primary text-end px-4 py-2 mt-4"
-        onClick={() => setDisplayedMaterials(materials)}
+                            onClick={() => setDisplayedMaterials(userMaterials)}
                         >
                             See More...
                         </button>
