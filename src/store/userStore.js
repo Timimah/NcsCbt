@@ -14,6 +14,7 @@ export const useUserStore = create((set, get) => ({
   users: [],
   admin: [],
   materials: [],
+  userMaterials: [],
   questions: [],
   examQuestions: [],
   userImage: null,
@@ -39,6 +40,8 @@ export const useUserStore = create((set, get) => ({
   setAdmin: (admin) => set({ admin: admin }),
 
   setMaterials: (materials) => set({ materials: materials }),
+
+  setUserMaterials: (userMaterials) => set({ userMaterials: userMaterials }),
 
   setQuestions: (questions) => set({ questions: questions }),
 
