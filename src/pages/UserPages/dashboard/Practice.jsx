@@ -12,26 +12,16 @@ export const Practice = () => {
   const [showModal, setShowModal] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [rank, setRank] = useState("");
-  const [time, setTime] = useState(60);
+  const [numberOfQuestions, setNumberOfQuestions] = useState(2);
+  const [time, setTime] = useState();
   const [error, setError] = useState("");
-  const [allQuestions, setAllQuestions] = useState();
+  // const [allQuestions, setAllQuestions] = useState();
   const token = localStorage.getItem("auth-token");
   let practiceQuestions;
 
-  const getQuestions = () => {
-    if (allQuestions.length > 0) {
-      practiceQuestions = allQuestions.questionDetails.filter(
-        (question) => question.category === rank
-      );
-      console.log(practiceQuestions);
-    } else {
-      practiceQuestions = [];
-    }
-    localStorage.setItem(
-      "practiceQuestions",
-      JSON.stringify(practiceQuestions)
-    );
-  };
+  // const getQuestions = () => {
+
+  // };
 
   useEffect(() => {
     console.log("Practice Page");
@@ -39,9 +29,28 @@ export const Practice = () => {
     // getQuestions();
   }, []);
 
+  const shuffle = (array) => {
+    let currentIndex = array.length, temporaryValue, randomIndex;
+  
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+  
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+  
+      // And swap it with the current element.
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+  
+    return array;
+  }
+
   const getPracticeQuestions = async () => {
-    if (!time) {
-      setError("Please select a time");
+    if (!numberOfQuestions) {
+      setError("Please set number of questions");
     }
     if (!rank) {
       setError("Please select a category");
@@ -59,30 +68,36 @@ export const Practice = () => {
         )
         .then((res) => {
           console.log(res);
-          setQuestions(res.data.data);
-          setAllQuestions(questions);
-          console.log(questions, "Questions", allQuestions, "All Questions");
-      localStorage.setItem("practiceQuestionsDetails", JSON.stringify({ rank, time }));
-          setShowModal(false);
-          setShowInstructions(true);
-          // const questionsForSelectedCategory =
-          //     questions.filter(
-          //         (question) =>
-          //             question.category === selectedCategory
-          //     );
-          // console.log(
-          //     questions,
-          //     questionsForSelectedCategory
-          // );
-          // setEditQuestions(
-          //     questionsForSelectedCategory
-          // );
+          const allQuestions = res.data.data;
+          if (allQuestions.length > 0) {
+            practiceQuestions = allQuestions.filter(
+              (question) => question.category === rank
+            );
+            setQuestions([]);
+            console.log(practiceQuestions, rank)
+            if (numberOfQuestions > practiceQuestions.length) {
+              setError("Number of questions exceeds available questions. There are " + practiceQuestions.length + " questions available questions for this category. Please select a lower number of questions.");
+              return;
+            } else {
+              const shuffledQuestions = shuffle(practiceQuestions)
+              const selectedQuestions = shuffledQuestions.slice(0, numberOfQuestions);
+              setQuestions(selectedQuestions);
+              localStorage.setItem("practiceQuestionsDetails", JSON.stringify({ rank, time: numberOfQuestions * 60 / 60 }));
+              localStorage.setItem("type", "practice");
+              setShowModal(false);
+              setShowInstructions(true);
+            }
+            console.log(questions, "Practice Questions");
+          } else {
+            practiceQuestions = [];
+          }
         })
         .catch((err) => {
           console.log(err);
         });
     }
   };
+
   return (
     <div className="flex items-center justify-center px-8">
       <Header title="Practice" />
@@ -95,14 +110,15 @@ export const Practice = () => {
             <div className="my-10">
               <div>
                 {error && <div className="text-sm text-red-500">{error}</div>}
-                <label htmlFor="time">Set Time (minutes)</label>
+                <label htmlFor="time">Set Number of Questions</label>
                 <input
                   type="tel"
                   id="time"
-                  value={time}
-                  className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary"
+                  value={numberOfQuestions}
+                  className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${error ? "border-red-500" : ""
+                }`}
                   placeholder="5 min"
-                  onChange={(e) => setTime(e.target.value)}
+                  onChange={(e) => {setNumberOfQuestions(e.target.value); setError("")}}	
                 />
               </div>
               <div>
@@ -117,9 +133,8 @@ export const Practice = () => {
                     setRank(e.target.value);
                     setError("");
                   }}
-                  className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${
-                    error ? "border-red-500" : ""
-                  }`}
+                  className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${error ? "border-red-500" : ""
+                    }`}
                 >
                   <option value="">Select a category</option>
                   <option value="CAI-CAII">CAI-CAII</option>
@@ -150,9 +165,9 @@ export const Practice = () => {
         <Modal
           title="Instructions"
           closeModal={() => setShowInstructions(false)}
-          modStyles="bg-secondary w-full h-full my-10 overflow-y-scroll"
+          modStyles="bg-secondary w-full h-full my-20 overflow-y-scroll"
           content={
-            <div className="rounded-lg p-8 mx-auto relative">
+            <div className="rounded-lg px-2 py-3 text-sm md:text-lg md:p-8 mx-auto relative">
               <p className="mb-4">
                 Welcome to the NCS CBT platform. Please read the following
                 instructions carefully before starting the exam.
@@ -162,11 +177,11 @@ export const Practice = () => {
                 connection are working properly. Click on the 'System Check'
                 button to verify.
               </p>
-              <ol className="list-decimal list-inside mb-4">
+              <ol className="list-decimal list-inside mb-4 flex flex-col gap-6">
                 <li>
                   <strong>Time Reminder:</strong>{" "}
                   <span className="font-normal">
-                    You will have {time} minutes to complete the exam. A timer
+                    You will have {duration} minutes to complete the exam. A timer
                     will be displayed on the screen to help you manage your time
                     effectively.
                   </span>
