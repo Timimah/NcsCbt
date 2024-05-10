@@ -37,7 +37,7 @@ export const Results = () => {
             <Header title="Result" />
             <main className="flex-grow">
                 <section className='flex flex-col gap-4'>
-                    <div className="flex mb-4">
+                    {/* <div className="flex mb-4">
                         <div className="relative w-full md:w-2/3 flex">
                             <input
                                 type="text"
@@ -62,8 +62,8 @@ export const Results = () => {
                                 </svg>
                             </div>
                         </div>
-                    </div>
-                    <div className="md:px-4 md:w-full">
+                    </div> */}
+                    <div className="md:w-full font-thin text-lg">
                         <Table data={results} columns={columns} />
                     </div>
                 </section>
