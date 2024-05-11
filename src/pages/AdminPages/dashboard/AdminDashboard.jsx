@@ -10,10 +10,6 @@ export const AdminDashboard = ({ children }) => {
   const navigate = useNavigate();
   const {
     loggedInUser,
-    setAdmin,
-    setLoggedInUser,
-    setIsLoggedIn,
-    setUserIsAdmin,
   } = useUserStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const token = localStorage.getItem("auth-token");
@@ -54,7 +50,7 @@ export const AdminDashboard = ({ children }) => {
   return (
     <>
       <section className="hidden md:flex bg-vector w-full bg-white h-full transform transition-all duration-300">
-        <div className="flex flex-col items-center w-1/4 bg-white text-grey py-10">
+        <div className="flex flex-col items-center w-1/4 bg-white text-grey py-10 px-4">
           <div
             className={
               active === "dashboardmain"

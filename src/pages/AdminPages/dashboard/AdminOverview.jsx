@@ -12,6 +12,8 @@ import { OverviewCard } from "../../../components/admin/OverviewCard";
 import { useUserStore } from "../../../store/userStore";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { materialStorage } from "../../../../config";
+import { getDownloadURL, getMetadata, listAll, ref } from "firebase/storage";
 
 export const AdminOverview = () => {
   const {
@@ -22,27 +24,19 @@ export const AdminOverview = () => {
     setMaterials,
     setQuestions,
     isLoggedIn,
+    checkedInUsers
   } = useUserStore();
   const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const cards = [
     {
       icon: user,
       value: users.length,
-      label: "Total User",
+      label: "Total Users",
       bgColor: "bg-green-100",
       textColor: "text-green-600",
       iconBgColor: "bg-green-500",
-      iconTextColor: "text-white",
-    },
-    {
-      icon: adminn,
-      value: 0,
-      label: "Total Admin",
-      bgColor: "bg-blue-100",
-      textColor: "text-blue-600",
-      iconBgColor: "bg-blue-500",
       iconTextColor: "text-white",
     },
     {
@@ -56,8 +50,8 @@ export const AdminOverview = () => {
     },
     {
       icon: examinee,
-      value: 0,
-      label: "Total Examinee",
+      value: checkedInUsers.length,
+      label: "Total Examinees",
       bgColor: "bg-blue-100",
       textColor: "text-blue-600",
       iconBgColor: "bg-blue-500",
@@ -65,13 +59,22 @@ export const AdminOverview = () => {
     },
   ];
 
+  const allMaterialsRef = ref(materialStorage, "materials/");
+
+useEffect(() => {
+  if (users.length !== 0 || materials.length !== 0 || questions.length !== 0) {
+    setIsLoading(false);
+  }
+}, [])
+
   useEffect(() => {
     const token = localStorage.getItem("auth-token");
     if (isLoggedIn) {
+      setIsLoading(true)
       axios
         .get("https://ncs-cbt-api.onrender.com/admin/getUsers", {
           headers: {
-            Authorization: `Bearer ${token}`,
+            "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json",
             Accept: "application/json",
           },
@@ -83,19 +86,20 @@ export const AdminOverview = () => {
           console.log(err);
         });
 
-      axios
-        .get("https://ncs-cbt-api.onrender.com/material/", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((res) => {
-          console.log(res);
-          setMaterials(res.data.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+        const getMaterials = async () => {
+          const res = await listAll(allMaterialsRef)
+          let newMaterials = [];
+    
+          for (const item of res.items) {
+            const url = await getDownloadURL(item);
+            const metadata = await getMetadata(item);
+            const coverImageUrl = metadata.customMetadata.materialCover;
+    
+            newMaterials.push({ url: url, materialDetails: metadata, coverImage: coverImageUrl });
+            setMaterials(newMaterials);
+          }
+        }
+          getMaterials()
 
       axios
         .get("https://ncs-cbt-api.onrender.com/exam/", {
@@ -104,23 +108,31 @@ export const AdminOverview = () => {
           },
         })
         .then((res) => {
-          // console.log(res.data)
           setQuestions(res.data.data);
-          // console.log(materials)
+        setIsLoading(false)
         })
         .catch((err) => {
           console.log(err);
         });
+
     } else {
       navigate("/admin");
     }
   }, []);
+
+
   console.log(users, materials, questions);
 
-  const sortedMaterials = materials.sort((a, b) => b.rating - a.rating);
+  // const sortedMaterials = materials.sort((a, b) => b.rating - a.rating);
 
   // Get the top 4 materials with the highest rating
-  const topMaterials = sortedMaterials.slice(0, 4);
+  const topMaterials = materials.slice(0, 4);
+
+  if (isLoading) {
+    return <div className="bg-cardgreen absolute inset-0 flex items-center justify-center mx-auto">
+      <div className="rounded-full w-52 h-52 animate-bounce border-8 border-secondary"></div>
+    </div>;
+  }
 
   return (
     <div className="flex flex-col w-full p-10">
