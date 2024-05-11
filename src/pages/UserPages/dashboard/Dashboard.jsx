@@ -212,7 +212,7 @@ export const Dashboard = ({ children }) => {
         </div>
       </section>
       {/* mobile dashboard nav */}
-      <section className="md:hidden flex justify-between bg-vector max-h-screen">
+      <section className="md:hidden flex justify-between bg-vector h-full max-h-screen">
         {isMenuOpen &&
         <div className="flex flex-col items-center absolute left-0 bottom-0 top-0 bg-white text-grey py-10 px-8 z-10 w-3/4">
         <div className="flex justify-between w-full mb-6">

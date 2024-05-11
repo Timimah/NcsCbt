@@ -8,14 +8,16 @@ import { useUserStore } from "../../../store/userStore";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { getDownloadURL, getMetadata, listAll, ref } from "firebase/storage";
-import { materialStorage } from "../../../../config";
+import { imageStorage, materialStorage } from "../../../../config";
 
 export const DashboardPage = ({ title, username }) => {
-  const { isLoggedIn, setUserMaterials, userMaterials, setExamQuestions, examQuestions } = useUserStore();
+  const { isLoggedIn, setUserMaterials, userMaterials, setExamQuestions, examQuestions, loggedInUser, userImage, setUserImage } = useUserStore();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const topMaterials = userMaterials.slice(0, 4);
   const allMaterialsRef = ref(materialStorage, "materials/");
+  console.log(loggedInUser, "logged in user")
+  const avatarRef = ref(imageStorage, `images/${loggedInUser}`);
   const token = localStorage.getItem("auth-token");
   console.log(userMaterials)
 
@@ -36,6 +38,19 @@ export const DashboardPage = ({ title, username }) => {
       }
       getMaterials()
 
+      // const getUserAvatar = async () => {
+      //   const res = await listAll(avatarRef)
+  
+      //   for (const item of res.items) {
+      //     const metadata = await getMetadata(item);
+      //     console.log(metadata)
+      //     const imageUrl = metadata.customMetadata.imageUrl;
+  
+      //     setUserImage(imageUrl);
+      //     console.log(userImage, "user image")
+      //   }
+      // }
+      //   getUserAvatar()
 
       axios.get("https://ncs-cbt-api.onrender.com/exam/getExamQuestions", {
         headers: {
