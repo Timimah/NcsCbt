@@ -130,7 +130,7 @@ export const Payment = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="px-4 w-full">
+                    <div className="w-full">
                         <Table data={examineeData} columns={columns} />
                     </div>
                 </section>

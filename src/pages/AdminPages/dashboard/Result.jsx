@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Table } from '../../../components/shared/Table';
 import { Header } from '../../../components/shared/Header';
 import { Button } from '../../../components/shared/Button'
 import { Modal } from '../../../components/shared/Modal'
+import axios from 'axios';
 
 const columns = [
     { key: 'id', label: 'S/N' },
@@ -109,6 +110,25 @@ export const Result = () => {
         console.log('doesn\'t work just yet');
     };
 
+    const token = localStorage.getItem("auth-token");
+    
+    useEffect(() => {
+        axios
+        .get("https://ncs-cbt-api.onrender.com/admin/getScores", {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+}, [])
+
     return (
         <div className="flex flex-col w-full p-10 gap-4">
             <Header title="Result" />
@@ -143,7 +163,7 @@ export const Result = () => {
                             <Button title="Export Result" btnStyles="px-4 py-3 bg-primary rounded-md text-white" btnClick={() => setShowModal(!showModal)} />
                         </div>
                     </div>
-                    <div className="px-4 w-full">
+                    <div className="w-full">
                         <Table data={examineeData} columns={columns} />
                     </div>
                 </section>
