@@ -6,12 +6,14 @@ export const useUserStore = create((set, get) => ({
   loggedInUser: "",
   userIsUser: false,
   userIsAdmin: false,
+  quizActive: false,
   loggedInUserEmail: "",
   loggedInUserId: "",
   loggedInUserRank: "",
   loggedInUserPhoneNumber: "",
   subscriptions: [],
   users: [],
+  checkedInUsers: [],
   admin: [],
   materials: [],
   userMaterials: [],
@@ -25,6 +27,8 @@ export const useUserStore = create((set, get) => ({
 
   setUserIsAdmin: (arg) => set({ userIsAdmin: arg }),
 
+  setQuizActive: (arg) => set({ quizActive: arg }),
+
   setLoggedInUser: (user) => set({ loggedInUser: user }),
 
   setLoggedInUserEmail: (user) => set({ loggedInUserEmail: user }),
@@ -36,6 +40,8 @@ export const useUserStore = create((set, get) => ({
   setLoggedInUserPhoneNumber: (user) => set({ loggedInUserPhoneNumber: user }),
 
   setUsers: (users) => set({ users: users }),
+
+  setCheckedInUsers: (users) => set({ checkedInUsers: users }),
 
   setAdmin: (admin) => set({ admin: admin }),
 

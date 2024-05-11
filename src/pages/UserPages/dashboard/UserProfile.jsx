@@ -5,15 +5,15 @@ import axios from "axios";
 import add from "../../../assets/add.png";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../../../store/userStore";
-import { User } from "../../AdminPages/dashboard/User";
-import { imageStorage, db } from "../../../../config";
-import { ref, uploadBytes, getDownloadURL, list } from "firebase/storage";
-import { collection, addDoc } from "firebase/firestore"; 
-// import { v4 } from "uuid";
+import { imageStorage } from "../../../../config";
+import { ref, uploadBytes, getDownloadURL, listAll, updateMetadata } from "firebase/storage";
+import { collection, addDoc } from "firebase/firestore";
+import { update } from "firebase/database";
+import { v4 } from "uuid";
 
 export const UserProfile = () => {
   const navigate = useNavigate();
-  const { userImage, setUserImage } = useUserStore();
+  const { userImage } = useUserStore();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -23,6 +23,7 @@ export const UserProfile = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [userAvatar, setUserAvatar] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
+  const [fileType, setFileType] = useState("");
   const [error, setError] = useState("");
 
   const [isEditing, setIsEditing] = useState(false);
@@ -31,9 +32,8 @@ export const UserProfile = () => {
   const [isValid, setIsValid] = useState(false);
   const token = localStorage.getItem("auth-token");
   const [phone, setPhone] = useState("");
-  let currentImage = useRef(profileImage)
 
-const listRef = ref(imageStorage, `images/${fullName}`);
+  const listRef = ref(imageStorage, `images/${fullName}`);
 
   useEffect(() => {
     getUserDetails();
@@ -60,33 +60,34 @@ const listRef = ref(imageStorage, `images/${fullName}`);
   //   }
   // };
 
-  const uploadImage = () => {
-    // const
-    const imageRef = ref(imageStorage, `images/${fullName}`);
-    uploadBytes(imageRef, userAvatar)
-      .then(() => {
-        getDownloadURL(imageRef)
-          .then(async (url) => {
-            setProfileImage(url);
-            try {
-              const docRef = await addDoc(collection(db, "users"), {
-                name: fullName,
-                id: userId,
-                profileImage: url
-              });
-              console.log("Document written with ID: ", docRef.id);
-            } catch (e) {
-              console.error("Error adding document: ", e);
-            };
-          })
-          .catch((error) => {
-            console.log(error.message, "error getting the image url");
-          });
-        // setUserAvatar(null);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
+  const uploadImage = (e) => {
+    const file = e.target.files[0];
+    setUserAvatar(file);
+    setProfileImage(URL.createObjectURL(file));
+    setFileType(file.type);
+    console.log(file, fileType, "File Type")
+    const userDetails = { fullName, userId };
+    console.log(userDetails)
+    // const metadata = {
+    //   contentType: fileType,
+      // customMetadata: userDetails,
+    // }
+    // console.log(metadata.contentType)
+    const imageRef = ref(imageStorage, `images/${v4()}`);
+    uploadBytes(imageRef, profileImage)
+    .then(() => {
+    getDownloadURL(imageRef).then((url) => {
+    console.log(url);
+    // setImageUrl(url);
+    // setUserAvatar(imageUrl)
+    })
+    })
+    // await updateMetadata(imageRef, {
+    //   customMetadata: {
+    //     imageUrl,
+    //   }
+    // })
+    // setUserAvatar(null)
   };
 
   const getUserDetails = async () => {
@@ -94,9 +95,9 @@ const listRef = ref(imageStorage, `images/${fullName}`);
     axios
       .get("https://ncs-cbt-api.onrender.com/users/dashboard", {
         headers: {
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
-          Accept: "application/json",
+          "Accept": "application/json",
         },
       })
       .then((res) => {
@@ -192,16 +193,18 @@ const listRef = ref(imageStorage, `images/${fullName}`);
   return (
     <div className="flex flex-col w-full p-10">
       <Header title="User Profile" />
-      {isLoading && (
-        <div className="text-center text-red-600">Getting user details...</div>
-      )}
+      {isLoading === true ? (
+        <div className="bg-cardgreen absolute inset-0 flex items-center justify-center mx-auto">
+          <div className="rounded-full w-52 h-52 animate-bounce border-8 border-secondary"></div>
+        </div>
+      ) : (<div></div>)}
       <main className="flex-grow">
         <div className="flex items-center justify-between my-10">
           <div className="flex flex-col">
             <div className="rounded-md h-44 w-52 relative">
-              {profileImage !== null || userImage !== null ? (
+              {userImage !== null ? (
                 <img
-                  src={profileImage || userImage}
+                  src={profileImage}
                   alt="user avatar"
                   className="absolute h-44 w-52 rounded-xl object-cover mt-1 border border-primary"
                 />
@@ -216,12 +219,9 @@ const listRef = ref(imageStorage, `images/${fullName}`);
             <div className="flex relative cursor-pointer justify-end w-56">
               <input
                 type="file"
-                accept=".png, .jpg, .jpeg, .svg"
+                accept=".png, .jpg, .jpeg"
                 onChange={(e) => {
-                  setUserAvatar(e.target.files[0]);
-                  // setImg(e.target.files[0].name);
-                  uploadImage();
-                  console.log(userAvatar);
+                  uploadImage(e);
                 }}
                 className="opacity-0 z-10 cursor-pointer"
               />
@@ -238,7 +238,6 @@ const listRef = ref(imageStorage, `images/${fullName}`);
           >
             Subscribe
           </button>
-          {/* <PaystackButton {...componentProps} /> */}
         </div>
 
         <div className="mb-6">
