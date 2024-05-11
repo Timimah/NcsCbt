@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Header } from '../../../components/shared/Header';
 import { useUserStore } from '../../../store/userStore';
+import { Button } from '../../../components/shared/Button';
 
 export const Materials = () => {
     const { userMaterials } = useUserStore();
@@ -20,19 +21,18 @@ export const Materials = () => {
 
     const handleSearch = (e) => {
         setIsSearching(true);
-        setIsSearching(true);
         const filteredMaterials = userMaterials.filter((material) => {
             const regex = new RegExp(searchTerm, 'i');
             const searchProperties = [material.materialDetails.customMetadata.name, material.materialDetails.customMetadata.rank, material.materialDetails.customMetadata.author];
             return searchProperties.some((property) => regex.test(property));
         });
 
-        console.log(filteredMaterials);
         if (filteredMaterials.length === 1) {
             setSearchedMaterials(filteredMaterials);
         } else {
             setSearchedMaterials(filteredMaterials.slice(0, 8));
         }
+        setSearchTerm("")
     };
 
     return (
@@ -68,32 +68,60 @@ export const Materials = () => {
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         {!isSearching &&
-                            (
+                            (displayedMaterials.length > 0 ? (
                                 displayedMaterials.map((material, index) => (
                                     <div key={index} className="p-4 text-darkgrey w-full">
-                                        <img
-                                            src={material.materialDetails.customMetadata.materialCover}
-                                            alt={material.materialDetails.customMetadata.name}
-                                            className="w-full h-32 object-cover border-4 border-yellow rounded-md mb-2 bg-grey"
-                                        />
-                                        <h3 className="mb-1">{material.materialDetails.customMetadata.name}</h3>
-                                        <div className="text-xs"> Rank: {material.materialDetails.customMetadata.rank}</div>
-                                    </div>
-                                ))
-                            )
-                        }
-                        {isSearching &&
-                            (searchedMaterials.map((material, index) => (
-                                <div key={index} className="p-4 text-darkgrey w-full">
-                                    <img
+                                      <img
                                         src={material.materialDetails.customMetadata.materialCover}
                                         alt={material.materialDetails.customMetadata.name}
-                                        className="w-full h-40 object-cover border-4 border-yellow rounded-md mb-2 bg-grey"
+                                        className="w-full h-32 object-cover border-4 border-yellow rounded-md mb-2 bg-grey"
+                                      />
+                                      <h3 className="mb-1">{material.materialDetails.customMetadata.name}</h3>
+                                      <div className="text-xs"> Rank: {material.materialDetails.customMetadata.rank}</div>
+                                    <Button
+                                      title="Download"
+                                      btnStyles=" text-secondary bg-yellow px-2 py-1 rounded-md mt-2"
+                                      btnClick={() => {
+                                        const link = document.createElement("a");
+                                        link.href = material.url;
+                                        link.download = material.materialDetails.customMetadata.name;
+                                        link.click();
+                                      }}
                                     />
-                                    <h3 className="mb-1">{material.materialDetails.customMetadata.name}</h3>
-                                    <div className="text-xs"> Rank: {material.materialDetails.customMetadata.rank}</div>
+                                    </div>
+                            ))
+                            ) : (
+                                <div className="text-center text-gray-500 text-xl col-span-5">
+                                  No materials available
+                                </div>)
+                        )}
+                        {isSearching &&
+                          (searchedMaterials.length > 0 ? (
+                            searchedMaterials.map((material, index) => (
+                                <div key={index} className="p-4 text-darkgrey w-full">
+                                  <img
+                                    src={material.materialDetails.customMetadata.materialCover}
+                                    alt={material.materialDetails.customMetadata.name}
+                                    className="w-full h-32 object-cover border-4 border-yellow rounded-md mb-2 bg-grey"
+                                  />
+                                  <h3 className="mb-1">{material.materialDetails.customMetadata.name}</h3>
+                                  <div className="text-xs"> Rank: {material.materialDetails.customMetadata.rank}</div>
+                                <Button
+                                  title="Download"
+                                  btnStyles=" text-secondary bg-yellow px-2 py-1 rounded-md mt-2"
+                                  btnClick={() => {
+                                    const link = document.createElement("a");
+                                    link.href = material.url;
+                                    link.download = material.materialDetails.customMetadata.name;
+                                    link.click();
+                                  }}
+                                />
                                 </div>
-                            )))}
+                        ))
+                        ) : (
+                        <div className="text-center text-gray-500 text-xl col-span-5">
+                          Materials does not exist!
+                        </div>))}
                     </div>
                     {isSearching && <div className="text-primary cursor-pointer text-lg" onClick={() => { setIsSearching(false); setSearchTerm("") }}>See all materials</div>}
                     {displayedMaterials.length > 10 && (

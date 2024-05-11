@@ -9,16 +9,21 @@ import { useUserStore } from "../../../store/userStore";
 import { materialStorage } from "../../../../config";
 import {
   getDownloadURL,
-  getMetadata,
-  listAll,
   ref,
+  updateMetadata,
   uploadBytes,
 } from "firebase/storage";
+import { v4 } from "uuid";
 
 export const UploadMaterials = () => {
-  // const { materials } = useUserStore();
-  const [materials, setMaterials] = useState([]);
+  const { materials } = useUserStore();
+  // const [materials, setMaterials] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
+    if (materials.length === 0) {
+      setIsLoading(true)
+    }
     if (materials.length > 10) {
       setDisplayedMaterials(materials.slice(0, 8));
     } else {
@@ -30,7 +35,10 @@ export const UploadMaterials = () => {
   const [author, setAuthor] = useState("");
   const [rank, setRank] = useState("");
   const [book, setBook] = useState(null);
+  const [coverImage, setCoverImage] = useState(null);
+  const [coverImageUrl, setCoverImageUrl] = useState(null);
   const [bookName, setBookName] = useState("");
+  const [fileType, setFileType] = useState("")
 
   const [uploadError, setUploadError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -40,255 +48,217 @@ export const UploadMaterials = () => {
 
   const [searchedMaterials, setSearchedMaterials] = useState([]);
   const [displayedMaterials, setDisplayedMaterials] = useState([]);
-  let materialURL = useRef("");
-  let materialDetails = useRef("");
-  const [materialss, setMaterialss] = useState([]);
-  //   const token = localStorage.getItem("auth-token");
 
-  const allMaterialsRef = ref(materialStorage, "materials/");
-
-  useEffect(() => {
-    listAll(allMaterialsRef).then((res) => {
-      console.log(res);
-      res.items.map((item) => {
-        console.log(item);
-        getDownloadURL(item).then((url) => {
-        //   setMaterialss((prev) => [...prev, url]);
-        materialURL.current = url;
-        // console.log(materialss);
-      });
-      getMetadata(item).then((metadata) => {
-        materialDetails.current = metadata;
-        console.log(materialDetails);
-      });
-
-    const bookList = new Array({url: materialURL.current, materialDetails: materialDetails});
-      // bookList.push({  });
-      setMaterials(bookList);
-      console.log(bookList, "bookList", materials);
-      });
-  }); 
-}, []) ;
-
-const handleSearch = (e) => {
-  setIsSearching(true);
-  const filteredMaterials = materials.filter((material) => {
-    const regex = new RegExp(searchTerm, "i");
-    const searchProperties = [material.name, material.rank, material.author];
-    return searchProperties.some((property) => regex.test(property));
-  });
-
-  if (filteredMaterials.length === 1) {
-    setSearchedMaterials(filteredMaterials);
-  } else {
-    setSearchedMaterials(filteredMaterials.slice(0, 8));
+  if (isLoading) {
+    return <div className="bg-cardgreen absolute inset-0 flex items-center justify-center mx-auto">
+      <div className="rounded-full w-52 h-52 animate-bounce border-8 border-secondary"></div>
+    </div>;
   }
-  setSearchTerm("");
-};
 
-const handleFileChange = (e) => {
-  const file = e.target.files[0];
-  if (file && file.size > 10485760) {
-    setUploadError("File size should not exceed 10MB");
-    setBook(null);
-    setBookName("");
-  } else {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = (e) => {
-      setBook(e.target.result);
-      console.log(e.target.result);
-      setBookName(file.name);
-      setUploadError("");
-    };
-    reader.onerror = (e) => {
-      setUploadError("Error uploading file");
+  const handleSearch = (e) => {
+    setIsSearching(true);
+    const filteredMaterials = materials.filter((material) => {
+      const regex = new RegExp(searchTerm, "i");
+      const searchProperties = [material.materialDetails.customMetadata.name, material.materialDetails.customMetadata.rank, material.materialDetails.customMetadata.author];
+      return searchProperties.some((property) => regex.test(property));
+    });
+
+    if (filteredMaterials.length === 1) {
+      setSearchedMaterials(filteredMaterials);
+    } else {
+      setSearchedMaterials(filteredMaterials.slice(0, 8));
+    }
+    setSearchTerm("");
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.size > 10485760) {
+      setUploadError("File size should not exceed 10MB");
       setBook(null);
-    };
-  }
-};
+      setBookName("");
+    } else {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = (e) => {
+        setBook(e.target.result);
+        setBookName(file.name);
+        setUploadError("");
+      };
+      reader.onerror = (e) => {
+        setUploadError("Error uploading file");
+        setBook(null);
+      };
+    }
+  };
 
-const uploadMaterial = async () => {
-  if (name === "" || author === "" || rank === "" || book === null) {
-    setUploadError("Please fill in all the required fields");
-  } else {
-    const material = { name, author, rank };
-    console.log(material);
-    const metadata = {
-      customMetadata: material,
-    };
-    const materialRef = ref(materialStorage, `materials/${name}`);
-    uploadBytes(materialRef, book, metadata);
-    // try {
-    //     const response = await axios.post(
-    //         "https://ncs-cbt-api.onrender.com/material/upload",
-    //         material,
-    //         {
-    //             headers: {
-    //                 Authorization: `Bearer ${token}`,
-    //                 "Content-Type": "application/json",
-    //             },
-    //         }
-    //     );
-    //     console.log(response);
-    // } catch (err) {
-    //     if (!err?.response) {
-    //         console.log(err);
-    //         console.log(err.message);
-    //     } else if (err.response?.status === 409) {
-    //         setUploadError(err.response.data.message);
-    //     } else {
-    //         setUploadError("Uplaod Failed");
-    //     }
-    // }
-    setName("");
-    setAuthor("");
-    setRank("");
-    // setCoverImage(null);
-    setBook(null);
-    setUploadError("");
-    setShowModal(false);
-    setHandleUpload(!handleUpload);
-  }
-};
+  const handleCoverImageChange = (e) => {
+    const file = e.target.files[0]
+    if (file && file.size > 1048576) {
+      setUploadError("File size should not exceed 1MB");
+      setCoverImage(null);
+    } else {
+      setCoverImage(file)
+      setCoverImageUrl(URL.createObjectURL(file));
+      setFileType(file.type)
+    }// Store the selected file in the state
+  };
 
-const getImageText = (materialName) => {
-  const options = [
-    // First letter
-    materialName.charAt(0),
-    // First and last letter
-    `${materialName.charAt(0)}${materialName.charAt(materialName.length - 1)}`,
-    // First letter of each word
-    materialName
-      .split(" ")
-      .map((word) => word.charAt(0))
-      .join(""),
-  ];
+  const uploadMaterial = async () => {
+    if (name === "" || author === "" || rank === "" || book === null || coverImage === null) {
+      setUploadError("Please fill in all the required fields");
+    } else {
+      const material = { name, author, rank };
+      const metadata = {
+        customMetadata: material,
+      };
 
-  // Choose one of the options randomly
-  const randomIndex = Math.floor(Math.random() * options.length);
-  const imageText = options[randomIndex];
+      const imageMetadata = {
+        contentType: fileType,
+        firebaseStorageDownloadTokens: v4()
+      }
+      const materialRef = ref(materialStorage, `materials/${name}`);
+      const coverImageRef = ref(materialStorage, `coverImages/${name}`)
+      await uploadBytes(materialRef, book, metadata);
+      await uploadBytes(coverImageRef, coverImage, imageMetadata)
 
-  return encodeURIComponent(imageText);
-};
+      const coverImageUrl = await getDownloadURL(coverImageRef);
 
-// const openDocumentInNewTab = (documentUrl) => {
-//   const newTab = window.open();
-//   newTab.document.write(`
-//     <html>
-//       <body>
-//         <embed src="${documentUrl}" type="application/pdf" width="100%" height="100%" />
-//       </body>
-//     </html>
-//   `);
-// };
+      await updateMetadata(materialRef, {
+        customMetadata: {
+          materialCover: coverImageUrl
+        }
+      })
 
-return (
-  <div className="flex flex-col w-full p-10 gap-4">
-    <Header title="Materials" />
-    <main className="flex-grow">
-      <section className="flex flex-col gap-4">
-        <div className="flex mb-4 justify-between">
-          <div className="relative w-2/3 flex">
-            <input
-              type="text"
-              className="border rounded-md py-2 px-4 pr-10 w-full"
-              placeholder="Search materials..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <div
-              className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer hover:text-primary"
-              onClick={handleSearch}
-            >
-              <svg
-                className="h-5 w-5 text-gray-400"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
+      setName("");
+      setAuthor("");
+      setRank("");
+      setCoverImage(null);
+      setBook(null);
+      setUploadError("");
+      setShowModal(false);
+      setHandleUpload(!handleUpload);
+    }
+  };
+
+  const getImageText = (materialName) => {
+    const options = [
+      // First letter
+      materialName.charAt(0),
+      // First and last letter
+      `${materialName.charAt(0)}${materialName.charAt(materialName.length - 1)}`,
+      // First letter of each word
+      materialName
+        .split(" ")
+        .map((word) => word.charAt(0))
+        .join(""),
+    ];
+
+    // Choose one of the options randomly
+    const randomIndex = Math.floor(Math.random() * options.length);
+    const imageText = options[randomIndex];
+
+    return encodeURIComponent(imageText);
+  };
+
+  return (
+    <div className="flex flex-col w-full p-10 gap-4">
+      <Header title="Materials" />
+      <main className="flex-grow">
+        <section className="flex flex-col gap-4">
+          <div className="flex mb-4 justify-between">
+            <div className="relative w-2/3 flex">
+              <input
+                type="text"
+                className="border rounded-md py-2 px-4 pr-10 w-full"
+                placeholder="Search materials..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <div
+                className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer hover:text-primary"
+                onClick={handleSearch}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
+                <svg
+                  className="h-5 w-5 text-gray-400"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div>
+              <Button
+                title="Upload Material"
+                btnStyles="px-4 py-3 text-white bg-primary rounded-md"
+                btnClick={() => setShowModal(!showModal)}
+              />
             </div>
           </div>
-          <div>
-            <Button
-              title="Upload Material"
-              btnStyles="px-4 py-3 text-white bg-primary rounded-md"
-              btnClick={() => setShowModal(!showModal)}
-            />
-          </div>
-        </div>
-        <div className="text-2xl mt-6">Uploaded Materials</div>
-        <div className="grid grid-cols-2 gap-4">
-          {displayedMaterials.length > 0 ? (
-            displayedMaterials.map((material, index) => (
-              <div className="p-4">
-                <div
-                  key={index}
-                  className="w-full flex mb-2 gap-4"
-                >
-                  <img
-                    src={`https://via.placeholder.com/300x200?text=${getImageText(
-                      material.materialDetails.current.customMetadata.name
-                    )}`}
-                    alt={material.materialDetails.current.customMetadata.name}
-                    className="w-full h-40 object-cover"
-                  />
-                  <div className="flex flex-col justify-between my-2">
-                  <div className="text-lg font-bold text-primary w-full">
-                    {material.materialDetails.current.customMetadata.name}
-                  </div>
-                  <div className="text-xs font-light">
-                    Rank: {material.materialDetails.current.customMetadata.rank}
-                  </div>
+          <div className="text-2xl mt-6">Uploaded Materials</div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {!isSearching && 
+            (displayedMaterials.length > 0 ? (
+              displayedMaterials.map((material, index) => (
+                  <div key={index} className="p-4 text-darkgrey w-full">
+                    <img
+                      src={material.materialDetails.customMetadata.materialCover}
+                      alt={material.materialDetails.customMetadata.name}
+                      className="w-full h-32 object-cover border-4 border-yellow rounded-md mb-2 bg-grey"
+                    />
+                    <h3 className="mb-1">{material.materialDetails.customMetadata.name}</h3>
+                    <div className="text-xs"> Rank: {material.materialDetails.customMetadata.rank}</div>
                   <Button
                     title="Download"
-                    btnStyles=" text-secondary bg-yellow px-2 py-1 rounded-md"
-                     btnClick={() => {
-            const link = document.createElement("a");
-            link.href = material.url.current;
-            link.download = material.materialDetails.current.customMetadata.name;
-            link.click();
-          }}
+                    btnStyles=" text-secondary bg-yellow px-2 py-1 rounded-md mt-2"
+                    btnClick={() => {
+                      const link = document.createElement("a");
+                      link.href = material.url;
+                      link.download = material.materialDetails.customMetadata.name;
+                      link.click();
+                    }}
                   />
                   </div>
-                </div>
-                {/* <div className="flex gap-2 w-fit text-xs font-thin"> */}
-                  {/* <Button
-                    title="View"
-                    btnStyles=" text-secondary bg-yellow px-2 py-1 rounded-md"
-                    btnClick={() => openDocumentInNewTab(material.url.current)}/> */}
-                  
-                {/* </div> */}
-              </div>
-            ))
+          ))
           ) : (
-            <div className="text-center text-gray-500 text-xl col-span-5">
-              No materials available
-            </div>
-          )}
+          <div className="text-center text-gray-500 text-xl col-span-5">
+            No materials available
+          </div>)
+            )}
           {isSearching &&
-            searchedMaterials.map((material) => (
-              <div key={material._id} className="p-4">
-                <img
-                  src={material.name}
-                  alt={material.name}
-                  className="w-full h-40 object-cover rounded-md mb-2"
-                />
-                <h3 className="text-lg font-semibold mb-1">
-                  {material.name}
-                </h3>
-                <div className="text-xs font-light">
-                  Rank: {material.rank}
-                </div>
-              </div>
-            ))}
+            (searchedMaterials.length > 0 ? (
+              searchedMaterials.map((material, index) => (
+                  <div key={index} className="p-4 text-darkgrey w-full">
+                    <img
+                      src={material.materialDetails.customMetadata.materialCover}
+                      alt={material.materialDetails.customMetadata.name}
+                      className="w-full h-32 object-cover border-4 border-yellow rounded-md mb-2 bg-grey"
+                    />
+                    <h3 className="mb-1">{material.materialDetails.customMetadata.name}</h3>
+                    <div className="text-xs"> Rank: {material.materialDetails.customMetadata.rank}</div>
+                  <Button
+                    title="Download"
+                    btnStyles=" text-secondary bg-yellow px-2 py-1 rounded-md mt-2"
+                    btnClick={() => {
+                      const link = document.createElement("a");
+                      link.href = material.url;
+                      link.download = material.materialDetails.customMetadata.name;
+                      link.click();
+                    }}
+                  />
+                  </div>
+          ))
+          ) : (
+          <div className="text-center text-gray-500 text-xl col-span-5">
+            Materials does not exist!
+          </div>))}
         </div>
         {isSearching && (
           <div
@@ -369,30 +339,30 @@ return (
                   </select>
                 </div>
                 <div className="w-full flex flex-col gap-10">
-                  {/* <div className='border border-dotted border-primary rounded-lg flex flex-col justify-center items-center px-14 py-10'>
-                                    <div className='flex justify-start w-full -mt-8 -ml-14'>Upload cover image</div>
-                                    <label htmlFor="coverImage" className="flex flex-col items-center justify-center my-10">
-                                        <div className="flex flex-col items-center justify-center">
-                                            <img src={upload} alt="upload" />
-                                            <div className='text-primary'>Drag & Drop</div>
-                                        </div>
-                                        <div className='text-sm'>or select file from device</div>
-                                        <input
-                                            type="file"
-                                            id="coverImage"
-                                            accept="image/*"
-                                            onChange={handleCoverImageChange}
-                                            className="hidden"
-                                        />
-                                    </label>
-                                    <div className='text-xs -mb-8'>max. 1MB</div>
-                                </div>
-                                {coverImage ? (
-                                    <div className='rounded-md px-4 py-3 border border-primary'>
-                                        <div className='flex w-full justify-end text-red-500 cursor-pointer' onClick={() => setCoverImage(null)}>X</div>
-                                        <img src={coverImage} alt="Cover" className="w-full object-cover rounded-md mb-2" />
-                                    </div>
-                                ) : ("")} */}
+                  <div className='border border-dotted border-primary rounded-lg flex flex-col justify-center items-center px-14 py-10'>
+                    <div className='flex justify-start w-full -mt-8 -ml-14'>Upload cover image</div>
+                    <label htmlFor="coverImage" className="flex flex-col items-center justify-center my-10">
+                      <div className="flex flex-col items-center justify-center">
+                        <img src={upload} alt="upload" />
+                        <div className='text-primary'>Drag & Drop</div>
+                      </div>
+                      <div className='text-sm'>or select file from device</div>
+                      <input
+                        type="file"
+                        id="coverImage"
+                        accept="image/*"
+                        onChange={(e) => { handleCoverImageChange(e) }}
+                        className="hidden"
+                      />
+                    </label>
+                    <div className='text-xs -mb-8'>max. 1MB</div>
+                  </div>
+                  {coverImage ? (
+                    <div className='rounded-md px-4 py-3 border border-primary'>
+                      <div className='flex w-full justify-end text-red-500 cursor-pointer' onClick={() => { setCoverImage(null); setCoverImageUrl(null) }}>X</div>
+                      <img src={coverImageUrl} alt="Cover" className="w-full h-40 object-cover rounded-md mb-2" />
+                    </div>
+                  ) : ("")}
                   <div className="border border-dotted border-primary rounded-lg flex flex-col justify-center items-center px-14 py-10">
                     <div className="flex justify-start w-full -mt-8 -ml-14">
                       Upload file
@@ -472,6 +442,6 @@ return (
         )}
       </section>
     </main>
-  </div>
-);
+    </div >
+  );
 };
