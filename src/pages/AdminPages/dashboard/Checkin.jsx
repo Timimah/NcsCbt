@@ -18,16 +18,23 @@ const userHeader = [
 ]
 
 export const Checkin = () => {
-    const { users } = useUserStore();
+    const { users, checkedInUsers, setCheckedInUsers } = useUserStore();
     const [searchTerm, setSearchTerm] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [eID, setEID] = useState("")
     const [error, setError] = useState("");
-    // const [users, setUsers]  = useState([]);
-    const [checkedInUsers, setCheckedInUsers] = useState([]);
     const [checkUser, setCheckuser] = useState(false);
 
-    console.log(users)
+    useEffect(() => {
+        const currentDate = new Date().toDateString();
+        const storedDate = localStorage.getItem('adminLoginDate');
+      
+        if (storedDate !== currentDate) {
+          setCheckedInUsers([]);
+        }
+      
+        localStorage.setItem('adminLoginDate', currentDate);
+      }, []);
 
     const handleSearch = (e) => {
         const term = e.target.value;
@@ -106,7 +113,7 @@ export const Checkin = () => {
             </main>
             {showModal &&
                 <Modal title="Check Examinee In" content={
-                    <div className='flex flex-col items-center gap-4 my-2'>
+                    <div className='flex flex-col items-center gap-4 my-4'>
                         <div>
                             <label htmlFor="examineeID">Examinee ID</label>
                             <input
@@ -127,7 +134,7 @@ export const Checkin = () => {
                     buttons={
                         <Button title="Check In" btnStyles="bg-primary px-4 py-3 text-white rounded-md w-full my-5" btnClick={handleCheckIn} />
                     }
-                    modStyles="bg-white h-1/2"
+                    modStyles="bg-white h-fit"
                     closeModal={() => setShowModal(false)}
                 />
             }
