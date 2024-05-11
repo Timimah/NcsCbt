@@ -181,7 +181,7 @@ export const Practice = () => {
                 <li>
                   <strong>Time Reminder:</strong>{" "}
                   <span className="font-normal">
-                    You will have {duration} minutes to complete the exam. A timer
+                    You will have {time} minutes to complete the exam. A timer
                     will be displayed on the screen to help you manage your time
                     effectively.
                   </span>
