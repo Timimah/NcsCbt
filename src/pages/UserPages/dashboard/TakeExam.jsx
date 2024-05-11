@@ -13,7 +13,7 @@ import axios from "axios";
 
 export const TakeExam = () => {
   const navigate = useNavigate();
-  const { loggedInUserId, questions } = useUserStore();
+  const { isLoggedIn, loggedInUserId, questions, setQuizActive } = useUserStore();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answered, setAnswered] = useState(false);
   const [answers, setAnswers] = useState([]);
@@ -32,6 +32,7 @@ export const TakeExam = () => {
   // console.log(quizType)
 
   useEffect(() => {
+    setQuizActive(true)
     if (quizType === "practice") {
       quizDetails = JSON.parse(localStorage.getItem("practiceQuestionsDetails"));
     } else {
@@ -54,10 +55,12 @@ export const TakeExam = () => {
   }, []);
 
   useEffect(() => {
-    if (timeRemaining === 0) {
-      handleSubmit();
+    if (isLoggedIn) {
+      if (timeRemaining === 0) {
+        handleSubmit();
 
-      // setShowModal(true);
+        // setShowModal(true);
+      }
     }
   }, [timeRemaining]);
 
@@ -79,13 +82,13 @@ export const TakeExam = () => {
   const handleOptionChange = (value, questionId) => {
     setAnswered(true);
     const answer = value;
-    const question_Id = questionId;
+    const question_id = questionId;
     setAnswers((prevAnswers) => [
       ...prevAnswers.slice(0, currentQuestion),
       value,
       ...prevAnswers.slice(currentQuestion + 1),
     ]);
-    const newAnswer = { answer, question_Id };
+    const newAnswer = { answer, question_id };
     setSelectedAnswers((prevSelectedAnswers) => {
       const newSelectedAnswers = [...prevSelectedAnswers];
       newSelectedAnswers[currentQuestion] = newAnswer;
@@ -121,7 +124,7 @@ export const TakeExam = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            "Authorization": `Bearer ${token}`,
           },
         },
       );
@@ -150,6 +153,7 @@ export const TakeExam = () => {
                 ) === true
               ) {
                 window.history.back();
+                setQuizActive(false)
               }
             }}
             disable={quizType === "exam"}
@@ -183,6 +187,13 @@ export const TakeExam = () => {
           </div>
         </div>
       )}
+      <div
+        className="md:hidden flex ml-12 mb-4 gap-2 text-gray-600 cursor-pointer hover:text-primary"
+        onClick={() => setShowModal(true)}
+      >
+        <img src={quit} alt="quit" />
+        <span className="text-lg">Quit </span>
+      </div>
       <div className="flex gap-8 justify-between items-center w-full px-10">
         <div className="md:w-1/2 md:px-8 px-4 flex flex-col mb-10 gap-8">
           <div className="flex flex-col gap-8">
@@ -297,12 +308,15 @@ export const TakeExam = () => {
               Are you sure you want to quit?
             </div>
           }
-          modStyles="w-1/2 my-auto justify-center bg-secondary"
+          modStyles="w-1/2 justify-center bg-secondary"
           buttons={
-            <div className="flex justify-between w-full p-4 my-4">
+            <div className="flex flex-col md:flex-row gap-6 justify-between w-full p-4 my-4">
               <Button
                 title="Yes, Quit"
-                btnClick={() => navigate("/dashboard/result")}
+                btnClick={() => {
+                  navigate("/dashboard/result");
+                  setQuizActive(false)
+                }}
                 btnStyles="bg-yellow text-primary px-4 py-3 rounded-md"
               />
               <Button
@@ -322,13 +336,16 @@ export const TakeExam = () => {
               {score}
             </div>
           }
-          modStyles="w-1/2 my-auto justify-center bg-secondary"
+          modStyles="w-1/2 justify-center bg-secondary"
           closeModal={() => setResultModal(false)}
           buttons={
-            <div className="flex justify-between w-full p-4 my-4">
+            <div className="flex flex-col md:flex-row gap-6 justify-between w-full p-4 my-4">
               <Button
                 title="Back to Dashboard"
-                btnClick={() => navigate("/dashboard/result")}
+                btnClick={() => {
+                  navigate("/dashboard/result");
+                  setQuizActive(false)
+                }}
                 btnStyles="border border-primary text-primary px-4 py-3 rounded-md"
               />
               <Button
