@@ -45,7 +45,7 @@ export const Materials = () => {
                             <input
                                 type="text"
                                 className="border rounded-md py-2 px-4 pr-10 w-full"
-                                placeholder="Search materials..."
+                                placeholder="Search by rank or title"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -71,57 +71,57 @@ export const Materials = () => {
                             (displayedMaterials.length > 0 ? (
                                 displayedMaterials.map((material, index) => (
                                     <div key={index} className="p-4 text-darkgrey w-full">
-                                      <img
-                                        src={material.materialDetails.customMetadata.materialCover}
-                                        alt={material.materialDetails.customMetadata.name}
-                                        className="w-full h-32 object-cover border-4 border-yellow rounded-md mb-2 bg-grey"
-                                      />
-                                      <h3 className="mb-1">{material.materialDetails.customMetadata.name}</h3>
-                                      <div className="text-xs"> Rank: {material.materialDetails.customMetadata.rank}</div>
-                                    <Button
-                                      title="Download"
-                                      btnStyles=" text-secondary bg-yellow px-2 py-1 rounded-md mt-2"
-                                      btnClick={() => {
-                                        const link = document.createElement("a");
-                                        link.href = material.url;
-                                        link.download = material.materialDetails.customMetadata.name;
-                                        link.click();
-                                      }}
-                                    />
+                                        <img
+                                            src={material.materialDetails.customMetadata.materialCover}
+                                            alt={material.materialDetails.customMetadata.name}
+                                            className="w-full h-32 object-cover border-4 border-yellow rounded-md mb-2 bg-grey"
+                                        />
+                                        <h3 className="mb-1">{material.materialDetails.customMetadata.name}</h3>
+                                        <div className="text-xs"> Rank: {material.materialDetails.customMetadata.rank}</div>
+                                        <Button
+                                            title="Download"
+                                            btnStyles=" text-secondary bg-yellow px-2 py-1 rounded-md mt-2"
+                                            btnClick={() => {
+                                                const link = document.createElement("a");
+                                                link.href = material.url;
+                                                link.download = material.materialDetails.customMetadata.name;
+                                                link.click();
+                                            }}
+                                        />
                                     </div>
-                            ))
+                                ))
                             ) : (
                                 <div className="text-center text-gray-500 text-xl col-span-5">
-                                  No materials available
+                                    No materials available
                                 </div>)
-                        )}
+                            )}
                         {isSearching &&
-                          (searchedMaterials.length > 0 ? (
-                            searchedMaterials.map((material, index) => (
-                                <div key={index} className="p-4 text-darkgrey w-full">
-                                  <img
-                                    src={material.materialDetails.customMetadata.materialCover}
-                                    alt={material.materialDetails.customMetadata.name}
-                                    className="w-full h-32 object-cover border-4 border-yellow rounded-md mb-2 bg-grey"
-                                  />
-                                  <h3 className="mb-1">{material.materialDetails.customMetadata.name}</h3>
-                                  <div className="text-xs"> Rank: {material.materialDetails.customMetadata.rank}</div>
-                                <Button
-                                  title="Download"
-                                  btnStyles=" text-secondary bg-yellow px-2 py-1 rounded-md mt-2"
-                                  btnClick={() => {
-                                    const link = document.createElement("a");
-                                    link.href = material.url;
-                                    link.download = material.materialDetails.customMetadata.name;
-                                    link.click();
-                                  }}
-                                />
-                                </div>
-                        ))
-                        ) : (
-                        <div className="text-center text-gray-500 text-xl col-span-5">
-                          Materials does not exist!
-                        </div>))}
+                            (searchedMaterials.length > 0 ? (
+                                searchedMaterials.map((material, index) => (
+                                    <div key={index} className="p-4 text-darkgrey w-full">
+                                        <img
+                                            src={material.materialDetails.customMetadata.materialCover}
+                                            alt={material.materialDetails.customMetadata.name}
+                                            className="w-full h-32 object-cover border-4 border-yellow rounded-md mb-2 bg-grey"
+                                        />
+                                        <h3 className="mb-1">{material.materialDetails.customMetadata.name}</h3>
+                                        <div className="text-xs"> Rank: {material.materialDetails.customMetadata.rank}</div>
+                                        <Button
+                                            title="Download"
+                                            btnStyles=" text-secondary bg-yellow px-2 py-1 rounded-md mt-2"
+                                            btnClick={() => {
+                                                const link = document.createElement("a");
+                                                link.href = material.url;
+                                                link.download = material.materialDetails.customMetadata.name;
+                                                link.click();
+                                            }}
+                                        />
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center text-gray-500 text-xl col-span-5">
+                                    Materials does not exist!
+                                </div>))}
                     </div>
                     {isSearching && <div className="text-primary cursor-pointer text-lg" onClick={() => { setIsSearching(false); setSearchTerm("") }}>See all materials</div>}
                     {displayedMaterials.length > 10 && (

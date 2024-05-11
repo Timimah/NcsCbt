@@ -171,7 +171,7 @@ export const UploadMaterials = () => {
               <input
                 type="text"
                 className="border rounded-md py-2 px-4 pr-10 w-full"
-                placeholder="Search materials..."
+                placeholder="Search by rank or title"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -204,9 +204,9 @@ export const UploadMaterials = () => {
           </div>
           <div className="text-2xl mt-6">Uploaded Materials</div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {!isSearching && 
-            (displayedMaterials.length > 0 ? (
-              displayedMaterials.map((material, index) => (
+            {!isSearching &&
+              (displayedMaterials.length > 0 ? (
+                displayedMaterials.map((material, index) => (
                   <div key={index} className="p-4 text-darkgrey w-full">
                     <img
                       src={material.materialDetails.customMetadata.materialCover}
@@ -215,26 +215,26 @@ export const UploadMaterials = () => {
                     />
                     <h3 className="mb-1">{material.materialDetails.customMetadata.name}</h3>
                     <div className="text-xs"> Rank: {material.materialDetails.customMetadata.rank}</div>
-                  <Button
-                    title="Download"
-                    btnStyles=" text-secondary bg-yellow px-2 py-1 rounded-md mt-2"
-                    btnClick={() => {
-                      const link = document.createElement("a");
-                      link.href = material.url;
-                      link.download = material.materialDetails.customMetadata.name;
-                      link.click();
-                    }}
-                  />
+                    <Button
+                      title="Download"
+                      btnStyles=" text-secondary bg-yellow px-2 py-1 rounded-md mt-2"
+                      btnClick={() => {
+                        const link = document.createElement("a");
+                        link.href = material.url;
+                        link.download = material.materialDetails.customMetadata.name;
+                        link.click();
+                      }}
+                    />
                   </div>
-          ))
-          ) : (
-          <div className="text-center text-gray-500 text-xl col-span-5">
-            No materials available
-          </div>)
-            )}
-          {isSearching &&
-            (searchedMaterials.length > 0 ? (
-              searchedMaterials.map((material, index) => (
+                ))
+              ) : (
+                <div className="text-center text-gray-500 text-xl col-span-5">
+                  No materials available
+                </div>)
+              )}
+            {isSearching &&
+              (searchedMaterials.length > 0 ? (
+                searchedMaterials.map((material, index) => (
                   <div key={index} className="p-4 text-darkgrey w-full">
                     <img
                       src={material.materialDetails.customMetadata.materialCover}
@@ -243,205 +243,205 @@ export const UploadMaterials = () => {
                     />
                     <h3 className="mb-1">{material.materialDetails.customMetadata.name}</h3>
                     <div className="text-xs"> Rank: {material.materialDetails.customMetadata.rank}</div>
-                  <Button
-                    title="Download"
-                    btnStyles=" text-secondary bg-yellow px-2 py-1 rounded-md mt-2"
-                    btnClick={() => {
-                      const link = document.createElement("a");
-                      link.href = material.url;
-                      link.download = material.materialDetails.customMetadata.name;
-                      link.click();
-                    }}
-                  />
+                    <Button
+                      title="Download"
+                      btnStyles=" text-secondary bg-yellow px-2 py-1 rounded-md mt-2"
+                      btnClick={() => {
+                        const link = document.createElement("a");
+                        link.href = material.url;
+                        link.download = material.materialDetails.customMetadata.name;
+                        link.click();
+                      }}
+                    />
                   </div>
-          ))
-          ) : (
-          <div className="text-center text-gray-500 text-xl col-span-5">
-            Materials does not exist!
-          </div>))}
-        </div>
-        {isSearching && (
-          <div
-            className="text-primary cursor-pointer text-lg"
-            onClick={() => {
-              setIsSearching(false);
-              setSearchTerm("");
-            }}
-          >
-            See all materials
+                ))
+              ) : (
+                <div className="text-center text-gray-500 text-xl col-span-5">
+                  Materials does not exist!
+                </div>))}
           </div>
-        )}
-        {materials.length > 10 && (
-          <button onClick={() => setDisplayedMaterials(materials)}>
-            See More...
-          </button>
-        )}
-      </section>
-      <section>
-        {showModal && (
-          <Modal
-            closeModal={() => setShowModal(false)}
-            title="Upload Material"
-            content={
-              <div className="flex flex-col items-center gap-4 my-2">
-                {uploadError && (
-                  <div className="text-red-500 mt-2">{uploadError}</div>
-                )}
-                <div className="w-full flex flex-col">
-                  <label htmlFor="name">Material Name</label>
-                  <input
-                    type="text"
-                    value={name}
-                    className="border rounded-md py-2 px-4"
-                    placeholder="Material Name"
-                    onChange={(e) => {
-                      setName(e.target.value);
-                    }}
-                  />
-                </div>
-                <div className="w-full flex flex-col">
-                  <label htmlFor="author">Author's Name</label>
-                  <input
-                    type="text"
-                    value={author}
-                    onChange={(e) => {
-                      setAuthor(e.target.value);
-                    }}
-                    className="border rounded-md py-2 px-4"
-                    placeholder="Author's Name"
-                  />
-                </div>
-                <div className="w-full flex flex-col">
-                  <label htmlFor="rank" className="block py-1 -mb-1">
-                    Select Rank
-                  </label>
-                  <select
-                    id="rank"
-                    name="rank"
-                    value={rank}
-                    onChange={(e) => {
-                      setRank(e.target.value);
-                    }}
-                    className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary`}
-                  >
-                    <option value="">Select a category</option>
-                    <option value="CAI-CAII">CAI-CAII</option>
-                    <option value="CAII-AIC">CAII-AIC</option>
-                    <option value="AIC-IC">AIC-IC</option>
-                    <option value="IC-ASCII">IC-ASCII</option>
-                    <option value="ASCII-ASCI">ASCII-ASCI</option>
-                    <option value="ASCI-DSC">ASCI-DSC</option>
-                    <option value="DSC-SC">DSC-SC</option>
-                    <option value="SC-CSC">SC-CSC</option>
-                    <option value="CSC-AC">CSC-AC</option>
-                    <option value="AC-DC">AC-DC</option>
-                    <option value="DC-CC">DC-CC</option>
-                  </select>
-                </div>
-                <div className="w-full flex flex-col gap-10">
-                  <div className='border border-dotted border-primary rounded-lg flex flex-col justify-center items-center px-14 py-10'>
-                    <div className='flex justify-start w-full -mt-8 -ml-14'>Upload cover image</div>
-                    <label htmlFor="coverImage" className="flex flex-col items-center justify-center my-10">
-                      <div className="flex flex-col items-center justify-center">
-                        <img src={upload} alt="upload" />
-                        <div className='text-primary'>Drag & Drop</div>
-                      </div>
-                      <div className='text-sm'>or select file from device</div>
-                      <input
-                        type="file"
-                        id="coverImage"
-                        accept="image/*"
-                        onChange={(e) => { handleCoverImageChange(e) }}
-                        className="hidden"
-                      />
-                    </label>
-                    <div className='text-xs -mb-8'>max. 1MB</div>
-                  </div>
-                  {coverImage ? (
-                    <div className='rounded-md px-4 py-3 border border-primary'>
-                      <div className='flex w-full justify-end text-red-500 cursor-pointer' onClick={() => { setCoverImage(null); setCoverImageUrl(null) }}>X</div>
-                      <img src={coverImageUrl} alt="Cover" className="w-full h-40 object-cover rounded-md mb-2" />
-                    </div>
-                  ) : ("")}
-                  <div className="border border-dotted border-primary rounded-lg flex flex-col justify-center items-center px-14 py-10">
-                    <div className="flex justify-start w-full -mt-8 -ml-14">
-                      Upload file
-                    </div>
-                    <label
-                      htmlFor="fileUpload"
-                      className="flex flex-col items-center justify-center my-10"
-                    >
-                      <div className="flex flex-col items-center justify-center">
-                        <img src={upload} alt="upload" />
-                        <div className="text-primary">Drag & Drop</div>
-                      </div>
-                      <div className="text-sm">
-                        or select file from device
-                      </div>
-                      <input
-                        type="file"
-                        id="fileUpload"
-                        accept=".pdf, .doc, .docx, .ppt, .pptx, .xls, .xlsx, .txt, .zip, .mp4, .mp3, .wav, .flac, .avi, .mkv, .mov, .wmv, .webm, .ogg"
-                        onChange={(e) => handleFileChange(e)}
-                        className="hidden"
-                      />
-                    </label>
-                    <div className="text-xs -mb-8">max. 10MB</div>
-                  </div>
-                  {book ? (
-                    <div className="flex w-full justify-between items-center rounded-md px-4 py-2 border border-primary">
-                      <div>{bookName}</div>
-                      <div
-                        className="cursor-pointer text-red-500"
-                        onClick={() => {
-                          setBook(null);
-                          setBookName("");
-                        }}
-                      >
-                        X
-                      </div>
-                    </div>
-                  ) : (
-                    ""
+          {isSearching && (
+            <div
+              className="text-primary cursor-pointer text-lg"
+              onClick={() => {
+                setIsSearching(false);
+                setSearchTerm("");
+              }}
+            >
+              See all materials
+            </div>
+          )}
+          {materials.length > 10 && (
+            <button onClick={() => setDisplayedMaterials(materials)}>
+              See More...
+            </button>
+          )}
+        </section>
+        <section>
+          {showModal && (
+            <Modal
+              closeModal={() => setShowModal(false)}
+              title="Upload Material"
+              content={
+                <div className="flex flex-col items-center gap-4 my-2">
+                  {uploadError && (
+                    <div className="text-red-500 mt-2">{uploadError}</div>
                   )}
+                  <div className="w-full flex flex-col">
+                    <label htmlFor="name">Material Name</label>
+                    <input
+                      type="text"
+                      value={name}
+                      className="border rounded-md py-2 px-4"
+                      placeholder="Material Name"
+                      onChange={(e) => {
+                        setName(e.target.value);
+                      }}
+                    />
+                  </div>
+                  <div className="w-full flex flex-col">
+                    <label htmlFor="author">Author's Name</label>
+                    <input
+                      type="text"
+                      value={author}
+                      onChange={(e) => {
+                        setAuthor(e.target.value);
+                      }}
+                      className="border rounded-md py-2 px-4"
+                      placeholder="Author's Name"
+                    />
+                  </div>
+                  <div className="w-full flex flex-col">
+                    <label htmlFor="rank" className="block py-1 -mb-1">
+                      Select Rank
+                    </label>
+                    <select
+                      id="rank"
+                      name="rank"
+                      value={rank}
+                      onChange={(e) => {
+                        setRank(e.target.value);
+                      }}
+                      className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary`}
+                    >
+                      <option value="">Select a category</option>
+                      <option value="CAI-CAII">CAI-CAII</option>
+                      <option value="CAII-AIC">CAII-AIC</option>
+                      <option value="AIC-IC">AIC-IC</option>
+                      <option value="IC-ASCII">IC-ASCII</option>
+                      <option value="ASCII-ASCI">ASCII-ASCI</option>
+                      <option value="ASCI-DSC">ASCI-DSC</option>
+                      <option value="DSC-SC">DSC-SC</option>
+                      <option value="SC-CSC">SC-CSC</option>
+                      <option value="CSC-AC">CSC-AC</option>
+                      <option value="AC-DC">AC-DC</option>
+                      <option value="DC-CC">DC-CC</option>
+                    </select>
+                  </div>
+                  <div className="w-full flex flex-col gap-10">
+                    <div className='border border-dotted border-primary rounded-lg flex flex-col justify-center items-center px-14 py-10'>
+                      <div className='flex justify-start w-full -mt-8 -ml-14'>Upload cover image</div>
+                      <label htmlFor="coverImage" className="flex flex-col items-center justify-center my-10">
+                        <div className="flex flex-col items-center justify-center">
+                          <img src={upload} alt="upload" />
+                          <div className='text-primary'>Drag & Drop</div>
+                        </div>
+                        <div className='text-sm'>or select file from device</div>
+                        <input
+                          type="file"
+                          id="coverImage"
+                          accept="image/*"
+                          onChange={(e) => { handleCoverImageChange(e) }}
+                          className="hidden"
+                        />
+                      </label>
+                      <div className='text-xs -mb-8'>max. 1MB</div>
+                    </div>
+                    {coverImage ? (
+                      <div className='rounded-md px-4 py-3 border border-primary'>
+                        <div className='flex w-full justify-end text-red-500 cursor-pointer' onClick={() => { setCoverImage(null); setCoverImageUrl(null) }}>X</div>
+                        <img src={coverImageUrl} alt="Cover" className="w-full h-40 object-cover rounded-md mb-2" />
+                      </div>
+                    ) : ("")}
+                    <div className="border border-dotted border-primary rounded-lg flex flex-col justify-center items-center px-14 py-10">
+                      <div className="flex justify-start w-full -mt-8 -ml-14">
+                        Upload file
+                      </div>
+                      <label
+                        htmlFor="fileUpload"
+                        className="flex flex-col items-center justify-center my-10"
+                      >
+                        <div className="flex flex-col items-center justify-center">
+                          <img src={upload} alt="upload" />
+                          <div className="text-primary">Drag & Drop</div>
+                        </div>
+                        <div className="text-sm">
+                          or select file from device
+                        </div>
+                        <input
+                          type="file"
+                          id="fileUpload"
+                          accept=".pdf, .doc, .docx, .ppt, .pptx, .xls, .xlsx, .txt, .zip, .mp4, .mp3, .wav, .flac, .avi, .mkv, .mov, .wmv, .webm, .ogg"
+                          onChange={(e) => handleFileChange(e)}
+                          className="hidden"
+                        />
+                      </label>
+                      <div className="text-xs -mb-8">max. 10MB</div>
+                    </div>
+                    {book ? (
+                      <div className="flex w-full justify-between items-center rounded-md px-4 py-2 border border-primary">
+                        <div>{bookName}</div>
+                        <div
+                          className="cursor-pointer text-red-500"
+                          onClick={() => {
+                            setBook(null);
+                            setBookName("");
+                          }}
+                        >
+                          X
+                        </div>
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                  </div>
                 </div>
-              </div>
-            }
-            buttons={
-              <Button
-                title="Upload Material"
-                btnStyles="bg-primary px-4 py-3 text-white rounded-md w-full my-5"
-                btnClick={uploadMaterial}
-              />
-            }
-            modStyles="bg-secondary h-5/6 w-1/2 overflow-y-scroll"
-          />
-        )}
-        {handleUpload && (
-          <Modal
-            content={
-              <div className="flex flex-col gap-4 items-center justify-center py-10">
-                <div className="motion-safe:animate-bounce duration-75">
-                  <img src={success} alt="sucess" />
+              }
+              buttons={
+                <Button
+                  title="Upload Material"
+                  btnStyles="bg-primary px-4 py-3 text-white rounded-md w-full my-5"
+                  btnClick={uploadMaterial}
+                />
+              }
+              modStyles="bg-secondary h-5/6 w-1/2 overflow-y-scroll"
+            />
+          )}
+          {handleUpload && (
+            <Modal
+              content={
+                <div className="flex flex-col gap-4 items-center justify-center py-10">
+                  <div className="motion-safe:animate-bounce duration-75">
+                    <img src={success} alt="sucess" />
+                  </div>
+                  <div className="text-primary text-3xl font-bold">
+                    Upload Successful!
+                  </div>
                 </div>
-                <div className="text-primary text-3xl font-bold">
-                  Upload Successful!
-                </div>
-              </div>
-            }
-            buttons={
-              <Button
-                title="Done"
-                btnStyles="bg-primary px-4 py-3 text-white rounded-md w-full"
-                btnClick={() => setHandleUpload(false)}
-              />
-            }
-            modStyles="bg-secondary w-1/2 transition duration-300 ease-in-out"
-            closeModal={() => setHandleUpload(false)}
-          />
-        )}
-      </section>
-    </main>
+              }
+              buttons={
+                <Button
+                  title="Done"
+                  btnStyles="bg-primary px-4 py-3 text-white rounded-md w-full"
+                  btnClick={() => setHandleUpload(false)}
+                />
+              }
+              modStyles="bg-secondary w-1/2 transition duration-300 ease-in-out"
+              closeModal={() => setHandleUpload(false)}
+            />
+          )}
+        </section>
+      </main>
     </div >
   );
 };
