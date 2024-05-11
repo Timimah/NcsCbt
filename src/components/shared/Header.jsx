@@ -1,20 +1,19 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 // import { useAdminStore } from '../../store/adminStore';
 import { useUserStore } from "../../store/userStore";
 
 export const Header = ({ title }) => {
   const navigate = useNavigate();
-  const { loggedInUser, userIsUser, userIsAdmin, userImage } = useUserStore();
-  // console.log(loggedInUser);
+  const { loggedInUser, quizActive, userImage } = useUserStore();
   let userName = loggedInUser ? loggedInUser : "";
 
-  console.log(userImage);
   useEffect(() => {
     if (userName === "") {
-      navigate("/");
+      navigate("/login");
     }
   }, [userName]);
+
 
   const handleProfile = () => {
     navigate("/dashboard/user-profile");
@@ -29,7 +28,7 @@ export const Header = ({ title }) => {
         </p>
       </div>
       <div
-        className="hidden md:flex items-center cursor-pointer"
+        className={`hidden ${quizActive === true ? "md:hidden" : "md:flex"} items-center cursor-pointer`}
         onClick={handleProfile}
       >
         <img
