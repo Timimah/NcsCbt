@@ -8,6 +8,7 @@ export const useUserStore = create((set, get) => ({
   userIsUser: false,
   userIsAdmin: false,
   quizActive: false,
+  userIsSubscribed: false,
   loggedInUserEmail: "",
   loggedInUserId: "",
   loggedInUserRank: "",
@@ -31,6 +32,8 @@ export const useUserStore = create((set, get) => ({
   setUserIsAdmin: (arg) => set({ userIsAdmin: arg }),
 
   setQuizActive: (arg) => set({ quizActive: arg }),
+
+  setUserIsSubscribed: (arg) => set({ userIsSubscribed: arg }),
 
   setLoggedInUser: (user) => set({ loggedInUser: user }),
 

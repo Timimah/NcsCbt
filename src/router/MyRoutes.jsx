@@ -22,6 +22,7 @@ import { ViewQuestion } from "../pages/AdminPages/dashboard/ViewQuestions";
 import axios from "axios";
 import { Practice } from "../pages/UserPages/dashboard/Practice";
 import { ExamPage } from "../pages/UserPages/dashboard/Exam";
+import { ForgotPassword } from "../pages/UserPages/auth/ForgotPassword";
 
 export const MyRoutes = () => {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ export const MyRoutes = () => {
     axios
       .get("https://ncs-cbt-api.onrender.com/admin/dashboard", {
         headers: {
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       })
@@ -49,6 +50,7 @@ export const MyRoutes = () => {
       <Route path="/" element={<Home />} />
       <Route path="/create-account" element={<CreateAccount />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/admin" element={<AdminLogin />} />
       <Route path="/take-exam" element={<TakeExam />} />
       <Route path="/dashboard" element={<Dashboard />}>
