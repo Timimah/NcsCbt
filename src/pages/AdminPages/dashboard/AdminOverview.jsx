@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Header } from "../../../components/shared/Header";
-import { materials } from "../../../components/user/materials";
-import { Button } from "../../../components/shared/Button";
-import { Modal } from "../../../components/shared/Modal";
 import { Chart } from "../../../components/user/Chart";
 import user from "../../../assets/user.png";
-import adminn from "../../../assets/user.png";
 import subscription from "../../../assets/sub.png";
 import examinee from "../../../assets/examinee.png";
 import { OverviewCard } from "../../../components/admin/OverviewCard";
@@ -29,6 +25,7 @@ export const AdminOverview = () => {
     setSubscribers,
     results,
     setResults,
+    setUserResults,
   } = useUserStore();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -116,7 +113,7 @@ export const AdminOverview = () => {
       axios
         .get("https://ncs-cbt-api.onrender.com/exam/", {
           headers: {
-            Authorization: `Bearer ${token}`,
+            "Authorization": `Bearer ${token}`,
           },
         })
         .then((res) => {
@@ -152,6 +149,7 @@ export const AdminOverview = () => {
         })
         .then((res) => {
           setResults(res.data.data);
+          setUserResults(res.data.data);
         })
         .catch((err) => {
           console.log(err);
@@ -190,12 +188,12 @@ export const AdminOverview = () => {
   return (
     <div className="flex flex-col w-full p-10">
       <Header title="Dashboard" />
-      <main className="flex-grow">
-        <div className="flex justify-around gap-6 p-5">
+      <main className="flex-grow mt-4">
+        <div className="flex flex-col md:flex-row md:justify-around justify-center items-center gap-6 md:p-5">
           {cards.map((card, index) => (
-            <div key={index} className="w-fit">
+            <div key={index} className="w-2/3 md:w-fit">
               <OverviewCard
-                cardStyles="p-6"
+                cardStyles="flex justify-center p-6"
                 label={card.label}
                 cardValue={card.value}
                 icon={
@@ -209,7 +207,7 @@ export const AdminOverview = () => {
         </div>
 
         <section className="mt-8">
-          <h2 className="text-xl font-bold mb-4">Test Overview</h2>
+          <h2 className="md:text-xl font-bold mb-4">Test Overview</h2>
           <div className="bg-white">
             <Chart />
           </div>

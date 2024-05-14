@@ -49,7 +49,7 @@ export const AdminDashboard = ({ children }) => {
 
   return (
     <>
-      <section className="hidden md:flex bg-vector w-full bg-white h-full transform transition-all duration-300">
+      <section className="hidden md:flex bg-vector w-full bg-secondary h-full transform transition-all duration-300">
         <div className="flex flex-col items-center w-1/4 bg-white text-grey py-10 px-4">
           <div
             className={
@@ -262,22 +262,22 @@ export const AdminDashboard = ({ children }) => {
             <p className="">Logout</p>
           </div>
         </div>
-        <div className="row-start-2 col-start-2 overflow-y-auto w-full">
+        <div className="row-start-2 col-start-2 overflow-y-scroll w-full">
           <Outlet />
         </div>
       </section>
       {/* mobile dashboard nav */}
-      <section className="md:hidden flex justify-between max-h-screen">
+      <section className="md:hidden flex justify-between bg-vector bg-secondary h-full max-h-screen">
         {isMenuOpen && (
           <div className="flex flex-col items-center absolute left-0 bottom-0 top-0 bg-white text-grey py-10 px-8 z-10 w-3/4">
             <div className="flex justify-between w-full mb-6">
               <div
-                className="flex items-center cursor-pointer gap-4"
+                className="flex flex-col md:flex-row md:items-center cursor-pointer md:gap-4"
                 // onClick={handleProfile}
               >
                 <img alt="User Avatar" className="w-8 h-8 rounded-full mr-2" />
                 <div>
-                  <span className="font-bold text-darkgrey text-lg max-w-30">
+                  <span className="font-bold text-darkgrey text-sm md:text-lg max-w-30">
                     {userName}
                   </span>
                 </div>
