@@ -7,6 +7,23 @@ export const Header = ({ title }) => {
   const navigate = useNavigate();
   const { loggedInUser, quizActive, userImage } = useUserStore();
   let userName = loggedInUser ? loggedInUser : "";
+  const [path, setPath] = useState(window.location.pathname);
+
+  useEffect(() => {
+    // console.log(window.location.pathname )
+    const handleLocationChange = () => {
+      setPath(window.location.pathname);
+      console.log("You are here: ", path)
+    };
+    handleLocationChange();
+
+    window.addEventListener('popstate', handleLocationChange);
+
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+    };
+  }, []);
+
 
   useEffect(() => {
     if (userName === "") {
@@ -28,7 +45,7 @@ export const Header = ({ title }) => {
         </p>
       </div>
       <div
-        className={`hidden ${quizActive === true ? "md:hidden" : "md:flex"} items-center cursor-pointer`}
+        className={`hidden ${path === '/take-exam' ? "md:hidden" : "md:flex"} items-center cursor-pointer`}
         onClick={handleProfile}
       >
         <img
