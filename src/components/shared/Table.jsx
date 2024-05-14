@@ -2,27 +2,30 @@ import React from 'react';
 
 export const Table = ({ data, columns }) => {
   return (
-      <div className="flex table-container w-full text-darkgrey overflow-x-scroll shadow-md">
-        <div className="table-header flex w-1/3 justify-between font-semibold text-lg border-primary border-r-2">
-          <div className={`bg-secondary w-full grid grid-cols-${columns.length}`}>
-            {columns.map((column) => (
-              <div key={column.key} className="table-cell py-4 px-7">
-                {column.label}
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="table-body flex w-full text-center">
-          {data.map((item, index) => (
-            <div key={item.id} className={`w-full grid grid-cols-${columns.length} ${index % 2 === 0 ? 'bg-secondary' : ''} items-center`}>
-              {columns.map((column, index) => (
-                <div key={`${item.id}-${column.key}`} className={`border-b table-cell w-full px-5 py-5 ${index === columns.length - 2 ? 'text-primary' : ''} ${index === columns.length - 1 ? 'text-center' : ''}`}>
-                  {item[column.key]}
-                </div>
-              ))}
-            </div>
+    <table className="w-full">
+      <thead>
+        <tr>
+          {columns.map((column) => (
+            <th key={column.key} className="px-6 py-3 text-left text-xs text-gray-500 uppercase tracking-wider font-mono font-semibold">
+              {column.label}
+            </th>
           ))}
-        </div>
-      </div>
+        </tr>
+      </thead>
+      <tbody className="divide-y divide-gray-200 bg-gray-50">
+        {data.map((item) => (
+          <tr
+            key={item.id}
+            className="hover:bg-secondary hover:shadow-md"
+          >
+            {columns.map((column) => (
+              <td key={`${item.id}-${column.key}`} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {item[column.key]}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 };
