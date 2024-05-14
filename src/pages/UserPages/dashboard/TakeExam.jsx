@@ -13,7 +13,8 @@ import axios from "axios";
 
 export const TakeExam = () => {
   const navigate = useNavigate();
-  const { isLoggedIn, loggedInUserId, questions, setQuizActive } = useUserStore();
+  const { isLoggedIn, loggedInUserId, questions, setQuizActive } =
+    useUserStore();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answered, setAnswered] = useState(false);
   const [answers, setAnswers] = useState([]);
@@ -23,8 +24,11 @@ export const TakeExam = () => {
   const [showModal, setShowModal] = useState(false);
   const [resultModal, setResultModal] = useState(false);
   const [score, setScore] = useState("");
+  const [message, setMessage] = useState("");
   const [reviewing, setReviewing] = useState(false);
   const [answer, setAnswer] = useState();
+  const [correctAnswers, setCrrectAnswers] = useState();
+  const [wrongAnswers, setWrongAnswers] = useState();
 
   let timer;
   let quizDetails;
@@ -32,9 +36,11 @@ export const TakeExam = () => {
   // console.log(quizType)
 
   useEffect(() => {
-    setQuizActive(true)
+    setQuizActive(true);
     if (quizType === "practice") {
-      quizDetails = JSON.parse(localStorage.getItem("practiceQuestionsDetails"));
+      quizDetails = JSON.parse(
+        localStorage.getItem("practiceQuestionsDetails")
+      );
     } else {
       quizDetails = JSON.parse(localStorage.getItem("examQuestionsDetails"));
     }
@@ -63,21 +69,6 @@ export const TakeExam = () => {
       }
     }
   }, [timeRemaining]);
-
-  // const handleOptionChange = (value) => {
-  //   setAnswered(true);
-  //   setAnswers((prevAnswers) => [
-  //     ...prevAnswers.slice(0, currentQuestion),
-  //     value,
-  //     ...prevAnswers.slice(currentQuestion + 1),
-  //   ]);
-  //   setSelectedAnswers((prevSelectedAnswers) => {
-  //     const newSelectedAnswers = [...prevSelectedAnswers];
-  //     newSelectedAnswers[currentQuestion] = value;
-  //     return newSelectedAnswers;
-  //   });
-  //   console.log(answers, selectedAnswers);
-  // };
 
   const handleOptionChange = (value, questionId) => {
     setAnswered(true);
@@ -114,7 +105,7 @@ export const TakeExam = () => {
       answers: selectedAnswers,
       userId: loggedInUserId,
       type: "practice",
-      date: new Date().toLocaleDateString(),
+      // date: new Date().toLocaleDateString(),
     };
     console.log(practiceData);
     try {
@@ -124,23 +115,31 @@ export const TakeExam = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
-        },
+        }
       );
       console.log(response);
+      const data = response.data.data;
       setResultModal(true);
-      setScore(response.data.message);
-      setAnswer(response.data.data);
-      console.log(answer);
+      setMessage(response.data.message);
+      const totalMark = data.reduce((total, item) => total + item.mark, 0);
+      console.log
+
+// Get correct and wrong answers
+const correctAnswers = data.filter(item => item.userAnswer === item.correctAnswer);
+const wrongAnswers = data.filter(item => item.userAnswer !== item.correctAnswer);
+
+      console.log(totalMark, correctAnswers, wrongAnswers);
       // navigate('/dashboard/result')
     } catch (error) {
       console.log(error);
     }
+    setScore("");
   };
 
   return (
-    <section className="flex flex-col bg-vector w-full bg-white h-full transform transition-all duration-300">
+    <section className="flex flex-col bg-vector w-full bg-secondary h-screen overflow-y-auto transform transition-all duration-300">
       <div className="flex justify-between items-center p-8 w-full">
         <div className="flex items-center">
           <Button
@@ -149,22 +148,24 @@ export const TakeExam = () => {
             btnClick={() => {
               if (
                 confirm(
-                  "All your progress will be lost, are you sure you want to go back?",
+                  "All your progress will be lost, are you sure you want to go back?"
                 ) === true
               ) {
                 window.history.back();
-                setQuizActive(false)
+                setQuizActive(false);
               }
             }}
             disable={quizType === "exam"}
           />
         </div>
-        {
-          quizType === "practice" ? <Header title="Practice" /> : <Header title="Exam" />
-        }
+        {quizType === "practice" ? (
+          <Header title="Practice" />
+        ) : (
+          <Header title="Exam" />
+        )}
       </div>
       {reviewing === true && (
-        <div className="absolute top-32 bottom-0 left-0 right-0 z-20 bg-white p-10 flex flex-col overflow-y-scroll">
+        <div className="absolute top-32 bottom-0 left-0 right-0 z-20 p-10 flex flex-col overflow-y-scroll">
           <div className="flex text-2xl font-bold">Review Questions</div>
           <div className="my-6 flex flex-col gap-6">
             {questions.map((question, index) => (
@@ -174,7 +175,11 @@ export const TakeExam = () => {
                 {question.options.map((option, index) => (
                   <div
                     key={index}
-                    className={`${answer[index].correctAnswer === option ? "bg-secondary" : ""} flex`}
+                    className={`${
+                      answer[index].correctAnswer === option
+                        ? "bg-secondary"
+                        : ""
+                    } flex`}
                   >
                     <span className="mr-3">
                       {String.fromCharCode(65 + index)}.{" "}
@@ -200,7 +205,11 @@ export const TakeExam = () => {
             <div className="flex justify-between items-center">
               <div className="text-3xl">Question {currentQuestion + 1}</div>
               <div
-                className={`text-3xl font-bold px-4 py-3 ${timeRemaining <= 300 ? "animate-pulse text-red-600 bg-transparent" : "text-white bg-red-600"}`}
+                className={`text-3xl font-bold px-4 py-3 ${
+                  timeRemaining <= 300
+                    ? "animate-pulse text-red-600 bg-transparent"
+                    : "text-white bg-red-600"
+                }`}
               >
                 {Math.floor(timeRemaining / 60)}:
                 {(timeRemaining % 60).toString().padStart(2, "0")}
@@ -214,10 +223,11 @@ export const TakeExam = () => {
             {questions[currentQuestion].options.map((option, index) => (
               <div
                 key={index}
-                className={`flex items-center justify-center rounded-lg px-4 py-3 cursor-pointer border border-primary text-primary font-bold  ${answers[currentQuestion] === option
-                  ? "bg-primary text-white"
-                  : ""
-                  }`}
+                className={`flex items-center justify-center rounded-lg px-4 py-3 cursor-pointer border border-primary text-primary font-bold  ${
+                  answers[currentQuestion] === option
+                    ? "bg-primary text-white"
+                    : ""
+                }`}
                 onClick={() =>
                   handleOptionChange(option, questions[currentQuestion].id)
                 }
@@ -229,7 +239,10 @@ export const TakeExam = () => {
               </div>
             ))}
           </div>
-          <div className="flex md:flex-row flex-col md:justify-evenly gap-8" id="navButton">
+          <div
+            className="flex md:flex-row flex-col md:justify-evenly gap-8"
+            id="navButton"
+          >
             <Button
               title={
                 <div className="flex px-4 gap-1 items-center">
@@ -237,8 +250,9 @@ export const TakeExam = () => {
                   <span>Previous</span>
                 </div>
               }
-              btnStyles={`text-lg bg-secondary shadow-md px-4 rounded-lg w-full ${currentQuestion == 0 ? "text-gry bg-gray" : "text-primary"
-                }`}
+              btnStyles={`text-lg bg-secondary shadow-md px-4 rounded-lg w-full ${
+                currentQuestion == 0 ? "text-gry bg-gray" : "text-primary"
+              }`}
               btnClick={handlePrevious}
               disable={currentQuestion === 0}
             />
@@ -257,12 +271,13 @@ export const TakeExam = () => {
                   </div>
                 }
                 btnStyles={`text-lg bg-primary shadow-md px-4 py-3 rounded-lg w-full text-white
-                        ${currentQuestion === questions.length - 1
-                    ? "hidden"
-                    : ""
-                  }`}
+                        ${
+                          currentQuestion === questions.length - 1
+                            ? "hidden"
+                            : ""
+                        }`}
                 btnClick={handleNext}
-              // disabled={currentQuestion === questions.length - 1}
+                // disabled={currentQuestion === questions.length - 1}
               />
             )}
           </div>
@@ -270,12 +285,17 @@ export const TakeExam = () => {
         <div className="md:flex flex-col gap-8 w-1/2 hidden">
           <div className="bg-secondary shadow-md rounded-lg py-10 items-center justify-center p-8 flex flex-col gap-8">
             <div
-              className={`${timeRemaining <= 300 ? "bg-transparent text-primary" : "bg-primary text-white"} rounded-full p-6 w-24 h-24 text-center flex flex-col justify-center items-center`}
+              className={`${
+                timeRemaining <= 300
+                  ? "bg-transparent text-primary"
+                  : "bg-primary text-white"
+              } rounded-full p-6 w-24 h-24 text-center flex flex-col justify-center items-center`}
             >
               <div>Timer</div>
               <div
-                className={`text-2xl font-bold ${timeRemaining <= 300 ? "text-red-500 animate-pulse" : ""
-                  }`}
+                className={`text-2xl font-bold ${
+                  timeRemaining <= 300 ? "text-red-500 animate-pulse" : ""
+                }`}
               >
                 {Math.floor(timeRemaining / 60)}:
                 {(timeRemaining % 60).toString().padStart(2, "0")}
@@ -286,7 +306,13 @@ export const TakeExam = () => {
                 <Button
                   key={index}
                   title={index + 1}
-                  btnStyles={`border ${currentQuestion === index ? "border border-primary" : ""}  ${selectedAnswers[index] ? "bg-primary text-white" : "bg-white "} text-primary rounded shadow-md w-10 h-10`}
+                  btnStyles={`border ${
+                    currentQuestion === index ? "border border-primary" : ""
+                  }  ${
+                    selectedAnswers[index]
+                      ? "bg-primary text-white"
+                      : "bg-white "
+                  } text-primary rounded shadow-md w-10 h-10`}
                   btnClick={(e) => setCurrentQuestion(index)}
                 />
               ))}
@@ -315,7 +341,7 @@ export const TakeExam = () => {
                 title="Yes, Quit"
                 btnClick={() => {
                   navigate("/dashboard/result");
-                  setQuizActive(false)
+                  setQuizActive(false);
                 }}
                 btnStyles="bg-yellow text-primary px-4 py-3 rounded-md"
               />
@@ -333,7 +359,7 @@ export const TakeExam = () => {
         <Modal
           content={
             <div className="text-primary font-bold text-2xl text-center my-4">
-              {score}
+              {message}
             </div>
           }
           modStyles="w-1/2 justify-center bg-secondary"
@@ -344,7 +370,7 @@ export const TakeExam = () => {
                 title="Back to Dashboard"
                 btnClick={() => {
                   navigate("/dashboard/result");
-                  setQuizActive(false)
+                  setQuizActive(false);
                 }}
                 btnStyles="border border-primary text-primary px-4 py-3 rounded-md"
               />

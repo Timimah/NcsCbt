@@ -44,6 +44,7 @@ export const UserProfile = () => {
     // {
     //   console.log(response)
     // })
+    listAll()
   }, []);
 
   // const getAvatar = () => {
@@ -66,7 +67,8 @@ export const UserProfile = () => {
     setProfileImage(URL.createObjectURL(file));
     setFileType(file.type);
     console.log(file, fileType, "File Type")
-    const userDetails = { fullName, userId };
+    const examineeId = userId;
+    const userDetails = { fullName, examineeId };
     console.log(userDetails)
     // const metadata = {
     //   contentType: fileType,

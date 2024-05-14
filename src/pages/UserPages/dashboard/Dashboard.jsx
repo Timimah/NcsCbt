@@ -11,24 +11,31 @@ export const Dashboard = ({ children }) => {
   const { loggedInUser } = useUserStore();
     console.log(loggedInUser);
     let userName = loggedInUser ? loggedInUser : "";
+    const path = window.location.pathname;
+    console.log(path)
     
     useEffect(() => {
         if (userName === "") {
             navigate('/')
         } else {
-          if (active === "dashboardmain") {
+          if (path === '/dashboard/overview') {
+            setActive("dashboardmain")
             navigate("/dashboard/overview");
           }
-          if (active === "material") {
+          if (path === '/dashboard/material') {
+            setActive("material")
             navigate("/dashboard/material");
           }
-          if (active === "practice") {
+          if (path === "/dashboard/practice") {
+            setActive("practice")
             navigate("/dashboard/practice");
           }
-          if (active === "exam") {
+          if (path === "/dashboard/exam") {
+            setActive("exam")
             navigate("/dashboard/exam");
           }
-          if (active === "result") {
+          if (path === "/dashboard/result") {
+            setActive("result")
             navigate("/dashboard/result");
           }
         }
@@ -44,7 +51,7 @@ export const Dashboard = ({ children }) => {
 
   return (
     <>
-      <section className="hidden md:flex bg-vector w-full bg-white h-full transform transition-all duration-300">
+      <section className="hidden md:flex bg-vector w-full bg-secondary h-full max-h-screen transform transition-all duration-300">
         <div className="flex flex-col items-center w-80 bg-white text-grey py-10 px-4">
           <div
             className={
