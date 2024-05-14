@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Table } from "../../../components/shared/Table";
 import { Header } from "../../../components/shared/Header";
-import { Button } from "../../../components/shared/Button";
-import { Modal } from "../../../components/shared/Modal";
-import axios from "axios";
 import { useUserStore } from "../../../store/userStore";
 
 const columns = [
+  { key: "id", label: "S/N" },
   { key: "examineeId", label: "ID" },
   { key: "plan", label: "Plan" },
   { key: "reference", label: "Reference" },
@@ -33,7 +31,7 @@ export const Payment = () => {
 
     setDisplayedData(filteredData);
   };
-
+  
   const handleClearSearch = () => {
     setSearchTerm('');
     setDisplayedResults(originalResults);
@@ -93,7 +91,7 @@ export const Payment = () => {
             </div>
           </div>
           <div className="w-full">
-            <Table data={displayedData} columns={columns} />
+            <Table data={displayedData.map((data, index) => ({...data, id: index + 1, createdAt: new Date(data.createdAt).toDateString(), expiresAt: new Date(data.expiresAt).toDateString()}))} columns={columns} />
           </div>
         </section>
       </main>

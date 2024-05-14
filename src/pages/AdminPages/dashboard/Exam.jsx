@@ -63,19 +63,18 @@ export const Exam = () => {
       questionCategory: "DC-CC"
     }
   ];
-  console.log(questions);
   return (
     <div className='p-10'>
       <Header title="Exam/Practice" />
       <div className='w-full flex justify-end py-4'>
         <Button title="Upload Questions" btnStyles="px-4 py-3 rounded-md bg-primary text-white" btnClick={() => navigate("../upload-question")} />
       </div>
-      <div className='text-3xl font-light'>Question Categories</div>
+      <div className='text-2xl md:text-3xl font-light'>Question Categories</div>
         {tableData.map((item, index) => (
           <div key={item.questionCategory} className='my-2'>
-            <div className='flex justify-between items-center hover:bg-primary hover:text-white px-4 py-3 w-1/2'>
-              {/* <div>{index + 1}</div> */}
-              <div>{item.questionCategory}</div>
+            <div className='flex justify-between items-center hover:bg-primary hover:text-white px-4 py-3 md:w-1/2'>
+              <div>{index + 1}</div>
+              <div className='text-md md:text-lg'>{item.questionCategory}</div>
               <div className='flex justify-between gap-4 hover:textwhite'>
                 <Button title={<img src={view} alt='delete' className='w-7 h-7' />} btnStyles="text-primary bg-secondary px-4 py-2 rounded-md shadow-md"
                   btnClick={() => showQuestions(item.questionCategory)} />

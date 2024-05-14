@@ -11,13 +11,13 @@ const userHeader = [
   { key: "examineeId", label: "Examinee ID" },
   { key: "fullName", label: "Full Name" },
   { key: "rank", label: "Rank" },
-  { key: "checkInTime", label: "Checkin Time" },
+  { key: "checkIn", label: "Checkin Time" },
 
   // Add any other relevant columns for users
 ];
 
 export const Checkin = () => {
-  const { users, checkedInUsers, setCheckedInUsers } = useUserStore();
+  const { users, checkedInUsers, setCheckedInUsers, isLoggedIn } = useUserStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [eID, setEID] = useState("");
@@ -58,13 +58,13 @@ export const Checkin = () => {
   };
 
   const handleCheckIn = () => {
-    console.log("clicked!");
     if (eID === "") {
       setError("Enter Examinee ID!");
     } else {
       const userExists = users.some((user) => user.examineeId === eID);
       if (userExists) {
         const getUser = users.find((user) => user.examineeId === eID);
+        getUser.checkIn = new Date().toLocaleTimeString();
         setCheckedInUsers([...checkedInUsers, getUser]);
         console.log(checkedInUsers);
         console.log("user exists");
@@ -82,8 +82,8 @@ export const Checkin = () => {
       <Header title="Check In" />
       <main className="flex-grow">
         <section className="flex flex-col gap-4">
-          <div className="flex mb-4 justify-between">
-            <div className="relative w-2/3 flex">
+          <div className="flex flex-col md:flex-row gap-4 mb-4 justify-between">
+            <div className="relative md:w-2/3 flex">
               <input
                 type="text"
                 className="border rounded-md py-2 px-4 pr-10 w-full"
@@ -129,11 +129,13 @@ export const Checkin = () => {
                 )}
               </div>
             </div>
+            <div className="flex justify-end">
             <Button
               title="Check Examinee In"
               btnStyles="px-4 py-3 bg-primary rounded-md text-white"
               btnClick={() => setShowModal(!showModal)}
             />
+            </div>
           </div>
           <div className="w-full">
           {!searchTerm && <Table data={users.length > 0 ? checkedInUsers.map((user, index) => ({ ...user, id: index + 1 })) : [{ id: 1, name: 'No Examinee is checked in yet' }]} columns={userHeader} />}
