@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { Table } from '../../../components/shared/Table';
-import { results } from '../../../components/user/results';
+import { results as originalResults } from '../../../components/user/results';
 import { Header } from '../../../components/shared/Header';
 
 const columns = [
@@ -13,23 +13,26 @@ const columns = [
 
 export const Results = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    // const [displayedMaterials, setDisplayedMaterials] = useState(materials.slice(0, 8));
+    const [displayedResults, setDisplayedResults] = useState(originalResults);
 
     const handleSearch = (e) => {
         const term = e.target.value;
         setSearchTerm(term);
 
         const regex = new RegExp(term, 'i');
-        // const filteredMaterials = materials.filter((material) =>
-        //     regex.test(material.title)
-        // );
+        const filteredResults = originalResults.filter((result) =>
+            regex.test(result.testDate) ||
+            regex.test(result.rank) ||
+            regex.test(result.score) ||
+            regex.test(result.duration)
+        );
 
-        // if (filteredMaterials.length === 1) {
-        //     setDisplayedMaterials(filteredMaterials);
-        // } else {
-        //     setDisplayedMaterials(filteredMaterials.slice(0, 8));
-        // }
-        console.log('doesn\'t work just yet');
+        setDisplayedResults(filteredResults);
+    };
+
+    const handleClearSearch = () => {
+        setSearchTerm('');
+        setDisplayedResults(originalResults);
     };
 
     return (
@@ -37,17 +40,38 @@ export const Results = () => {
             <Header title="Result" />
             <main className="flex-grow">
                 <section className='flex flex-col gap-4'>
-                    {/* <div className="flex mb-4">
-                        <div className="relative w-full md:w-2/3 flex">
+                    <div className="flex mb-4">
+                        <div className="relative w-full flex">
                             <input
                                 type="text"
                                 className="border rounded-md py-2 px-4 pr-10 w-full"
-                                placeholder="Search materials..."
+                                placeholder="Search results..."
                                 value={searchTerm}
                                 onChange={handleSearch}
                             />
                             <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                                <svg
+                                {searchTerm && (
+                                    <button
+                                        className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                                        onClick={handleClearSearch}
+                                    >
+                                        <svg
+                                            className="h-5 w-5"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M6 18L18 6M6 6l12 12"
+                                            />
+                                        </svg>
+                                    </button>
+                                )}
+                                {!searchTerm && (
+                                    <svg
                                     className="h-5 w-5 text-gray-400"
                                     viewBox="0 0 24 24"
                                     fill="none"
@@ -60,11 +84,12 @@ export const Results = () => {
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                                     />
                                 </svg>
+                                )}
                             </div>
                         </div>
-                    </div> */}
+                    </div>
                     <div className="md:w-full font-thin text-lg">
-                        <Table data={results} columns={columns} />
+                        <Table data={displayedResults} columns={columns} />
                     </div>
                 </section>
             </main>

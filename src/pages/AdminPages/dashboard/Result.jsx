@@ -1,229 +1,244 @@
-import React, { useEffect, useState } from 'react'
-import { Table } from '../../../components/shared/Table';
-import { Header } from '../../../components/shared/Header';
-import { Button } from '../../../components/shared/Button'
-import { Modal } from '../../../components/shared/Modal'
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { Table } from "../../../components/shared/Table";
+import { Header } from "../../../components/shared/Header";
+import { Button } from "../../../components/shared/Button";
+import { Modal } from "../../../components/shared/Modal";
+import * as XLSX from "xlsx";
+// import jsPDF from "jspdf";
+import { useUserStore } from "../../../store/userStore";
 
 const columns = [
-    { key: 'id', label: 'S/N' },
-    { key: 'examineeId', label: 'Examinee ID' },
-    { key: 'name', label: 'Name' },
-    { key: 'email', label: 'Email Adress' },
-    { key: 'checkinTime', label: 'Checkin Time' },
+  { key: "id", label: "S/N" },
+  { key: "userId", label: "ID" },
+  { key: "score", label: "Score" },
+  { key: "questions", label: "Total Questions" },
+  { key: "date", label: "Date" },
 ];
 
-const examineeData = [
-    {
-        id: 1,
-        examineeId: 'NCS/2021/001',
-        name: 'John Doe',
-        email: 'johndoe@gmail.com',
-        checkinTime: '12:00 PM'
-    },
-    {
-        id: 2,
-        examineeId: 'NCS/2021/002',
-        name: 'Jane Doe',
-        email: 'janedoe@gmail.com',
-        checkinTime: '12:00 PM'
-    },
-    {
-        id: 3,
-        examineeId: 'NCS/2021/003',
-        name: 'Doe John',
-        email: 'doejon@gmail.com',
-        checkinTime: '12:00 PM'
-    },
-    {
-        id: 1,
-        examineeId: 'NCS/2021/001',
-        name: 'John Doe',
-        email: 'johndoe@gmail.com',
-        checkinTime: '12:00 PM'
-    },
-    {
-        id: 2,
-        examineeId: 'NCS/2021/002',
-        name: 'Jane Doe',
-        email: 'janedoe@gmail.com',
-        checkinTime: '12:00 PM'
-    },
-    {
-        id: 3,
-        examineeId: 'NCS/2021/003',
-        name: 'Doe John',
-        email: 'doejon@gmail.com',
-        checkinTime: '12:00 PM'
-    }
-]
-
-const cards = [
-    {
-        icon: '👥',
-        value: 75,
-        label: 'Total User',
-        bgColor: 'bg-green-100',
-        textColor: 'text-green-600',
-        iconBgColor: 'bg-green-500',
-        iconTextColor: 'text-white',
-    },
-    {
-        icon: '👥',
-        value: 128,
-        label: 'Total subscriber',
-        bgColor: 'bg-blue-100',
-        textColor: 'text-blue-600',
-        iconBgColor: 'bg-blue-500',
-        iconTextColor: 'text-white',
-    }
-]
-
 export const Result = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [showModal, setShowModal] = useState(false);
-    const [exportFormat, setExportFormat] = useState('');
+  const { results } = useUserStore();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [format, setFormat] = useState("");
+  const [displayedResults, setDisplayedResults] = useState(results);
 
-    const handleExportFormat = (format) => {
-      setExportFormat(format);
-    };
+  const handleExportFormat = (exportFormat) => {
+    setShowModal(false);
+    console.log(`Exporting in ${exportFormat} format`);
 
-    const handleExport = () => {
-      // Export logic goes here
-      console.log(`Exporting in ${exportFormat} format`);
-    };
+    try {
+      switch (exportFormat) {
+        case "XLSX":
+          const wb = XLSX.utils.book_new();
+          const ws = XLSX.utils.json_to_sheet(displayedResults);
+          XLSX.utils.book_append_sheet(wb, ws, "Results");
+          XLSX.writeFile(wb, "Results.xlsx");
+          break;
+        case "CSV":
+          const csvRows = [];
+          const headers = Object.keys(displayedResults[0]);
+          csvRows.push(headers.join(","));
 
-    const handleSearch = (e) => {
-        const term = e.target.value;
-        setSearchTerm(term);
+          for (const row of displayedResults) {
+            const values = headers.map((header) => {
+              const escaped = ("" + row[header]).replace(/"/g, '\\"');
+              return `"${escaped}"`;
+            });
+            csvRows.push(values.join(","));
+          }
 
-        const regex = new RegExp(term, 'i');
-        // const filteredMaterials = materials.filter((material) =>
-        //     regex.test(material.title)
-        // );
+          const csvString = csvRows.join("\r\n");
+          const csvBlob = new Blob([csvString], {
+            type: "text/csv;charset=utf-8;",
+          });
+          const csvUrl = URL.createObjectURL(csvBlob);
+          const link = document.createElement("a");
+          link.href = csvUrl;
+          link.setAttribute("download", "Results.csv");
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          break;
+        // case "PDF":
+        //   const doc = new jsPDF();
+        //   let y = 10;
+        //   displayedResults.forEach((result, index) => {
+        //     doc.text(`Result ${index + 1}:`, 10, y);
+        //     y += 10;
+        //     for (const [key, value] of Object.entries(result)) {
+        //       doc.text(`${key}: ${value}`, 20, y);
+        //       y += 10;
+        //     }
+        //     y += 10; // Add extra space between results
+        //   });
+        //   doc.save("Results.pdf");
+        //   break;
+        default:
+          throw new Error(`Unsupported export format: ${exportFormat}`);
+      }
+    } catch (error) {
+      console.error(`Error exporting results: ${error}`);
+    }
+  };
 
-        // if (filteredMaterials.length === 1) {
-        //     setDisplayedMaterials(filteredMaterials);
-        // } else {
-        //     setDisplayedMaterials(filteredMaterials.slice(0, 8));
-        // }
-        console.log('doesn\'t work just yet');
-    };
+  const handleSearch = (e) => {
+    const term = e.target.value;
+    setSearchTerm(term);
 
-    const token = localStorage.getItem("auth-token");
-    
-    useEffect(() => {
-        axios
-        .get("https://ncs-cbt-api.onrender.com/admin/getScores", {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        })
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-}, [])
+    const regex = new RegExp(term, "i");
+    const filteredResults = results.filter(
+      (result) =>
+        regex.test(result.examineeId) ||
+        regex.test(result.date) ||
+        regex.test(result.category)
+    );
 
-    return (
-        <div className="flex flex-col w-full p-10 gap-4">
-            <Header title="Result" />
-            <main className="flex-grow">
-                <section className='flex flex-col gap-4'>
-                    <div className="flex mb-4 justify-between gap-8 h-14">
-                        <div className="relative flex w-2/3">
-                            <input
-                                type="text"
-                                className="border rounded-md py-2 px-4 w-full"
-                                placeholder="Search here..."
-                                value={searchTerm}
-                                onChange={handleSearch}
-                            />
-                            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                                <svg
-                                    className="h-5 w-5 text-gray-400"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                    />
-                                </svg>
-                            </div>
-                        </div>
-                        <div className='flex justify-end'>
-                            <Button title="Export Result" btnStyles="px-4 py-3 bg-primary rounded-md text-white" btnClick={() => setShowModal(!showModal)} />
-                        </div>
-                    </div>
-                    <div className="w-full">
-                        <Table data={examineeData} columns={columns} />
-                    </div>
-                </section>
-            </main>
-            {showModal &&
-                <Modal title="Export Result" content={
-                    <div className='flex flex-col gap-4 my-2'>
-                        <div className='text-primary'>Select an export format type</div>
-                        <div className="space-y-2">
-                            <div className="flex items-center">
-                                <input
-                                    id="pdf"
-                                    type="radio"
-                                    name="exportFormat"
-                                    value="PDF"
-                                    checked={exportFormat === 'PDF'}
-                                    onChange={() => handleExportFormat('PDF')}
-                                    className="form-radio h-5 w-5 text-green-600"
-                                />
-                                <label htmlFor="pdf" className="ml-2 text-gray-700">
-                                    PDF
-                                </label>
-                            </div>
-                            <div className="flex items-center">
-                                <input
-                                    id="doc"
-                                    type="radio"
-                                    name="exportFormat"
-                                    value="DOC"
-                                    checked={exportFormat === 'DOC'}
-                                    onChange={() => handleExportFormat('DOC')}
-                                    className="form-radio h-5 w-5 text-green-600"
-                                />
-                                <label htmlFor="doc" className="ml-2 text-gray-700">
-                                    DOC
-                                </label>
-                            </div>
-                            <div className="flex items-center">
-                                <input
-                                    id="csv"
-                                    type="radio"
-                                    name="exportFormat"
-                                    value="CSV"
-                                    checked={exportFormat === 'CSV'}
-                                    onChange={() => handleExportFormat('CSV')}
-                                    className="form-radio h-5 w-5 text-green-600"
-                                />
-                                <label htmlFor="csv" className="ml-2 text-gray-700">
-                                    CSV
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                }
-                    buttons={
-                        <Button title="Export" btnStyles="bg-primary px-4 py-3 text-white rounded-md w-full my-5" btnClick={() => setShowModal(false)} />
-                    }
-                    modStyles="bg-secondary w-1/2"
-                />
-            }
-        </div>
-    )
-}
+    setDisplayedResults(filteredResults);
+  };
+
+  const handleClearSearch = () => {
+    setSearchTerm("");
+    setDisplayedResults(originalResults);
+  };
+
+  return (
+    <div className="flex flex-col w-full p-10 gap-4">
+      <Header title="Result" />
+      <main className="flex-grow">
+        <section className="flex flex-col gap-4">
+          <div className="flex mb-4 justify-between gap-8 h-14">
+            <div className="relative flex w-full">
+              <input
+                type="text"
+                className="border rounded-md py-2 px-4 w-full"
+                placeholder="Search here..."
+                value={searchTerm}
+                onChange={handleSearch}
+              />
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                {searchTerm && (
+                  <button
+                    className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                    onClick={handleClearSearch}
+                  >
+                    <svg
+                      className="h-5 w-5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                )}
+                {!searchTerm && (
+                  <svg
+                    className="h-5 w-5 text-gray-400"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                )}
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <Button
+                title="Export Result"
+                btnStyles="px-4 py-3 bg-primary rounded-md text-white"
+                btnClick={() => setShowModal(true)}
+              />
+            </div>
+          </div>
+          <div className="w-full">
+            <Table
+              data={
+                displayedResults.length > 0
+                  ? displayedResults.map((results, index) => ({
+                      ...results,
+                      id: index + 1,
+                    }))
+                  : [{ examineeId: "No results available" }]
+              }
+              columns={columns}
+            />
+          </div>
+        </section>
+      </main>
+      {showModal && (
+        <Modal
+          title="Export Result"
+          content={
+            <div className="flex flex-col gap-4 my-2">
+              <div className="text-primary">Export as:</div>
+              <div className="space-y-2">
+                <div className="flex items-center">
+                  <input
+                    id="xlsx"
+                    type="radio"
+                    name="exportFormat"
+                    value="XLSX"
+                    checked={format === "XLSX"}
+                    onChange={() => setFormat("XLSX")}
+                    className="form-radio h-5 w-5 text-green-600"
+                  />
+                  <label htmlFor="xlsx" className="ml-2 text-gray-700">
+                    EXCEL
+                  </label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    id="csv"
+                    type="radio"
+                    name="exportFormat"
+                    value="CSV"
+                    checked={format === "CSV"}
+                    onChange={() => setFormat("CSV")}
+                    className="form-radio h-5 w-5 text-green-600"
+                  />
+                  <label htmlFor="csv" className="ml-2 text-gray-700">
+                    CSV
+                  </label>
+                </div>
+                {/* <div className="flex items-center">
+                  <input
+                    id="pdf"
+                    type="radio"
+                    name="exportFormat"
+                    value="PDF"
+                    checked={format === "PDF"}
+                    onChange={() => setFormat("PDF")}
+                    className="form-radio h-5 w-5 text-green-600"
+                  />
+                  <label htmlFor="pdf" className="ml-2 text-gray-700">
+                    PDF
+                  </label>
+                </div> */}
+              </div>
+            </div>
+          }
+          buttons={
+            <Button
+              title="Export"
+              btnStyles="bg-primary px-4 py-3 text-white rounded-md w-full my-5"
+              btnClick={() => handleExportFormat(format)}
+            />
+          }
+          closeModal={() => setShowModal(false)}
+          modStyles="bg-secondary w-1/2"
+        />
+      )}
+    </div>
+  );
+};
