@@ -166,8 +166,8 @@ export const UploadMaterials = () => {
       <Header title="Materials" />
       <main className="flex-grow">
         <section className="flex flex-col gap-4">
-          <div className="flex mb-4 justify-between">
-            <div className="relative w-2/3 flex">
+          <div className="flex md:flex-row flex-col gap-4 mb-4 justify-between">
+            <div className="relative md:w-2/3 flex">
               <input
                 type="text"
                 className="border rounded-md py-2 px-4 pr-10 w-full"
@@ -194,7 +194,7 @@ export const UploadMaterials = () => {
                 </svg>
               </div>
             </div>
-            <div>
+            <div className="flex justify-end">
               <Button
                 title="Upload Material"
                 btnStyles="px-4 py-3 text-white bg-primary rounded-md"
@@ -203,7 +203,7 @@ export const UploadMaterials = () => {
             </div>
           </div>
           <div className="text-2xl mt-6">Uploaded Materials</div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {!isSearching &&
               (displayedMaterials.length > 0 ? (
                 displayedMaterials.map((material, index) => (

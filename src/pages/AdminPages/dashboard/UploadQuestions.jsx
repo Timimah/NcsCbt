@@ -166,9 +166,7 @@ const updateQuestions = async () => {
     }
 
     const handleSaveQuestions = async () => {
-        // Here, you can handle the logic to save the questions data to a database or API
-        // const uniqueId = `${questionCategory}-${Math.random().toString(12).substr(2, 4)}`;
-        if (
+               if (
             questionCategory === "" ||
             questionDetails.some(
                 (question) => question.text === ""
@@ -208,12 +206,7 @@ const updateQuestions = async () => {
                     setUploadError("Uplaod Failed");
                 }
             }
-            // setQuestionCategory('');
-            // setQuestions([{ id: 1, text: '', options: ['', '', '', ''], type: 'single', answer: '' }])
         }
-
-        // setIsPreviewVisible(true);
-        // navigate('../preview-question')
     };
 
     const uploadFile = () => {

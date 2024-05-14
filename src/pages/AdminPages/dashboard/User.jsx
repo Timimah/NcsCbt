@@ -159,9 +159,9 @@ export const User = () => {
                 )}
               </div>
             </div>
-            <div className="flex  justify-between w-full md:w-1/3 gap-4">
+            <div className="flex justify-end w-full md:w-1/3 gap-4">
               {cards.map((card, index) => (
-                <div key={index} className="w-full">
+                <div key={index} className="w-2/3 md:w-full">
                   <OverviewCard
                     cardStyles="justify-center py-3"
                     label={card.label}

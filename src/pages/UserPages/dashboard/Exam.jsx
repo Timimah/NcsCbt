@@ -7,8 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Modal } from "../../../components/shared/Modal";
 
 export const ExamPage = () => {
-  const { examQuestions, setQuestions, loggedInUserRank } = useUserStore();
-  // const token = localStorage.getItem("auth-token");
+  const { examQuestions, setQuestions, loggedInUserRank, userIsSubscribed } = useUserStore();
   const navigate = useNavigate();
   const [nextRank, setNextRank] = useState("");
   const [exam, setExam] = useState(nextRank);
@@ -73,7 +72,7 @@ export const ExamPage = () => {
   return (
     <div className="flex flex-col w-full p-10 gap-6">
       <Header title="Exam" />
-      {examQuestions.length === 0 ? (
+      {userIsSubscribed === true ? (examQuestions.length === 0 ? (
         <div className="flex items-center bg-cardgreen p-10 rounded-md text-white justify-center flex-grow">
           <p className="text-2xl text-center">No Examination Available</p>
         </div>
@@ -92,7 +91,17 @@ export const ExamPage = () => {
             }} />
           </div>
         </div>
-      )}
+      )) :
+    (
+      <div>
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-cardgreen p-10 rounded-md text-white flex-grow">
+          <p className="text-lg md:text-2xl text-center">Please subscribe to take the exam</p>
+          <Button title="Subscribe" btnStyles="bg-yellow text-black px-4 py-3 rounded-md shadow-md" btnClick={() => {
+            navigate("/dashboard/user-profile");
+          }} />
+        </div>
+       </div>
+    )}
       {showInstructions && (
         <Modal
           title="Instructions"

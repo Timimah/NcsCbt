@@ -46,6 +46,7 @@ export const Dashboard = ({ children }) => {
   }
 
   const handleProfile = () => {
+    setIsMenuOpen(false);
     navigate('/dashboard/user-profile')
 }
 
@@ -219,11 +220,11 @@ export const Dashboard = ({ children }) => {
         </div>
       </section>
       {/* mobile dashboard nav */}
-      <section className="md:hidden flex justify-between bg-vector h-full max-h-screen">
+      <section className="md:hidden flex justify-between bg-vector bg-secondary h-full max-h-screen">
         {isMenuOpen &&
         <div className="flex flex-col items-center absolute left-0 bottom-0 top-0 bg-white text-grey py-10 px-8 z-10 w-3/4">
         <div className="flex justify-between w-full mb-6">
-        <div className="flex items-center cursor-pointer gap-4" onClick={handleProfile}>
+        <div className="flex flex-col md:flex-row md:items-center cursor-pointer md:gap-4" onClick={handleProfile}>
                 <img alt="User Avatar" className="w-8 h-8 rounded-full mr-2" />
                 <div>
                     <span className='font-bold text-darkgrey text-lg max-w-30'>{userName}</span>

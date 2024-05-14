@@ -95,7 +95,7 @@ export const CreateAccount = () => {
   };
  
   return (
-    <div className="bg-vector min-h-screen flex items-center justify-center py-10">
+    <div className="bg-vector bg-secondary min-h-screen flex items-center justify-center py-10">
       <div className='w-full max-w-lg px-10 py-8 mx-8 md:mx-auto bg-secondary rounded-2xl shadow-md'>
         <div className='max-w-md mx-auto space-y-3' onSubmit={handleSubmit}>
           <h3 className="text-3xl text-primary font-bold">Welcome</h3>
@@ -180,7 +180,6 @@ export const CreateAccount = () => {
           <div className="flex flex-col gap-3 pt-3 items-center">
             <Button title="Create Account" btnStyles="bg-primary text-white text-lg rounded-lg shadow-sm py-4 px-4 w-full" btnClick={handleSubmit} />
             <Button title="Login" btnStyles="border border-primary text-primary text-lg rounded-lg shadow-sm py-4 px-4 w-full" btnClick={() => navigate('/login')} />
-            {/* <a href="#">Forgot Password</a> */}
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "../../../components/shared/Button";
 import { useUserStore } from "../../../store/userStore";
@@ -44,6 +44,7 @@ export const Login = () => {
         setLoggedInUserPhoneNumber(user.phoneNumber);
         setLoggedInUserRank(user.rank);
         navigate("/dashboard/overview");
+        setIsLoading(false);
         setExamineeId("");
         setPassword("");
       } catch (err) {
@@ -59,7 +60,7 @@ export const Login = () => {
   };
 
   return (
-    <div className="bg-vector min-h-screen flex items-center justify-center">
+    <div className="bg-vector bg-secondary min-h-screen flex flex-col gap-2 items-center justify-center">
       <div className="w-full max-w-lg px-10 py-8 mx-8 md:mx-auto bg-secondary rounded-2xl shadow-md">
         <div className="max-w-md mx-auto space-y-3">
           <h3 className="text-3xl text-primary font-bold">Welcome back!</h3>
@@ -102,13 +103,12 @@ export const Login = () => {
           </div>
           {error && <div className="text-sm text-red-500">{error}</div>}
           <div className="flex flex-col gap-3 pt-3 items-center">
-            <button
-              className="bg-primary text-white text-lg rounded-lg shadow-sm py-4 px-4 w-full relative text-center flex justify-center items-center"
-              onClick={handleLogin}
-              disabled={!isValid}
-            >
-              {isLoading ? "Loading..." : "Login"}
-            </button>
+            <Button
+              title={isLoading ? "Loading..." : "Login"}
+              btnStyles="bg-primary text-white text-lg rounded-lg shadow-sm py-4 px-4 w-full relative text-center flex justify-center items-center"
+              btnClick={handleLogin}
+              disabled={isValid === false || isLoading === true}
+            />
 
             <Button
               title="Create Account"
@@ -118,6 +118,7 @@ export const Login = () => {
           </div>
         </div>
       </div>
+      <Link to="/forgot-password" className="text-sm text-primary">Forgot Password?</Link>
     </div>
   );
 };

@@ -12,6 +12,7 @@ const columns = [
 ];
 
 export const Results = () => {
+    // const {userResults} = useUserStore();
     const [searchTerm, setSearchTerm] = useState('');
     const [displayedResults, setDisplayedResults] = useState(originalResults);
 

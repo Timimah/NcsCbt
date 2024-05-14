@@ -106,8 +106,8 @@ export const Result = () => {
       <Header title="Result" />
       <main className="flex-grow">
         <section className="flex flex-col gap-4">
-          <div className="flex mb-4 justify-between gap-8 h-14">
-            <div className="relative flex w-full">
+          <div className="flex flex-col md:flex-row mb-4 justify-between gap-4">
+            <div className="relative flex md:w-2/3">
               <input
                 type="text"
                 className="border rounded-md py-2 px-4 w-full"
@@ -168,6 +168,8 @@ export const Result = () => {
                   ? displayedResults.map((results, index) => ({
                       ...results,
                       id: index + 1,
+                      questions: results.data.length,
+                      date: new Date(results.date).toDateString(),
                     }))
                   : [{ examineeId: "No results available" }]
               }
