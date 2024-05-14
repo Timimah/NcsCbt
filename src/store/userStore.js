@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
+import { results } from "../components/user/results";
 
 export const useUserStore = create((set, get) => ({
   isLoggedIn: false,
@@ -11,12 +12,14 @@ export const useUserStore = create((set, get) => ({
   loggedInUserId: "",
   loggedInUserRank: "",
   loggedInUserPhoneNumber: "",
-  subscriptions: [],
+  subscribers: [],
+  results: [],
   users: [],
   checkedInUsers: [],
   admin: [],
   materials: [],
   userMaterials: [],
+  userResults: [],
   questions: [],
   examQuestions: [],
   userImage: null,
@@ -39,6 +42,10 @@ export const useUserStore = create((set, get) => ({
 
   setLoggedInUserPhoneNumber: (user) => set({ loggedInUserPhoneNumber: user }),
 
+  setSubscribers: (subscribers) => set({ subscribers: subscribers }),
+
+  setResults: (results) => set({ results: results }),
+
   setUsers: (users) => set({ users: users }),
 
   setCheckedInUsers: (users) => set({ checkedInUsers: users }),
@@ -48,6 +55,8 @@ export const useUserStore = create((set, get) => ({
   setMaterials: (materials) => set({ materials: materials }),
 
   setUserMaterials: (userMaterials) => set({ userMaterials: userMaterials }),
+
+  setUserResults: (userResults) => set({ userResults: userResults }),
 
   setQuestions: (questions) => set({ questions: questions }),
 
@@ -59,32 +68,7 @@ export const useUserStore = create((set, get) => ({
     set((state) => ({ ...state, isLoggedIn: false, loggedInUser: null }));
   },
 
-  setSubscription: (subscriptionData) => {
-    set((state) => ({
-      ...state,
-      subscriptions: [...state.subscriptions, subscriptionData],
-    }));
-  },
 
-  cancelSubscription: (subscriptionId) => {
-    set((state) => ({
-      ...state,
-      subscriptions: state.subscriptions.filter(
-        (subscription) => subscription.id !== subscriptionId,
-      ),
-    }));
-  },
-
-  addQuiz: (quiz) => {
-    set((state) => ({ ...state, quizzes: [...state.quizzes, quiz] }));
-  },
-
-  removeQuiz: (quizId) => {
-    set((state) => ({
-      ...state,
-      quizzes: state.quizzes.filter((quiz) => quiz.id !== quizId),
-    }));
-  },
 }));
 
 // Initialize the store
