@@ -10,7 +10,7 @@ export const OverviewCard = ({ cardStyles, label, icon, cardValue, cardClick }) 
                 {icon}
             </div>
             <div>
-                <div className="font-bold text-2xl">{cardValue}</div>
+                <div className="font-bold text-lg md:text-2xl">{cardValue}</div>
                 <div className="text-xs font-light" >{label}</div>
             </div>
         </div>
