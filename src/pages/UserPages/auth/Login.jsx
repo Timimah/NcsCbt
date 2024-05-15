@@ -38,6 +38,14 @@ export const Login = () => {
         localStorage.setItem("auth-token", response.data.token);
         setIsLoading(false);
         setIsLoggedIn(true);
+        localStorage.setItem("isLoggedIn", true);
+        const userData = {
+          userEmail: user.email,
+          userId: user.examineeId,
+          userPhone: user.phoneNumber,
+          userrank: user.rank,
+        };
+        localStorage.setItem("userData", JSON.stringify(userData));
         setUserIsUser(true);
         setLoggedInUserEmail(user.email);
         setLoggedInUserId(user.examineeId);
@@ -118,7 +126,9 @@ export const Login = () => {
           </div>
         </div>
       </div>
-      <Link to="/forgot-password" className="text-sm text-primary">Forgot Password?</Link>
+      <Link to="/forgot-password" className="text-sm text-primary">
+        Forgot Password?
+      </Link>
     </div>
   );
 };

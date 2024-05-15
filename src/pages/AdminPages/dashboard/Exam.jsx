@@ -63,6 +63,7 @@ export const Exam = () => {
       questionCategory: "DC-CC"
     }
   ];
+  
   return (
     <div className='p-10'>
       <Header title="Exam/Practice" />

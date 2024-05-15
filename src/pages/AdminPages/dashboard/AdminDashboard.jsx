@@ -9,7 +9,7 @@ export const AdminDashboard = ({ children }) => {
   const [active, setActive] = useState("dashboardmain");
   const navigate = useNavigate();
   const {
-    loggedInUser,
+    loggedInUser, setIsLoggedIn
   } = useUserStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const token = localStorage.getItem("auth-token");
@@ -236,6 +236,7 @@ export const AdminDashboard = ({ children }) => {
             }
             onClick={() => {
               setActive("logout");
+              setIsLoggedIn(false)
               navigate("/admin");
             }}
           >
@@ -259,7 +260,7 @@ export const AdminDashboard = ({ children }) => {
                 fill={active === "material" ? "white" : "#8A898D"}
               />
             </svg>
-            <p className="">Logout</p>
+            <p className="">Log out</p>
           </div>
         </div>
         <div className="row-start-2 col-start-2 overflow-y-scroll w-full">
@@ -494,6 +495,7 @@ export const AdminDashboard = ({ children }) => {
               }
               onClick={() => {
                 setActive("logout");
+                setIsLoggedIn(false)
                 navigate("/admin");
               }}
             >
@@ -517,7 +519,7 @@ export const AdminDashboard = ({ children }) => {
                   fill={active === "material" ? "white" : "#8A898D"}
                 />
               </svg>
-              <p className="">Logout</p>
+              <p className="">Log out</p>
             </div>
           </div>
         )}

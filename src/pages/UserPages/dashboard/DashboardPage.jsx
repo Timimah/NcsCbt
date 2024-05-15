@@ -10,91 +10,11 @@ import axios from "axios";
 import { getDownloadURL, getMetadata, listAll, ref } from "firebase/storage";
 import { imageStorage, materialStorage } from "../../../../config";
 
-export const DashboardPage = ({ title, username }) => {
-  const {
-    isLoggedIn,
-    setUserMaterials,
-    userMaterials,
-    setExamQuestions,
-    examQuestions,
-    loggedInUser,
-    userIsSubscribed,
-    setUserIsSubscribed,
-    loggedInUserId,
-  } = useUserStore();
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+export const DashboardPage = () => {
+  const {userMaterials, isLoggedIn} = useUserStore()
   const topMaterials = userMaterials.slice(0, 4);
-  const allMaterialsRef = ref(materialStorage, "materials/");
-  console.log(loggedInUser, "logged in user");
-  const avatarRef = ref(imageStorage, `images/${loggedInUser}`);
-  const token = localStorage.getItem("auth-token");
-  console.log(userMaterials);
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      const getMaterials = async () => {
-        setIsLoading(true);
-        const res = await listAll(allMaterialsRef);
-        let newMaterials = [];
-        for (const item of res.items) {
-          const url = await getDownloadURL(item);
-          const metadata = await getMetadata(item);
-          const coverImageUrl = metadata.customMetadata.materialCover;
-          newMaterials.push({
-            url: url,
-            materialDetails: metadata,
-            coverImage: coverImageUrl,
-          });
-          setUserMaterials(newMaterials);
-          setIsLoading(false);
-        }
-      };
-      getMaterials();
-
-      // const getUserAvatar = async () => {
-      //   const res = await listAll(avatarRef)
-
-      //   for (const item of res.items) {
-      //     const metadata = await getMetadata(item);
-      //     console.log(metadata)
-      //     const imageUrl = metadata.customMetadata.imageUrl;
-
-      //     setUserImage(imageUrl);
-      //     console.log(userImage, "user image")
-      //   }
-      // }
-      //   getUserAvatar()
-
-      axios
-        .get("https://ncs-cbt-api.onrender.com/exam/getExamQuestions", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((res) => {
-          console.log(res);
-          setUserIsSubscribed(true);
-          setExamQuestions(res.data.data);
-          console.log(examQuestions);
-        })
-        .catch((err) => {
-          if (err.response.status === 401) {
-            setUserIsSubscribed(false);
-          }
-        });
-    } else {
-      navigate("/login");
-    }
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div className="bg-cardgreen absolute inset-0 flex items-center justify-center mx-auto">
-        <div className="rounded-full w-52 h-52 animate-bounce border-8 border-secondary"></div>
-      </div>
-    );
-  }
+  useEffect(()=> console.log(isLoggedIn),[isLoggedIn, userMaterials])
 
   return (
     <div className="flex flex-col w-full p-10">

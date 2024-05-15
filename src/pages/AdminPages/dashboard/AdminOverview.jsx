@@ -16,19 +16,10 @@ export const AdminOverview = () => {
     users,
     materials,
     questions,
-    setUsers,
-    setMaterials,
-    setQuestions,
-    isLoggedIn,
     checkedInUsers,
     subscribers,
-    setSubscribers,
     results,
-    setResults,
-    setUserResults,
   } = useUserStore();
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
 
   const cards = [
     {
@@ -60,105 +51,6 @@ export const AdminOverview = () => {
     },
   ];
 
-  const allMaterialsRef = ref(materialStorage, "materials/");
-
-  useEffect(() => {
-    if (
-      users.length !== 0 ||
-      materials.length !== 0 ||
-      questions.length !== 0
-    ) {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem("auth-token");
-    if (isLoggedIn) {
-      setIsLoading(true);
-      axios
-        .get("https://ncs-cbt-api.onrender.com/admin/getUsers", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        })
-        .then((res) => {
-          setUsers(res.data.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-
-      const getMaterials = async () => {
-        const res = await listAll(allMaterialsRef);
-        let newMaterials = [];
-
-        for (const item of res.items) {
-          const url = await getDownloadURL(item);
-          const metadata = await getMetadata(item);
-          const coverImageUrl = metadata.customMetadata.materialCover;
-
-          newMaterials.push({
-            url: url,
-            materialDetails: metadata,
-            coverImage: coverImageUrl,
-          });
-          setMaterials(newMaterials);
-        }
-      };
-      getMaterials();
-
-      axios
-        .get("https://ncs-cbt-api.onrender.com/exam/", {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-          },
-        })
-        .then((res) => {
-          setQuestions(res.data.data);
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-
-      axios
-        .get("https://ncs-cbt-api.onrender.com/admin/getAllSubscribers", {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        })
-        .then((res) => {
-          setSubscribers(res.data.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-
-      axios
-        .get("https://ncs-cbt-api.onrender.com/admin/getScores", {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        })
-        .then((res) => {
-          setResults(res.data.data);
-          setUserResults(res.data.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } else {
-      navigate("/admin");
-    }
-  }, []);
-
   console.log(
     users,
     "users",
@@ -170,20 +62,7 @@ export const AdminOverview = () => {
     "subscribers",
     results,
     "results"
-  );
-
-  // const sortedMaterials = materials.sort((a, b) => b.rating - a.rating);
-
-  // Get the top 4 materials with the highest rating
-  const topMaterials = materials.slice(0, 4);
-
-  if (isLoading) {
-    return (
-      <div className="bg-cardgreen absolute inset-0 flex items-center justify-center mx-auto">
-        <div className="rounded-full w-52 h-52 animate-bounce border-8 border-secondary"></div>
-      </div>
-    );
-  }
+  )
 
   return (
     <div className="flex flex-col w-full p-10">
