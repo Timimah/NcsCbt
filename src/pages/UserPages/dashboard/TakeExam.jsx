@@ -7,28 +7,36 @@ import prev from "../../../assets/prev.png";
 import { Button } from "../../../components/shared/Button";
 import { Modal } from "../../../components/shared/Modal";
 import { Header } from "../../../components/shared/Header";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../../../store/userStore";
 import axios from "axios";
+import { ProgressBar } from "../../../components/shared/ProgressBar";
 
 export const TakeExam = () => {
   const navigate = useNavigate();
-  const { isLoggedIn, loggedInUserId, questions, setQuizActive } =
-    useUserStore();
+  const {
+    isLoggedIn,
+    loggedInUserId,
+    questions,
+    setQuizActive,
+    userIsAdmin,
+    userIsUser,
+  } = useUserStore();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answered, setAnswered] = useState(false);
   const [answers, setAnswers] = useState([]);
   const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [timeRemaining, setTimeRemaining] = useState();
-  // const [duration, setDuration] = useState();
+  const [submit, setSubmit] = useState();
+  const [timerId, setTimerId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [resultModal, setResultModal] = useState(false);
   const [score, setScore] = useState("");
   const [message, setMessage] = useState("");
-  const [reviewing, setReviewing] = useState(false);
+  const [reviewMode, setReviewMode] = useState(false);
   const [answer, setAnswer] = useState();
-  const [correctAnswers, setCrrectAnswers] = useState();
-  const [wrongAnswers, setWrongAnswers] = useState();
+  const [crctAnswers, setCrctAnswers] = useState([]);
+  const [wrngAnswers, setWrngAnswers] = useState([]);
 
   let timer;
   let quizDetails;
@@ -48,8 +56,10 @@ export const TakeExam = () => {
     // setAnswers([]);
     setTimeRemaining(quizDetails.time * 60);
     timer = setInterval(() => {
+      setTimerId(timer);
       setTimeRemaining((prevTime) => {
         if (prevTime <= 0) {
+          console.log("ended");
           clearInterval(timer); // Stop the timer when timeRemaining reaches 0
           handleSubmit(); // Call the handleSubmit function when the timer ends
           return 0; // Set timeRemaining to 0 to prevent negative values
@@ -63,12 +73,13 @@ export const TakeExam = () => {
   useEffect(() => {
     if (isLoggedIn) {
       if (timeRemaining === 0) {
+        console.log("Time up");
         handleSubmit();
-
-        // setShowModal(true);
       }
+    } else {
+      navigate("/login");
     }
-  }, [timeRemaining]);
+  }, [timeRemaining, isLoggedIn]);
 
   const handleOptionChange = (value, questionId) => {
     setAnswered(true);
@@ -99,8 +110,9 @@ export const TakeExam = () => {
   const token = localStorage.getItem("auth-token");
 
   const handleSubmit = async () => {
+    clearInterval(timerId);
     console.log(selectedAnswers);
-    setReviewing(false);
+    // setReviewMode(false);
     const practiceData = {
       answers: selectedAnswers,
       userId: loggedInUserId,
@@ -122,20 +134,26 @@ export const TakeExam = () => {
       console.log(response);
       const data = response.data.data;
       setResultModal(true);
-      setMessage(response.data.message);
-      const totalMark = data.reduce((total, item) => total + item.mark, 0);
-      console.log
-
-// Get correct and wrong answers
-const correctAnswers = data.filter(item => item.userAnswer === item.correctAnswer);
-const wrongAnswers = data.filter(item => item.userAnswer !== item.correctAnswer);
-
-      console.log(totalMark, correctAnswers, wrongAnswers);
+      const message = response.data.message;
+      setMessage(message);
+      const mark = data.map((item) => item.mark);
+      const totalMark = mark.reduce((a, b) => a + b, 0);
+      console.log(data.length);
+      setScore((totalMark / data.length) * 100);
+      const correctAnswers = data.filter(
+        (item) => item.userAnswer === item.correctAnswer
+      );
+      setCrctAnswers(correctAnswers);
+      const wrongAnswers = data.filter(
+        (item) => item.userAnswer !== item.correctAnswer
+      );
+      setWrngAnswers(wrongAnswers);
+      console.log("You scored, ", score);
       // navigate('/dashboard/result')
     } catch (error) {
       console.log(error);
     }
-    setScore("");
+    // setScore("");
   };
 
   return (
@@ -164,169 +182,185 @@ const wrongAnswers = data.filter(item => item.userAnswer !== item.correctAnswer)
           <Header title="Exam" />
         )}
       </div>
-      {reviewing === true && (
-        <div className="absolute top-32 bottom-0 left-0 right-0 z-20 p-10 flex flex-col overflow-y-scroll">
-          <div className="flex text-2xl font-bold">Review Questions</div>
-          <div className="my-6 flex flex-col gap-6">
-            {questions.map((question, index) => (
-              <div key={index} className="flex flex-col gap-4">
-                <div className="font-bold text-lg">Question {index + 1}</div>
-                <div className="text-lg">{question.question}</div>
-                {question.options.map((option, index) => (
+      {reviewMode ? (
+        <div className="flex flex-col px-20 gap-4">
+          <div className="flex justify-center text-xl font-bold">
+            Review Questions
+          </div>
+          {questions.map((question, i) => (
+            <div key={i} className="flex flex-col gap-4">
+              {/* <div className="font-bold text-lg">Question </div> */}
+              <div className="text-lg">
+                {i + 1}. {question.question}
+              </div>
+              {question.options.map((option, optionIndex) => (
+                <div
+                  key={optionIndex}
+                  className={`${
+                    selectedAnswers[optionIndex] === option
+                      ? "bg-green-200"
+                      : ""
+                  } flex`}
+                >
+                  <span className="mr-3">
+                    {String.fromCharCode(65 + optionIndex)}.{" "}
+                  </span>
+                  <div>{option}</div>
+                </div>
+              ))}
+            </div>
+          ))}
+          <div className="flex gap-10 px-10 mb-10">
+            <Button
+              title="Submit"
+              btnStyles="bg-primary text-white px-4 py-3 w-full rounded-md"
+              btnClick={handleSubmit}
+            />
+            <Button
+              title="Back to quiz"
+              btnStyles="bg-primary text-white px-4 py-3 w-full rounded-md"
+              btnClick={() => setReviewMode(false)}
+            />
+          </div>
+        </div>
+      ) : (
+        <>
+          <div
+            className="md:hidden flex ml-12 mb-4 gap-2 text-gray-600 cursor-pointer hover:text-primary"
+            onClick={() => setShowModal(true)}
+          >
+            <img src={quit} alt="quit" />
+            <span className="text-lg">Quit </span>
+          </div>
+          <div className="flex gap-8 justify-between items-center w-full px-10">
+            <div className="md:w-1/2 md:px-8 px-4 flex flex-col mb-10 gap-8">
+              <div className="flex flex-col gap-8">
+                <div className="flex justify-between items-center">
+                  <div className="text-3xl">Question {currentQuestion + 1}</div>
+                  <div
+                    className={`text-3xl font-bold px-4 py-3 ${
+                      timeRemaining <= 300
+                        ? "animate-pulse text-red-600 bg-transparent"
+                        : "text-white bg-red-600"
+                    }`}
+                  >
+                    {Math.floor(timeRemaining / 60)}:
+                    {(timeRemaining % 60).toString().padStart(2, "0")}
+                  </div>
+                </div>
+                <div className="font-semibold text-lg">
+                  {questions[currentQuestion].question}
+                </div>
+              </div>
+              <div className="flex flex-col md:grid md:grid-cols-2 gap-6 mb-8">
+                {questions[currentQuestion].options.map((option, index) => (
                   <div
                     key={index}
-                    className={`${
-                      answer[index].correctAnswer === option
-                        ? "bg-secondary"
+                    className={`flex items-center justify-center rounded-lg px-4 py-3 cursor-pointer border border-primary text-primary font-bold  ${
+                      answers[currentQuestion] === option
+                        ? "bg-primary text-white"
                         : ""
-                    } flex`}
+                    }`}
+                    onClick={() =>
+                      handleOptionChange(option, questions[currentQuestion].id)
+                    }
                   >
                     <span className="mr-3">
                       {String.fromCharCode(65 + index)}.{" "}
                     </span>
-                    <div>{option}</div>
+                    {option}
                   </div>
                 ))}
               </div>
-            ))}
-          </div>
-        </div>
-      )}
-      <div
-        className="md:hidden flex ml-12 mb-4 gap-2 text-gray-600 cursor-pointer hover:text-primary"
-        onClick={() => setShowModal(true)}
-      >
-        <img src={quit} alt="quit" />
-        <span className="text-lg">Quit </span>
-      </div>
-      <div className="flex gap-8 justify-between items-center w-full px-10">
-        <div className="md:w-1/2 md:px-8 px-4 flex flex-col mb-10 gap-8">
-          <div className="flex flex-col gap-8">
-            <div className="flex justify-between items-center">
-              <div className="text-3xl">Question {currentQuestion + 1}</div>
               <div
-                className={`text-3xl font-bold px-4 py-3 ${
-                  timeRemaining <= 300
-                    ? "animate-pulse text-red-600 bg-transparent"
-                    : "text-white bg-red-600"
-                }`}
+                className="flex md:flex-row flex-col md:justify-evenly gap-8"
+                id="navButton"
               >
-                {Math.floor(timeRemaining / 60)}:
-                {(timeRemaining % 60).toString().padStart(2, "0")}
-              </div>
-            </div>
-            <div className="font-semibold text-lg">
-              {questions[currentQuestion].question}
-            </div>
-          </div>
-          <div className="flex flex-col md:grid md:grid-cols-2 gap-6 mb-8">
-            {questions[currentQuestion].options.map((option, index) => (
-              <div
-                key={index}
-                className={`flex items-center justify-center rounded-lg px-4 py-3 cursor-pointer border border-primary text-primary font-bold  ${
-                  answers[currentQuestion] === option
-                    ? "bg-primary text-white"
-                    : ""
-                }`}
-                onClick={() =>
-                  handleOptionChange(option, questions[currentQuestion].id)
-                }
-              >
-                <span className="mr-3">
-                  {String.fromCharCode(65 + index)}.{" "}
-                </span>
-                {option}
-              </div>
-            ))}
-          </div>
-          <div
-            className="flex md:flex-row flex-col md:justify-evenly gap-8"
-            id="navButton"
-          >
-            <Button
-              title={
-                <div className="flex px-4 gap-1 items-center">
-                  <img src={prev} className="" alt="" />
-                  <span>Previous</span>
-                </div>
-              }
-              btnStyles={`text-lg bg-secondary shadow-md px-4 rounded-lg w-full ${
-                currentQuestion == 0 ? "text-gry bg-gray" : "text-primary"
-              }`}
-              btnClick={handlePrevious}
-              disable={currentQuestion === 0}
-            />
-            {currentQuestion === questions.length - 1 ? (
-              <Button
-                title="Submit"
-                btnStyles="bg-primary text-white text-lg rounded-lg shadow-md px-4 w-full"
-                btnClick={handleSubmit}
-              />
-            ) : (
-              <Button
-                title={
-                  <div className="flex px-4 py-3 gap-1 items-center">
-                    <img src={next} className="" alt="" />
-                    <span>Next</span>
-                  </div>
-                }
-                btnStyles={`text-lg bg-primary shadow-md px-4 py-3 rounded-lg w-full text-white
+                <Button
+                  title={
+                    <div className="flex px-4 gap-1 items-center">
+                      <img src={prev} className="" alt="" />
+                      <span>Previous</span>
+                    </div>
+                  }
+                  btnStyles={`text-lg bg-secondary shadow-md px-4 rounded-lg w-full ${
+                    currentQuestion == 0 ? "text-gry bg-gray" : "text-primary"
+                  }`}
+                  btnClick={handlePrevious}
+                  disable={currentQuestion === 0}
+                />
+                {currentQuestion === questions.length - 1 ? (
+                  <Button
+                    title="Submit"
+                    btnStyles="bg-primary text-white text-lg rounded-lg shadow-md px-4 w-full"
+                    btnClick={() => setReviewMode(true)}
+                  />
+                ) : (
+                  <Button
+                    title={
+                      <div className="flex px-4 py-3 gap-1 items-center">
+                        <img src={next} className="" alt="" />
+                        <span>Next</span>
+                      </div>
+                    }
+                    btnStyles={`text-lg bg-primary shadow-md px-4 py-3 rounded-lg w-full text-white
                         ${
                           currentQuestion === questions.length - 1
                             ? "hidden"
                             : ""
                         }`}
-                btnClick={handleNext}
-                // disabled={currentQuestion === questions.length - 1}
-              />
-            )}
-          </div>
-        </div>
-        <div className="md:flex flex-col gap-8 w-1/2 hidden">
-          <div className="bg-secondary shadow-md rounded-lg py-10 items-center justify-center p-8 flex flex-col gap-8">
-            <div
-              className={`${
-                timeRemaining <= 300
-                  ? "bg-transparent text-primary"
-                  : "bg-primary text-white"
-              } rounded-full p-6 w-24 h-24 text-center flex flex-col justify-center items-center`}
-            >
-              <div>Timer</div>
-              <div
-                className={`text-2xl font-bold ${
-                  timeRemaining <= 300 ? "text-red-500 animate-pulse" : ""
-                }`}
-              >
-                {Math.floor(timeRemaining / 60)}:
-                {(timeRemaining % 60).toString().padStart(2, "0")}
+                    btnClick={handleNext}
+                  />
+                )}
               </div>
             </div>
-            <div className="hidden md:grid md:grid-cols-5 lg:grid-cols-10 gap-4 place-items-center">
-              {questions.map((_, index) => (
-                <Button
-                  key={index}
-                  title={index + 1}
-                  btnStyles={`border ${
-                    currentQuestion === index ? "border border-primary" : ""
-                  }  ${
-                    selectedAnswers[index]
-                      ? "bg-primary text-white"
-                      : "bg-white "
-                  } text-primary rounded shadow-md w-10 h-10`}
-                  btnClick={(e) => setCurrentQuestion(index)}
-                />
-              ))}
+            <div className="md:flex flex-col gap-8 w-1/2 hidden">
+              <div className="bg-secondary shadow-md rounded-lg py-10 items-center justify-center p-8 flex flex-col gap-8">
+                <div
+                  className={`${
+                    timeRemaining <= 300
+                      ? "bg-transparent text-primary"
+                      : "bg-primary text-white"
+                  } rounded-full p-6 w-24 h-24 text-center flex flex-col justify-center items-center`}
+                >
+                  <div>Timer</div>
+                  <div
+                    className={`text-2xl font-bold ${
+                      timeRemaining <= 300 ? "text-red-500 animate-pulse" : ""
+                    }`}
+                  >
+                    {Math.floor(timeRemaining / 60)}:
+                    {(timeRemaining % 60).toString().padStart(2, "0")}
+                  </div>
+                </div>
+                <div className="hidden md:grid md:grid-cols-5 lg:grid-cols-10 gap-4 place-items-center">
+                  {questions.map((_, index) => (
+                    <Button
+                      key={index}
+                      title={index + 1}
+                      btnStyles={`border ${
+                        currentQuestion === index ? "border border-primary" : ""
+                      }  ${
+                        selectedAnswers[index]
+                          ? "bg-primary text-white"
+                          : "bg-white "
+                      } text-primary rounded shadow-md w-10 h-10`}
+                      btnClick={(e) => setCurrentQuestion(index)}
+                    />
+                  ))}
+                </div>
+              </div>
+              <div
+                className="flex gap-2 text-gray-600 cursor-pointer hover:text-primary"
+                onClick={() => setShowModal(true)}
+              >
+                <img src={quit} alt="quit" />
+                <span className="text-xl">Quit </span>
+              </div>
             </div>
           </div>
-          <div
-            className="flex gap-2 text-gray-600 cursor-pointer hover:text-primary"
-            onClick={() => setShowModal(true)}
-          >
-            <img src={quit} alt="quit" />
-            <span className="text-xl">Quit </span>
-          </div>
-        </div>
-      </div>
+        </>
+      )}
       {showModal && (
         <Modal
           content={
@@ -352,38 +386,50 @@ const wrongAnswers = data.filter(item => item.userAnswer !== item.correctAnswer)
               />
             </div>
           }
-          closeModal={() => setShowModal(false)}
+          // closeModal={() => setShowModal(false)}
         />
       )}
       {resultModal && (
         <Modal
           content={
-            <div className="text-primary font-bold text-2xl text-center my-4">
-              {message}
-            </div>
+            quizType === "practice" ? (
+              <div className="text-primary font-bold text-sm md:text-lg text-center my-4">
+                <ProgressBar score={score} />
+                {message}
+              </div>
+            ) : (
+              <div className="text-primary font-bold text-sm md:text-lg text-center my-4">
+                Your Examination has submitted successfully!
+              </div>
+            )
           }
-          modStyles="w-1/2 justify-center bg-secondary"
-          closeModal={() => setResultModal(false)}
+          modStyles="w-1/2 justify-center bg-white"
+          // closeModal={() => setResultModal(false)}
           buttons={
-            <div className="flex flex-col md:flex-row gap-6 justify-between w-full p-4 my-4">
-              <Button
-                title="Back to Dashboard"
-                btnClick={() => {
-                  navigate("/dashboard/result");
-                  setQuizActive(false);
-                }}
-                btnStyles="border border-primary text-primary px-4 py-3 rounded-md"
-              />
-              <Button
-                title="Review Questions"
-                btnClick={() => {
-                  console.log(showModal);
-                  setResultModal(false);
-                  setReviewing(true);
-                }}
-                btnStyles="bg-primary text-white px-4 py-3 rounded-md"
-              />
-            </div>
+            quizType === "prcatice" ? (
+              <div className="flex justify-center w-full p-4 my-4">
+                <Button
+                  title="Back to Dashboard"
+                  btnClick={() => {
+                    navigate("/dashboard/result");
+                    setQuizActive(false);
+                  }}
+                  btnStyles="border border-primary text-primary px-4 py-3 rounded-md"
+                />
+              </div>
+            ) : (
+              <div className="flex justify-center w-full p-4 my-4">
+                <Button
+                  title="Log Out"
+                  btnClick={() => {
+                    setIsLoggedIn(false);
+                    navigate("/login");
+                    setQuizActive(false);
+                  }}
+                  btnStyles="border border-primary text-primary px-4 py-3 rounded-md"
+                />
+              </div>
+            )
           }
         />
       )}

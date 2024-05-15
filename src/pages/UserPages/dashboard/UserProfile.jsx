@@ -5,15 +5,12 @@ import axios from "axios";
 import add from "../../../assets/add.png";
 import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../../../store/userStore";
-import { imageStorage } from "../../../../config";
-import { ref, uploadBytes, getDownloadURL, listAll, updateMetadata } from "firebase/storage";
-import { collection, addDoc } from "firebase/firestore";
-import { update } from "firebase/database";
+import { ref, uploadBytes, getDownloadURL, updateMetadata } from "firebase/storage";
 import { v4 } from "uuid";
 
 export const UserProfile = () => {
   const navigate = useNavigate();
-  const { userImage } = useUserStore();
+  const { userImage, setUserImage } = useUserStore();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -22,8 +19,6 @@ export const UserProfile = () => {
   const [rank, setRank] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [userAvatar, setUserAvatar] = useState(null);
-  const [profileImage, setProfileImage] = useState(null);
-  const [fileType, setFileType] = useState("");
   const [error, setError] = useState("");
 
   const [isEditing, setIsEditing] = useState(false);
@@ -31,66 +26,38 @@ export const UserProfile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState(false);
   const token = localStorage.getItem("auth-token");
-  const [phone, setPhone] = useState("");
 
-  const listRef = ref(imageStorage, `images/${fullName}`);
 
   useEffect(() => {
     getUserDetails();
-    // setPhone(phoneNumber); 
-    // setProfileImage(currentImage)
-    // getAvatar();
-    // list(listRef).then((res) =>
-    // {
-    //   console.log(response)
-    // })
-    listAll()
-  }, []);
-
-  // const getAvatar = () => {
-  //   const avatar = localStorage.getItem("userAvatar");
-  //   console.log(avatar);
-  //   if (avatar) {
-  //   currentImage.current = avatar;
-  //   console.log(currentImage, "Current Image")
-  //     setProfileImage(avatar);
-  //   } else if (userImage !== "") {
-  //   currentImage.current = userImage
-  //     console.log(userImage);
-  //     setProfileImage(userImage);
-  //   }
-  // };
+    if (userImage) {
+    console.log(userImage)
+    }
+  }, [userImage]);
 
   const uploadImage = (e) => {
     const file = e.target.files[0];
     setUserAvatar(file);
-    setProfileImage(URL.createObjectURL(file));
-    setFileType(file.type);
-    console.log(file, fileType, "File Type")
     const examineeId = userId;
     const userDetails = { fullName, examineeId };
     console.log(userDetails)
-    // const metadata = {
-    //   contentType: fileType,
-      // customMetadata: userDetails,
-    // }
-    // console.log(metadata.contentType)
-    const imageRef = ref(imageStorage, `images/${v4()}`);
-    uploadBytes(imageRef, profileImage)
+    const path = `images/${v4()}`
+    const imageRef = ref(imageStorage, path);
+    uploadBytes(imageRef, file)
     .then(() => {
-    getDownloadURL(imageRef).then((url) => {
-    console.log(url);
-    // setImageUrl(url);
-    // setUserAvatar(imageUrl)
+        // Set custom metadata
+        updateMetadata(imageRef, {
+            customMetadata: {
+                'userId': userId
+            }
+        }).then(() => {
+            getDownloadURL(imageRef).then((url) => {
+                console.log(url);
+                setUserImage(url)
+            })
+        });
     })
-    })
-    // await updateMetadata(imageRef, {
-    //   customMetadata: {
-    //     imageUrl,
-    //   }
-    // })
-    // setUserAvatar(null)
-  };
+};
 
   const getUserDetails = async () => {
     setIsLoading(true);
@@ -133,7 +100,7 @@ export const UserProfile = () => {
           updatedUserData,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              "Authorization": `Bearer ${token}`,
               "Content-Type": "application/json",
             },
           },
@@ -206,7 +173,7 @@ export const UserProfile = () => {
             <div className="rounded-md h-44 w-52 relative">
               {userImage !== null ? (
                 <img
-                  src={profileImage}
+                  src={userImage}
                   alt="user avatar"
                   className="absolute h-44 w-52 rounded-xl object-cover mt-1 border border-primary"
                 />

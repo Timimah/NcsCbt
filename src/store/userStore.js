@@ -70,9 +70,4 @@ export const useUserStore = create((set, get) => ({
   logoutUser: () => {
     set((state) => ({ ...state, isLoggedIn: false, loggedInUser: null }));
   },
-
-
 }));
-
-// Initialize the store
-// useUserStore.getState().init();

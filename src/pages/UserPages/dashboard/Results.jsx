@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table } from '../../../components/shared/Table';
 import { results as originalResults } from '../../../components/user/results';
 import { Header } from '../../../components/shared/Header';
+import { useUserStore } from '../../../store/userStore';
 
 const columns = [
     { key: 'id', label: 'S/N' },
@@ -12,9 +13,11 @@ const columns = [
 ];
 
 export const Results = () => {
-    // const {userResults} = useUserStore();
+    const {userResults} = useUserStore();
     const [searchTerm, setSearchTerm] = useState('');
     const [displayedResults, setDisplayedResults] = useState(originalResults);
+     
+    useEffect(() => console.log(userResults),[])
 
     const handleSearch = (e) => {
         const term = e.target.value;
