@@ -19,58 +19,45 @@ export const ExamPage = () => {
     setQuestions(examQuestions);
   }, [exam]);
 
-  // console.log("loggedInUserRank", loggedInUserRank)
   const setRank = () => {
-    console.log("Setting Rank")
     if (loggedInUserRank === "CAI") {
       setNextRank("CAII")
       setExam(`${loggedInUserRank}-${nextRank}`)
-      console.log(exam)
     } else if (loggedInUserRank === "CAII") {
       setNextRank("AIC");
       setExam(`${loggedInUserRank}-${nextRank}`)
-      console.log(exam)
     } else if (loggedInUserRank === "AIC") {
       setNextRank("IC")
       setExam(`${loggedInUserRank}-${nextRank}`)
-      console.log(exam)
     } else if (loggedInUserRank === "IC") {
       setNextRank("ASCII")
       setExam(`${loggedInUserRank}-${nextRank}`)
-      console.log(exam)
     } else if (loggedInUserRank === "ASCII") {
       setNextRank("ASCI")
       setExam(`${loggedInUserRank}-${nextRank}`)
-      console.log(exam)
     } else if (loggedInUserRank === "ASCI") {
       setNextRank("DSC")
       setExam(`${loggedInUserRank}-${nextRank}`)
-      console.log(exam)
     } else if (loggedInUserRank === "DSC") {
       setNextRank("SC")
       setExam(`${loggedInUserRank}-${nextRank}`)
-      console.log(exam)
     } else if (loggedInUserRank === "SC") {
       setNextRank("CSC")
       setExam(`${loggedInUserRank}-${nextRank}`)
-      console.log(exam)
     } else if (loggedInUserRank === "CSC") {
       setNextRank("AC")
       setExam(`${loggedInUserRank}-${nextRank}`)
-      console.log(exam)
     } else if (loggedInUserRank === "AC") {
       setNextRank("DC")
       setExam(`${loggedInUserRank}-${nextRank}`)
-      console.log(exam)
     } else if (loggedInUserRank === "DC") {
       setNextRank("CC")
       setExam(`${loggedInUserRank}-${nextRank}`)
-      console.log(exam)
     }
   }
 
   return (
-    <div className="flex flex-col w-full p-10 gap-6">
+    <div className="flex flex-col w-full p-8 md:p-10 gap-6">
       <Header title="Exam" />
       {userIsSubscribed === true ? (examQuestions.length === 0 ? (
         <div className="flex items-center bg-cardgreen p-10 rounded-md text-white justify-center flex-grow">
@@ -87,7 +74,6 @@ export const ExamPage = () => {
               setShowInstructions(true);
               localStorage.setItem("examQuestionsDetails", JSON.stringify({ rank: exam, time: duration }));
               localStorage.setItem("type", "exam");
-              console.log(exam, duration)
             }} />
           </div>
         </div>

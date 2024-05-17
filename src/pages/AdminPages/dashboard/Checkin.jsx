@@ -66,8 +66,6 @@ export const Checkin = () => {
         const getUser = users.find((user) => user.examineeId === eID);
         getUser.checkIn = new Date().toLocaleTimeString();
         setCheckedInUsers([...checkedInUsers, getUser]);
-        console.log(checkedInUsers);
-        console.log("user exists");
         setCheckuser(true);
         setShowModal(false);
       } else {
@@ -78,7 +76,7 @@ export const Checkin = () => {
   };
 
   return (
-    <div className="flex flex-col w-full p-10 gap-4">
+    <div className="flex flex-col w-full p-8 md:p-10  gap-4">
       <Header title="Check In" />
       <main className="flex-grow">
         <section className="flex flex-col gap-4">

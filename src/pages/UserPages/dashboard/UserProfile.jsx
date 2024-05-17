@@ -31,7 +31,6 @@ export const UserProfile = () => {
   useEffect(() => {
     getUserDetails();
     if (userImage) {
-    console.log(userImage)
     }
   }, [userImage]);
 
@@ -40,7 +39,6 @@ export const UserProfile = () => {
     setUserAvatar(file);
     const examineeId = userId;
     const userDetails = { fullName, examineeId };
-    console.log(userDetails)
     const path = `images/${v4()}`
     const imageRef = ref(imageStorage, path);
     uploadBytes(imageRef, file)
@@ -52,7 +50,6 @@ export const UserProfile = () => {
             }
         }).then(() => {
             getDownloadURL(imageRef).then((url) => {
-                console.log(url);
                 setUserImage(url)
             })
         });
@@ -70,7 +67,6 @@ export const UserProfile = () => {
         },
       })
       .then((res) => {
-        console.log(res);
         const user = res.data.data;
         setFullName(user.fullName);
         setEmail(user.email);
@@ -86,14 +82,11 @@ export const UserProfile = () => {
 
   const editDetails = async () => {
     setIsEditing(true);
-    console.log(isEditing, "Editing");
   };
 
   const handleSaveClick = async () => {
-    console.log(isValid);
     if (isValid) {
       const updatedUserData = { fullName, email, phoneNumber, password };
-      console.log(updatedUserData);
       try {
         const response = await axios.post(
           "https://ncs-cbt-api.onrender.com/users/update-profile",
@@ -105,7 +98,6 @@ export const UserProfile = () => {
             },
           },
         );
-        console.log(response);
         if (response.status === 201) {
           getUserDetails();
           setIsEditing(false);
@@ -122,7 +114,6 @@ export const UserProfile = () => {
   const handlePasswordChange = () => {
     if (password === confirmPassword) {
       // Perform password change operation
-      console.log("Password changed successfully");
       alert("Password changed successfully");
     } else {
       setError("Passwords do not match");
@@ -144,7 +135,6 @@ export const UserProfile = () => {
           },
         },
       );
-      console.log(response);
       const payment_url = response.data.data.authorization_url;
       if (
         confirm(
@@ -160,7 +150,7 @@ export const UserProfile = () => {
   };
 
   return (
-    <div className="flex flex-col w-full p-10">
+    <div className="flex flex-col w-full p-8 md:p-10">
       <Header title="User Profile" />
       {isLoading === true ? (
         <div className="bg-cardgreen absolute inset-0 flex items-center justify-center mx-auto">

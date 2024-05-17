@@ -46,7 +46,6 @@ export const UploadQuestions = () => {
 
     useEffect(() => {
         setAllQuestions(localStorage.getItem("questions") || []);
-        console.log(allQuestions);
         axios
             .get(
                 "https://ncs-cbt-api.onrender.com/exam/",
@@ -57,7 +56,6 @@ export const UploadQuestions = () => {
                 }
             )
             .then((res) => {
-                console.log(res);
                 setQuestions(res.data.data || []);
                 setDisplayedQuestions(questions);
                 const questionsForSelectedCategory =
@@ -65,10 +63,6 @@ export const UploadQuestions = () => {
                         (question) =>
                             question.category === selectedCategory
                     );
-                console.log(
-                    questions,
-                    questionsForSelectedCategory
-                );
                 setEditQuestions(
                     questionsForSelectedCategory
                 );
@@ -117,7 +111,6 @@ export const UploadQuestions = () => {
         ) {
             setUploadError("Input valid values!");
         } else {
-            console.log(questionDetails);
             const newQuestionObj = {
                 question: question,
                 answer: answer,
@@ -125,7 +118,6 @@ export const UploadQuestions = () => {
                 type: type,
                 category: category,
             };
-            // console.log(newOptions)
             setQuestionDetails([
                 ...questionDetails,
                 newQuestionObj,
@@ -133,8 +125,6 @@ export const UploadQuestions = () => {
             setQuestion("");
             setAnswer("");
             setOptions([""]);
-            // setCategory('');
-            // setType("");
         }
     };
 
@@ -148,7 +138,6 @@ const updateQuestions = async () => {
                 },
             }
         )
-        console.log(response);
         setQuestions(response.data.data || []);
         setDisplayedQuestions(questions);
         const questionsForSelectedCategory =
@@ -156,7 +145,6 @@ const updateQuestions = async () => {
                 (question) =>
                     question.category === selectedCategory
             );
-        console.log( questions, questionsForSelectedCategory );
         setEditQuestions(questionsForSelectedCategory);
 
     } catch (err) {
@@ -180,7 +168,6 @@ const updateQuestions = async () => {
             const questionData = {
                 questionDetails,
             };
-            console.log(questionData);
             localStorage.setItem("questions", JSON.stringify(questionData));
             try {
                 const response = await axios.post(
@@ -193,7 +180,6 @@ const updateQuestions = async () => {
                         },
                     }
                 );
-                console.log(response);
                 updateQuestions();
                 setQuestionDetails([]);
             } catch (err) {
@@ -213,64 +199,8 @@ const updateQuestions = async () => {
         setUpload(true);
     };
 
-    // const [pdfText, setPdfText] = useState('');
-    // const [questionss, setQuestionss] = useState([]);
-    // const [text, setText] = useState("")
-
-    // const extractText = async (e) => {
-    //     const file = await e.target.files[0];
-    //     pdfToText(file).then(
-    //         text => {
-    //             console.log(text)
-    //             setText(text);
-    //             const extractedQuestions = extractQuestions(text);
-    //             setQuestionss(extractedQuestions);
-    //             console.log(questionss)
-    //         })
-    //         .catch(error => console.error("Failed to extract text from pdf"));
-    // };
-
-    // const extractQuestions = (text) => {
-    //     const lines = text.split('\n');
-    //     console.log(lines)
-    //     const questions = [];
-
-    //     let currentQuestion = null;
-    //     let currentOptions = [];
-
-    //     for (let i = 0; i < lines.length; i++) {
-    //         const line = lines[i].trim();
-    //         console.log(line)
-
-    //         if (line.endsWith('?')) {
-    //             // New question
-    //             if (currentQuestion !== null) {
-    //                 questions.push({ question: currentQuestion, options: currentOptions });
-    //                 currentOptions = [];
-    //                 console.log(questions)
-    //             }
-    //             currentQuestion = line;
-    //             console.log(currentQuestion)
-    //         } else if (/^[a-d]\)\s/.test(line)) {
-    //             // Option
-    //             currentOptions.push(line.replace(/^\w\)\s*/, ''));
-    //         } else if (line.length === 0) {
-    //             // Skip empty lines
-    //             continue;
-    //         } else {
-    //             // Append to current question
-    //             currentQuestion += ' ' + line;
-    //         }
-    //     }
-
-    // Add the last question and options
-    //     if (currentQuestion !== null) {
-    //         questions.push({ question: currentQuestion, options: currentOptions });
-    //     }
-    // };
-
     return (
-        <div className='flex flex-col w-full p-10'>
+        <div className='flex flex-col w-full p-8 md:p-10'>
             <Header title='Upload Questions' />
             {upload && (
                 <Modal
@@ -416,7 +346,6 @@ const updateQuestions = async () => {
                             onChange={(e) => {
                                 setUploadError("");
                                 setQuestion(e.target.value.trim());
-                                console.log(question)
                             }}
                             rows={3}
                             className='border py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary w-full bg-gray-200 border-primary'

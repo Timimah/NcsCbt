@@ -4,7 +4,6 @@ import { Header } from "../../../components/shared/Header";
 import { Button } from "../../../components/shared/Button";
 import { Modal } from "../../../components/shared/Modal";
 import * as XLSX from "xlsx";
-// import jsPDF from "jspdf";
 import { useUserStore } from "../../../store/userStore";
 
 const columns = [
@@ -24,7 +23,6 @@ export const Result = () => {
 
   const handleExportFormat = (exportFormat) => {
     setShowModal(false);
-    console.log(`Exporting in ${exportFormat} format`);
 
     try {
       switch (exportFormat) {
@@ -59,20 +57,6 @@ export const Result = () => {
           link.click();
           document.body.removeChild(link);
           break;
-        // case "PDF":
-        //   const doc = new jsPDF();
-        //   let y = 10;
-        //   displayedResults.forEach((result, index) => {
-        //     doc.text(`Result ${index + 1}:`, 10, y);
-        //     y += 10;
-        //     for (const [key, value] of Object.entries(result)) {
-        //       doc.text(`${key}: ${value}`, 20, y);
-        //       y += 10;
-        //     }
-        //     y += 10; // Add extra space between results
-        //   });
-        //   doc.save("Results.pdf");
-        //   break;
         default:
           throw new Error(`Unsupported export format: ${exportFormat}`);
       }
@@ -102,7 +86,7 @@ export const Result = () => {
   };
 
   return (
-    <div className="flex flex-col w-full p-10 gap-4">
+    <div className="flex flex-col w-full p-8 md:p-10 gap-4">
       <Header title="Result" />
       <main className="flex-grow">
         <section className="flex flex-col gap-4">
@@ -163,6 +147,7 @@ export const Result = () => {
           </div>
           <div className="w-full">
             <Table
+            customTitle="Results"
               data={
                 displayedResults.length > 0
                   ? displayedResults.map((results, index) => ({
@@ -213,20 +198,6 @@ export const Result = () => {
                     CSV
                   </label>
                 </div>
-                {/* <div className="flex items-center">
-                  <input
-                    id="pdf"
-                    type="radio"
-                    name="exportFormat"
-                    value="PDF"
-                    checked={format === "PDF"}
-                    onChange={() => setFormat("PDF")}
-                    className="form-radio h-5 w-5 text-green-600"
-                  />
-                  <label htmlFor="pdf" className="ml-2 text-gray-700">
-                    PDF
-                  </label>
-                </div> */}
               </div>
             </div>
           }

@@ -13,7 +13,6 @@ export const Exam = () => {
   const {questions} = useUserStore();
 
   const showQuestions = (questionCategory) => {
-    // console.log(chosenCategory);
     navigate('../view-question', { state: { selectedCategory: questionCategory } });
   };
 
@@ -65,7 +64,7 @@ export const Exam = () => {
   ];
   
   return (
-    <div className='p-10'>
+    <div className='p-8 md:p-10'>
       <Header title="Exam/Practice" />
       <div className='w-full flex justify-end py-4'>
         <Button title="Upload Questions" btnStyles="px-4 py-3 rounded-md bg-primary text-white" btnClick={() => navigate("../upload-question")} />

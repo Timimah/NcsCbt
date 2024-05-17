@@ -8,45 +8,37 @@ import { useUserStore } from "../../../store/userStore";
 
 export const Practice = () => {
   const navigate = useNavigate();
-  const { questions, setQuestions } = useUserStore();
+  const { questions, setQuestions, practiceHistory } = useUserStore();
   const [showModal, setShowModal] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [rank, setRank] = useState("");
   const [numberOfQuestions, setNumberOfQuestions] = useState(2);
   const [time, setTime] = useState();
   const [error, setError] = useState("");
-  // const [allQuestions, setAllQuestions] = useState();
   const token = localStorage.getItem("auth-token");
   let practiceQuestions;
+  let category;
 
-  // const getQuestions = () => {
-
-  // };
-
-  useEffect(() => {
-    console.log("Practice Page");
-    setShowModal(true);
-    // getQuestions();
-  }, []);
+useEffect(() => {
+  console.log(practiceHistory)
+}, [practiceHistory])
 
   const shuffle = (array) => {
-    let currentIndex = array.length, temporaryValue, randomIndex;
-  
-    // While there remain elements to shuffle...
+    let currentIndex = array.length,
+      temporaryValue,
+      randomIndex;
+
     while (0 !== currentIndex) {
-  
-      // Pick a remaining element...
       randomIndex = Math.floor(Math.random() * currentIndex);
       currentIndex -= 1;
-  
-      // And swap it with the current element.
+
       temporaryValue = array[currentIndex];
       array[currentIndex] = array[randomIndex];
       array[randomIndex] = temporaryValue;
     }
-  
+
     return array;
-  }
+  };
 
   const getPracticeQuestions = async () => {
     if (!numberOfQuestions) {
@@ -55,39 +47,45 @@ export const Practice = () => {
     if (!rank) {
       setError("Please select a category");
     } else {
-      console.log(rank);
       axios
         .post(
           "https://ncs-cbt-api.onrender.com/exam/getPracticeQuestions",
           { rank },
           {
             headers: {
-              "Authorization": `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         )
         .then((res) => {
-          console.log(res);
           const allQuestions = res.data.data;
           if (allQuestions.length > 0) {
             practiceQuestions = allQuestions.filter(
               (question) => question.category === rank
             );
             setQuestions([]);
-            console.log(practiceQuestions, rank)
             if (numberOfQuestions > practiceQuestions.length) {
-              setError("Number of questions exceeds available questions. There are " + practiceQuestions.length + " questions available questions for this category. Please select a lower number of questions.");
+              setError(
+                "Number of questions exceeds available questions. There are " +
+                  practiceQuestions.length +
+                  " questions available questions for this category. Please select a lower number of questions."
+              );
               return;
             } else {
-              const shuffledQuestions = shuffle(practiceQuestions)
-              const selectedQuestions = shuffledQuestions.slice(0, numberOfQuestions);
+              const shuffledQuestions = shuffle(practiceQuestions);
+              const selectedQuestions = shuffledQuestions.slice(
+                0,
+                numberOfQuestions
+              );
               setQuestions(selectedQuestions);
-              localStorage.setItem("practiceQuestionsDetails", JSON.stringify({ rank, time: numberOfQuestions * 60 / 60 }));
+              localStorage.setItem(
+                "practiceQuestionsDetails",
+                JSON.stringify({ rank, time: (numberOfQuestions * 60) / 60 })
+              );
               localStorage.setItem("type", "practice");
               setShowModal(false);
               setShowInstructions(true);
             }
-            console.log(questions, "Practice Questions");
           } else {
             practiceQuestions = [];
           }
@@ -99,8 +97,36 @@ export const Practice = () => {
   };
 
   return (
-    <div className="flex items-center justify-center px-8">
+    <div className="flex flex-col items-center justify-center p-8 md:">
       <Header title="Practice" />
+      <div>
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-between items-center">
+            <div className="font-bold text-2xl">Review Quiz</div>
+            <div>
+              <Button
+                title="Take Quiz"
+                btnStyles="px-4 py-3 bg-primary text-white rounded-md"
+                btnClick={() => setShowModal(true)}
+              />
+            </div>
+          </div>
+          {practiceHistory.map((question, index) =>
+              <div key={index} className="flex flex-col gap-3 my-4 text-sm md:text-md">
+                <div>{index + 1}. {question.question}</div>
+                {/* <div >User Answer: {question.userAnswer}</div> */}
+                <div className="flex flex-col gap-2">{question.options.map((option, i) =>
+                <div key={i} className="flex">
+                  <span className="mr-3">
+                {String.fromCharCode(65 + i)}.{" "}
+              </span>
+                <div className={`${option === question.userAnswer ? "font-bold text-red-500" : ""} ${option === question.correctAnswer ? "text-primary font-bold" : "" }`}>{option}</div>
+                </div>
+                )}</div>
+              </div>
+          )}
+        </div>
+      </div>
       {showModal && (
         <Modal
           title="Quiz Settings"
@@ -115,10 +141,14 @@ export const Practice = () => {
                   type="tel"
                   id="time"
                   value={numberOfQuestions}
-                  className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${error ? "border-red-500" : ""
-                }`}
+                  className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${
+                    error ? "border-red-500" : ""
+                  }`}
                   placeholder="5 min"
-                  onChange={(e) => {setNumberOfQuestions(e.target.value); setError("")}}	
+                  onChange={(e) => {
+                    setNumberOfQuestions(e.target.value);
+                    setError("");
+                  }}
                 />
               </div>
               <div>
@@ -133,8 +163,9 @@ export const Practice = () => {
                     setRank(e.target.value);
                     setError("");
                   }}
-                  className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${error ? "border-red-500" : ""
-                    }`}
+                  className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${
+                    error ? "border-red-500" : ""
+                  }`}
                 >
                   <option value="">Select a category</option>
                   <option value="CAI-CAII">CAI-CAII</option>

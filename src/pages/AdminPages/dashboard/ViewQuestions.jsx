@@ -9,7 +9,6 @@ import del from '../../../assets/delete.png';
 
 export const ViewQuestion = () => {
     const { questions, setQuestions } = useUserStore();
-    console.log(questions)
     const [displayedQuestions, setDisplayedQuestions] = useState([]);
     const [editedQuestions, setEditedQuestions] = useState([]);
     const [isEditing, setIsEditing] =
@@ -18,7 +17,6 @@ export const ViewQuestion = () => {
     const [selectedCategoryData, setSelectedCategoryData] = useState([]);
     const location = useLocation();
     const selectedCategory = location.state?.selectedCategory;
-    console.log(selectedCategory);
     const token = localStorage.getItem("auth-token");
 
     useEffect(() => {
@@ -40,7 +38,6 @@ export const ViewQuestion = () => {
                 }
             )
             .then((res) => {
-                console.log(res);
                 setQuestions(res.data.data || []);
                 const questionsForSelectedCategory =
                     questions.filter(
@@ -67,7 +64,6 @@ export const ViewQuestion = () => {
                     },
                 }
             );
-            console.log(response);
             updateQuestions();
         } catch (err) {
             console.log(err);
@@ -75,7 +71,6 @@ export const ViewQuestion = () => {
     };
 
     const handleEdit = (category) => {
-        console.log(category);
         setIsEditing(true);
         const questionsForSelectedCategory =
             displayedQuestions.filter(
@@ -83,9 +78,7 @@ export const ViewQuestion = () => {
             );
 
         if (questionsForSelectedCategory) {
-            console.log(true)
             setSelectedCategoryData(questionsForSelectedCategory[0]);
-            console.log(selectedCategoryData)
         } else {
             console.error(
                 "No questions found for the selected category."
@@ -226,7 +219,7 @@ export const ViewQuestion = () => {
                                                 ) : (
                                                     <div className=''>
                                                         {question.options.map((option, i) => (
-                                                            <div key={i} className="flex items-center">
+                                                            <div key={i} className={`flex items-center ${option === question.answer ? "text-primary font-bold" : ""}`}>
                                                                 <span>{String.fromCharCode(65 + i)}. {option}</span>
                                                             </div>
                                                         ))}
@@ -238,24 +231,14 @@ export const ViewQuestion = () => {
                                                     title={
                                                     <img src={del} alt="delete" />
                                                     }
-                                                    btnStyles='px-4 py-3 text-white bg-yellow rounded-md my-4 w-full'
+                                                    btnStyles='px-4 py-3 text-white md:bg-yellow rounded-md my-4 w-full'
                                                     btnClick={() => {
-                                                        console.log(question._id);
                                                         deleteQuestion(question._id);
                                                     }}
                                                 />
                                             </div>
                                         </div>
                                     </div>
-                                    {/* <div className='flex gap-4 w-1/2'> */}
-                                    {/* <Button
-                                            title='Edit'
-                                            btnStyles='px-4 py-3 text-white bg-primary rounded-md my-4 w-full'
-                                            btnClick={() => {
-                                                handleEdit(question.category);
-                                            }}
-                                        /> */}
-                                    {/* </div> */}
                                 </div>
                             )}
                         {activeTab === "exam" &&
@@ -270,14 +253,14 @@ export const ViewQuestion = () => {
                                             </div>
                                             <div>{question.question}</div>
                                         </div>
-                                        <div className="flex justify-between">
+                                        <div className="flex md:flex-row flex-col justify-between">
                                             <div className='flex flex-col gap-4'>
                                                 {question.options === "" ? (
                                                     <div>No options added yet</div>
                                                 ) : (
                                                     <div className=''>
                                                         {question.options.map((option, i) => (
-                                                            <div key={i} className="flex items-center">
+                                                            <div key={i} className={`flex items-center ${option === question.answer ? "text-primary font-bold" : ""}`}>
                                                                 <span>{String.fromCharCode(65 + i)}. {option}</span>
                                                             </div>
                                                         ))}
@@ -287,10 +270,11 @@ export const ViewQuestion = () => {
                                             <div className=''>
                                                 <Button
                                                     title={
-                                                        <img src={del} alt="delete" />
+                                                    <img src={del} alt="delete" />
                                                     }
-                                                    btnStyles='px-4 py-3 text-white bg-yellow rounded-md my-4 w-full'
+                                                    btnStyles='px-4 py-3 text-white md:bg-yellow rounded-md my-4 w-full'
                                                     btnClick={() => {
+                                                        console.log(question._id);
                                                         deleteQuestion(question._id);
                                                     }}
                                                 />

@@ -58,7 +58,6 @@ export const CreateAccount = () => {
 
     if (isValid) {
       let userData = { fullName, examineeId, email, phoneNumber, rank, password };
-      console.log(userData)
      
     const sendRequest = async () => {
       try {
@@ -69,7 +68,6 @@ export const CreateAccount = () => {
             headers: { "Content-Type": "application/json" },
           }
         );
-        console.log(response.data.status);
         setFullName("");
       setExamineeId("");
       setEmail("");
@@ -77,12 +75,10 @@ export const CreateAccount = () => {
       setRank("");
       setPassword("");
       setConfirmPassword("");
-      console.log("User created successfully");
       navigate("/login");
         } catch (err) {
         if (!err?.response) {
           console.log(err);
-          console.log(err.message);
         } else if (err.response?.status === 409) {
           setFullNameError("Username Taken");
         } else {
@@ -150,7 +146,7 @@ export const CreateAccount = () => {
           </div>
           <div>
             <label htmlFor="rank" className="block py-1 -mb-1">Select Rank</label>
-            <select id="rank" name="rank" value={rank} onChange={(e) => { setRank(e.target.value); console.log(rank); setRankError("") }} className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${rankError ? 'border-red-500' : ''}`}>
+            <select id="rank" name="rank" value={rank} onChange={(e) => { setRank(e.target.value); setRankError("") }} className={`border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary ${rankError ? 'border-red-500' : ''}`}>
             <option value="">Select a category</option>
               <option value="CC">Comptroller (CC)</option>
               <option value="DC">Deputy Comptroller (DC)</option>

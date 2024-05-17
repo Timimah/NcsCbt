@@ -12,7 +12,6 @@ export const Dashboard = () => {
   const { loggedInUser } = useUserStore();
   let userName = loggedInUser ? loggedInUser : "";
   const path = window.location.pathname;
-  console.log(path);
 
   useEffect(() => {
     if (userName === "") {
@@ -33,10 +32,6 @@ export const Dashboard = () => {
       if (path === "/dashboard/exam") {
         setActive("exam");
         navigate("/dashboard/exam");
-      }
-      if (path === "/dashboard/result") {
-        setActive("result");
-        navigate("/dashboard/result");
       }
     }
   }, []);
@@ -155,31 +150,6 @@ export const Dashboard = () => {
               />
             </svg>
             <p className="">Exam</p>
-          </div>
-          <div
-            className={
-              active === "result"
-                ? `flex items-center bg-primary text-white px-4 w-full py-3 cursor-pointer rounded-md my-2 gap-2`
-                : `flex items-center hover:bg-active px-4 w-full py-3 cursor-pointer rounded-full my-2 gap-2`
-            }
-            onClick={() => {
-              setActive("result");
-              navigate("/dashboard/result");
-            }}
-          >
-            <svg
-              width="18"
-              height="21"
-              viewBox="0 0 18 21"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M14.0916 0.345538L10.182 1.12796V0.331129H5.98169H4.74633H0.546387V20.5091H4.74629H5.98165H10.1819V7.84843L12.7335 20.5993L17.9365 19.5578L14.0916 0.345538ZM2.45262 2.84307H4.0998V4.07844H2.45262V2.84307ZM4.74629 19.2737H1.78179V17.1352H4.74633V19.2737H4.74629ZM6.65292 2.84307H8.3001V4.07844H6.65292V2.84307ZM8.94662 19.2737H5.98169V17.1352H8.94662V19.2737ZM11.4643 4.70275L11.23 3.49003L12.7973 3.18735L13.0316 4.40008L11.4643 4.70275ZM13.2828 17.0476L16.0637 16.497L16.4824 18.5889L13.7024 19.1453L13.2828 17.0476Z"
-                fill={active === "result" ? "white" : "#8A898D"}
-              />
-            </svg>
-            <p className="">Result</p>
           </div>
           <div
             className={
@@ -361,32 +331,6 @@ export const Dashboard = () => {
                 />
               </svg>
               <p className="">Exam</p>
-            </div>
-            <div
-              className={
-                active === "result"
-                  ? `flex items-center bg-primary text-white px-4 w-full py-3 cursor-pointer rounded-md my-2 gap-4`
-                  : `flex items-center hover:bg-active px-4 w-full py-3 cursor-pointer rounded-full my-2 gap-4`
-              }
-              onClick={() => {
-                setActive("result");
-                setIsMenuOpen(false);
-                navigate("/dashboard/result");
-              }}
-            >
-              <svg
-                width="18"
-                height="21"
-                viewBox="0 0 18 21"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M14.0916 0.345538L10.182 1.12796V0.331129H5.98169H4.74633H0.546387V20.5091H4.74629H5.98165H10.1819V7.84843L12.7335 20.5993L17.9365 19.5578L14.0916 0.345538ZM2.45262 2.84307H4.0998V4.07844H2.45262V2.84307ZM4.74629 19.2737H1.78179V17.1352H4.74633V19.2737H4.74629ZM6.65292 2.84307H8.3001V4.07844H6.65292V2.84307ZM8.94662 19.2737H5.98169V17.1352H8.94662V19.2737ZM11.4643 4.70275L11.23 3.49003L12.7973 3.18735L13.0316 4.40008L11.4643 4.70275ZM13.2828 17.0476L16.0637 16.497L16.4824 18.5889L13.7024 19.1453L13.2828 17.0476Z"
-                  fill={active === "result" ? "white" : "#8A898D"}
-                />
-              </svg>
-              <p className="">Result</p>
             </div>
             <div
               className={

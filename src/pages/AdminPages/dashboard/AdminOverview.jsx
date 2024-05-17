@@ -65,7 +65,7 @@ export const AdminOverview = () => {
   )
 
   return (
-    <div className="flex flex-col w-full p-10">
+    <div className="flex flex-col w-full p-8 md:p-10">
       <Header title="Dashboard" />
       <main className="flex-grow mt-4">
         <div className="flex flex-col md:flex-row md:justify-around justify-center items-center gap-6 md:p-5">

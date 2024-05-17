@@ -7,6 +7,7 @@ import { OverviewCard } from "../../../components/admin/OverviewCard";
 import user from "../../../assets/user.png";
 import axios from "axios";
 import { useUserStore } from "../../../store/userStore";
+import success from '../../../assets/upload.png'
 
 const adminHeader = [
   { key: "id", label: "S/N" },
@@ -78,12 +79,9 @@ export const User = () => {
             },
           }
         );
-        console.log(adminData);
-        console.log(response.data.message, response);
       } catch (err) {
         if (!err?.response) {
           console.log(err);
-          console.log(err.message);
         } else if (err.response?.status === 409) {
           setError(err.response.data.message);
         } else {
@@ -108,11 +106,11 @@ export const User = () => {
   ];
 
   return (
-    <div className="flex flex-col w-full p-10 gap-4">
+    <div className="flex flex-col w-full p-8 md:p-10 gap-4">
       <Header title="Users" />
       <main className="flex-grow">
         <section className="flex flex-col gap-4">
-          <div className="flex md:flex-row flex-col mb-4 justify-between items-center gap-8">
+          <div className="flex md:flex-row flex-col-reverse mb-4 justify-between items-center gap-8">
             <div className="relative flex md:w-2/3 w-full">
               <input
                 type="text"
@@ -143,7 +141,7 @@ export const User = () => {
                   </button>
                 )}
                 {!searchTerm && (
-                    <svg
+                  <svg
                     className="h-5 w-5 text-gray-400"
                     viewBox="0 0 24 24"
                     fill="none"
@@ -159,9 +157,9 @@ export const User = () => {
                 )}
               </div>
             </div>
-            <div className="flex justify-end w-full md:w-1/3 gap-4">
+            <div className="flex w-full md:w-1/3 items-center justify-center gap-4">
               {cards.map((card, index) => (
-                <div key={index} className="w-2/3 md:w-full">
+                <div key={index} className="w-full">
                   <OverviewCard
                     cardStyles="justify-center py-3"
                     label={card.label}
@@ -174,6 +172,13 @@ export const User = () => {
                   />
                 </div>
               ))}
+              <div className="w-full"> 
+              <Button
+                title="Create Admin"
+                btnStyles="bg-primary rounded-md text-white px-4 py-3"
+                btnClick={() => setShowModal(true)}
+              />
+            </div>
             </div>
           </div>
           <div className="px-4 w-full">

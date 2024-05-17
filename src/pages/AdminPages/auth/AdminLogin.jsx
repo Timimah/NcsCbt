@@ -15,7 +15,6 @@ export const AdminLogin = () => {
   const [isValid, setIsValid] = useState(false);
 
   const handleLogin = async () => {
-    // console.log( "Logging in...")
     if (isValid) {
       setIsLoading(true);
       try {
@@ -36,7 +35,6 @@ export const AdminLogin = () => {
       } catch (err) {
         setIsLoading(false);
         if (!err?.response) {
-          console.log(err);
         }
         if (err.response) {
           setError(err.response.data.message);

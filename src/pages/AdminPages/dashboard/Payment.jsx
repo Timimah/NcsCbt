@@ -38,7 +38,7 @@ export const Payment = () => {
 };
 
   return (
-    <div className="flex flex-col w-full p-10 gap-4">
+    <div className="flex flex-col w-full p-8 md:p-10 gap-4">
       <Header title="Payment" />
       <main className="flex-grow">
         <section className="flex flex-col gap-4">

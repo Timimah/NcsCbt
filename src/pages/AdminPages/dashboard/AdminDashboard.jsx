@@ -18,7 +18,8 @@ export const AdminDashboard = ({ children }) => {
   useEffect(() => {
     if (userName === "") {
       navigate("/admin");
-    } else {
+    } 
+    else {
       if (active === "dashboardmain") {
         navigate("/admin-dashboard/overview");
       }
@@ -274,7 +275,7 @@ export const AdminDashboard = ({ children }) => {
             <div className="flex justify-between w-full mb-6">
               <div
                 className="flex flex-col md:flex-row md:items-center cursor-pointer md:gap-4"
-                // onClick={handleProfile}
+                onClick={() => {navigate('/admin-dashboard/admin-profile'); setIsMenuOpen(false)}}
               >
                 <img alt="User Avatar" className="w-8 h-8 rounded-full mr-2" />
                 <div>
