@@ -1,73 +1,87 @@
 import { create } from "zustand";
-import axios from "axios";
-import { results } from "../components/user/results";
+import { persist, createJSONStorage } from "zustand/middleware";
 
-export const useUserStore = create((set, get) => ({
-  isLoggedIn: false,
-  loggedInUser: "",
-  userIsUser: false,
-  userIsAdmin: false,
-  quizActive: false,
-  userIsSubscribed: false,
-  loggedInUserEmail: "",
-  loggedInUserId: "",
-  loggedInUserRank: "",
-  loggedInUserPhoneNumber: "",
-  subscribers: [],
-  results: [],
-  users: [],
-  checkedInUsers: [],
-  admin: [],
-  materials: [],
-  userMaterials: [],
-  userResults: [],
-  questions: [],
-  examQuestions: [],
-  userImage: null,
+export const useUserStore = create(
+  persist(
+    (set, get) => ({
+      isLoggedIn: false,
+      loggedInUser: "",
+      userIsUser: false,
+      userIsAdmin: false,
+      quizActive: false,
+      userIsSubscribed: false,
+      loggedInUserEmail: "",
+      loggedInUserId: "",
+      loggedInUserRank: "",
+      loggedInUserPhoneNumber: "",
+      subscribers: [],
+      results: [],
+      users: [],
+      checkedInUsers: [],
+      admin: [],
+      materials: [],
+      userMaterials: [],
+      userResults: [],
+      questions: [],
+      examQuestions: [],
+      practiceHistory: [],
+      userImage: null,
 
-  setIsLoggedIn: (arg) => set({ isLoggedIn: arg }),
+      setIsLoggedIn: (arg) => set({ isLoggedIn: arg }),
 
-  setUserIsUser: (arg) => set({ userIsUser: arg }),
+      setUserIsUser: (arg) => set({ userIsUser: arg }),
 
-  setUserIsAdmin: (arg) => set({ userIsAdmin: arg }),
+      setUserIsAdmin: (arg) => set({ userIsAdmin: arg }),
 
-  setQuizActive: (arg) => set({ quizActive: arg }),
+      setQuizActive: (arg) => set({ quizActive: arg }),
 
-  setUserIsSubscribed: (arg) => set({ userIsSubscribed: arg }),
+      setUserIsSubscribed: (arg) => set({ userIsSubscribed: arg }),
 
-  setLoggedInUser: (user) => set({ loggedInUser: user }),
+      setLoggedInUser: (user) => set({ loggedInUser: user }),
 
-  setLoggedInUserEmail: (user) => set({ loggedInUserEmail: user }),
+      setLoggedInUserEmail: (user) => set({ loggedInUserEmail: user }),
 
-  setLoggedInUserId: (user) => set({ loggedInUserId: user }),
+      setLoggedInUserId: (user) => set({ loggedInUserId: user }),
 
-  setLoggedInUserRank: (user) => set({ loggedInUserRank: user }),
+      setLoggedInUserRank: (user) => set({ loggedInUserRank: user }),
 
-  setLoggedInUserPhoneNumber: (user) => set({ loggedInUserPhoneNumber: user }),
+      setLoggedInUserPhoneNumber: (user) =>
+        set({ loggedInUserPhoneNumber: user }),
 
-  setSubscribers: (subscribers) => set({ subscribers: subscribers }),
+      setSubscribers: (subscribers) => set({ subscribers: subscribers }),
 
-  setResults: (results) => set({ results: results }),
+      setResults: (results) => set({ results: results }),
 
-  setUsers: (users) => set({ users: users }),
+      setUsers: (users) => set({ users: users }),
 
-  setCheckedInUsers: (users) => set({ checkedInUsers: users }),
+      setCheckedInUsers: (users) => set({ checkedInUsers: users }),
 
-  setAdmin: (admin) => set({ admin: admin }),
+      setAdmin: (admin) => set({ admin: admin }),
 
-  setMaterials: (materials) => set({ materials: materials }),
+      setMaterials: (materials) => set({ materials: materials }),
 
-  setUserMaterials: (userMaterials) => set({ userMaterials: userMaterials }),
+      setUserMaterials: (userMaterials) =>
+        set({ userMaterials: userMaterials }),
 
-  setUserResults: (userResults) => set({ userResults: userResults }),
+      setUserResults: (userResults) => set({ userResults: userResults }),
 
-  setQuestions: (questions) => set({ questions: questions }),
+      setQuestions: (questions) => set({ questions: questions }),
 
-  setExamQuestions: (examQuestions) => set({ examQuestions: examQuestions }),
+      setExamQuestions: (examQuestions) =>
+        set({ examQuestions: examQuestions }),
 
-  setUserImage: (image) => set({ userImage: image }),
+      setPracticeHistory: (practiceHistory) =>
+        set({ practiceHistory: practiceHistory }),
 
-  logoutUser: () => {
-    set((state) => ({ ...state, isLoggedIn: false, loggedInUser: null }));
-  },
-}));
+      setUserImage: (image) => set({ userImage: image }),
+
+      logoutUser: () => {
+        set((state) => ({ ...state, isLoggedIn: false, loggedInUser: null }));
+      },
+    }),
+    {
+      name: "ncs-storage",
+      storage: createJSONStorage(() => sessionStorage),
+    }
+  )
+);
