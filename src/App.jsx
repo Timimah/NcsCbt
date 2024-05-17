@@ -40,65 +40,50 @@ const App = () => {
   const path = window.location.pathname;
 
   const setRank = () => {
-    console.log("Setting Rank");
     if (loggedInUserRank === "CAI") {
       setNextRank("CAII");
       setUserRank(`${loggedInUserRank}-${nextRank}`);
-      console.log(userRank);
     } else if (loggedInUserRank === "CAII") {
       setNextRank("AIC");
       setUserRank(`${loggedInUserRank}-${nextRank}`);
-      console.log(userRank);
     } else if (loggedInUserRank === "AIC") {
       setNextRank("IC");
       setUserRank(`${loggedInUserRank}-${nextRank}`);
-      console.log(userRank);
     } else if (loggedInUserRank === "IC") {
       setNextRank("ASCII");
       setUserRank(`${loggedInUserRank}-${nextRank}`);
-      console.log(userRank);
     } else if (loggedInUserRank === "ASCII") {
       setNextRank("ASCI");
       setUserRank(`${loggedInUserRank}-${nextRank}`);
-      console.log(userRank);
     } else if (loggedInUserRank === "ASCI") {
       setNextRank("DSC");
       setUserRank(`${loggedInUserRank}-${nextRank}`);
-      console.log(userRank);
     } else if (loggedInUserRank === "DSC") {
       setNextRank("SC");
       setUserRank(`${loggedInUserRank}-${nextRank}`);
-      console.log(userRank);
     } else if (loggedInUserRank === "SC") {
       setNextRank("CSC");
       setUserRank(`${loggedInUserRank}-${nextRank}`);
-      console.log(userRank);
     } else if (loggedInUserRank === "CSC") {
       setNextRank("AC");
       setUserRank(`${loggedInUserRank}-${nextRank}`);
-      console.log(userRank);
     } else if (loggedInUserRank === "AC") {
       setNextRank("DC");
       setUserRank(`${loggedInUserRank}-${nextRank}`);
-      console.log(userRank);
     } else if (loggedInUserRank === "DC") {
       setNextRank("CC");
       setUserRank(`${loggedInUserRank}-${nextRank}`);
-      console.log(userRank);
     }
   };
 
   useEffect(() => {
-    // if (isLoggedIn) {
     if (userIsUser) {
       setIsLoading(true)
-    // Set isLoading to false after 10 seconds
     const timer = setTimeout(() => {
         setIsLoading(false);
     }, 10000); // 10000 milliseconds = 10 seconds
 
     // Clear the timer when the component unmounts
-      console.log("User", loggedInUser, "is logged in");
       const token = localStorage.getItem("auth-token");
       const getMaterials = async () => {
         setIsLoading(true);
@@ -124,19 +109,15 @@ const App = () => {
         // List all files in Firebase Storage
         const res = await listAll(imageRef);
         res.items.forEach((item) => {
-          console.log(item, "From firebase");
           // Get metadata for each file
           getMetadata(item).then((metadata) => {
             // Check if the userId in the metadata matches the current user's ID
-            console.log(loggedInUserId, "Current user", metadata);
             if (metadata.customMetadata) {
               // alert();
               if (metadata.customMetadata.userId === loggedInUserId) {
-                console.log(metadata.customMetadata, ":Custom Metadata");
                 getDownloadURL(item)
                   .then((url) => {
                     setUserImage(url);
-                    console.log(url);
                   })
                   .catch((error) => {
                     if (error) {
@@ -159,10 +140,8 @@ const App = () => {
           },
         })
         .then((res) => {
-          console.log(res);
           setUserIsSubscribed(true);
           setExamQuestions(res.data.data);
-          console.log(examQuestions);
         })
         .catch((err) => {
           if (err.response.status === 401) {
@@ -171,7 +150,6 @@ const App = () => {
         });
     }
     if (userIsAdmin) {
-      console.log("Admin", loggedInUser, "is logged in");
       const token = localStorage.getItem("auth-token");
       setIsLoading(true);
       axios
@@ -187,7 +165,6 @@ const App = () => {
           setUsers(data);
         })
         .catch((err) => {
-          console.log(err);
         });
 
       const getMaterials = async () => {
@@ -221,7 +198,6 @@ const App = () => {
           setIsLoading(false);
         })
         .catch((err) => {
-          console.log(err);
         });
 
       axios
@@ -237,7 +213,6 @@ const App = () => {
           setSubscribers(data);
         })
         .catch((err) => {
-          console.log(err);
         });
 
       axios
@@ -259,7 +234,6 @@ const App = () => {
           setUserResults(filteredUserResults);
         })
         .catch((err) => {
-          console.log(err);
         });
     }
   }, [userIsAdmin, userIsUser]);
