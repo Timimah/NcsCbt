@@ -19,29 +19,23 @@ export const TakeExam = () => {
     loggedInUserId,
     questions,
     setQuizActive,
-    userIsAdmin,
-    userIsUser,
+    setPracticeHistory,
   } = useUserStore();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answered, setAnswered] = useState(false);
   const [answers, setAnswers] = useState([]);
   const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [timeRemaining, setTimeRemaining] = useState();
-  const [submit, setSubmit] = useState();
   const [timerId, setTimerId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [resultModal, setResultModal] = useState(false);
   const [score, setScore] = useState("");
   const [message, setMessage] = useState("");
   const [reviewMode, setReviewMode] = useState(false);
-  const [answer, setAnswer] = useState();
-  const [crctAnswers, setCrctAnswers] = useState([]);
-  const [wrngAnswers, setWrngAnswers] = useState([]);
 
   let timer;
   let quizDetails;
   const quizType = localStorage.getItem("type");
-  // console.log(quizType)
 
   useEffect(() => {
     setQuizActive(true);
@@ -52,14 +46,11 @@ export const TakeExam = () => {
     } else {
       quizDetails = JSON.parse(localStorage.getItem("examQuestionsDetails"));
     }
-    console.log(quizDetails);
-    // setAnswers([]);
     setTimeRemaining(quizDetails.time * 60);
     timer = setInterval(() => {
       setTimerId(timer);
       setTimeRemaining((prevTime) => {
         if (prevTime <= 0) {
-          console.log("ended");
           clearInterval(timer); // Stop the timer when timeRemaining reaches 0
           handleSubmit(); // Call the handleSubmit function when the timer ends
           return 0; // Set timeRemaining to 0 to prevent negative values
@@ -73,7 +64,6 @@ export const TakeExam = () => {
   useEffect(() => {
     if (isLoggedIn) {
       if (timeRemaining === 0) {
-        console.log("Time up");
         handleSubmit();
       }
     } else {
@@ -96,7 +86,6 @@ export const TakeExam = () => {
       newSelectedAnswers[currentQuestion] = newAnswer;
       return newSelectedAnswers;
     });
-    console.log(answers, selectedAnswers);
   };
 
   const handlePrevious = () => {
@@ -111,15 +100,11 @@ export const TakeExam = () => {
 
   const handleSubmit = async () => {
     clearInterval(timerId);
-    console.log(selectedAnswers);
-    // setReviewMode(false);
     const practiceData = {
       answers: selectedAnswers,
       userId: loggedInUserId,
       type: "practice",
-      // date: new Date().toLocaleDateString(),
     };
-    console.log(practiceData);
     try {
       const response = await axios.post(
         "https://ncs-cbt-api.onrender.com/exam/mark",
@@ -131,29 +116,34 @@ export const TakeExam = () => {
           },
         }
       );
-      console.log(response);
       const data = response.data.data;
-      setResultModal(true);
       const message = response.data.message;
       setMessage(message);
       const mark = data.map((item) => item.mark);
       const totalMark = mark.reduce((a, b) => a + b, 0);
-      console.log(data.length);
       setScore((totalMark / data.length) * 100);
-      const correctAnswers = data.filter(
-        (item) => item.userAnswer === item.correctAnswer
-      );
-      setCrctAnswers(correctAnswers);
-      const wrongAnswers = data.filter(
-        (item) => item.userAnswer !== item.correctAnswer
-      );
-      setWrngAnswers(wrongAnswers);
-      console.log("You scored, ", score);
-      // navigate('/dashboard/result')
+      let reviewData = [];
+      if (quizType === "practice") {
+        quizDetails = JSON.parse(
+          localStorage.getItem("practiceQuestionsDetails")
+        );
+      } else {
+        quizDetails = JSON.parse(localStorage.getItem("examQuestionsDetails"));
+      }
+      const newReviewData = data.map((item, index) => ({
+        question: questions[index].question,
+        category: quizDetails.rank,
+        userAnswer: selectedAnswers[index].answer,
+        correctAnswer: item.correctAnswer,
+        options: questions[index].options,
+      }));
+
+      reviewData = [...reviewData, ...newReviewData];
+      setPracticeHistory(reviewData);
+      setResultModal(true);
     } catch (error) {
       console.log(error);
     }
-    // setScore("");
   };
 
   return (
@@ -183,24 +173,26 @@ export const TakeExam = () => {
         )}
       </div>
       {reviewMode ? (
-        <div className="flex flex-col px-20 gap-4">
-          <div className="flex justify-center text-xl font-bold">
+        <div className="flex flex-col md:px-20 px-6 gap-4 -mt-6">
+          <div className="flex justify-center text-2xl font-bold">
             Review Questions
           </div>
+          <div className="bg-cardgreen text-white p-8 rounded-md flex flex-col gap-6">
           {questions.map((question, i) => (
-            <div key={i} className="flex flex-col gap-4">
+            <div key={i} className="flex flex-col text-sm gap-2">
               {/* <div className="font-bold text-lg">Question </div> */}
-              <div className="text-lg">
+              <div className="md:text-lg">
                 {i + 1}. {question.question}
               </div>
               {question.options.map((option, optionIndex) => (
                 <div
                   key={optionIndex}
                   className={`${
-                    selectedAnswers[optionIndex] === option
-                      ? "bg-green-200"
+                    selectedAnswers[i]?.answer === option
+                      ? "text-yellow font-bold"
                       : ""
-                  } flex`}
+                  }
+                  flex`}
                 >
                   <span className="mr-3">
                     {String.fromCharCode(65 + optionIndex)}.{" "}
@@ -210,7 +202,8 @@ export const TakeExam = () => {
               ))}
             </div>
           ))}
-          <div className="flex gap-10 px-10 mb-10">
+          </div>
+          <div className="flex md:flex-row flex-col py-10 gap-10 px-10">
             <Button
               title="Submit"
               btnStyles="bg-primary text-white px-4 py-3 w-full rounded-md"
@@ -233,7 +226,7 @@ export const TakeExam = () => {
             <span className="text-lg">Quit </span>
           </div>
           <div className="flex gap-8 justify-between items-center w-full px-10">
-            <div className="md:w-1/2 md:px-8 px-4 flex flex-col mb-10 gap-8">
+            <div className="md:w-1/2 md:px-8 px-2 flex flex-col mb-10 gap-8">
               <div className="flex flex-col gap-8">
                 <div className="flex justify-between items-center">
                   <div className="text-3xl">Question {currentQuestion + 1}</div>
@@ -248,7 +241,7 @@ export const TakeExam = () => {
                     {(timeRemaining % 60).toString().padStart(2, "0")}
                   </div>
                 </div>
-                <div className="font-semibold text-lg">
+                <div className="font-semibold md:text-lg">
                   {questions[currentQuestion].question}
                 </div>
               </div>
@@ -278,12 +271,12 @@ export const TakeExam = () => {
               >
                 <Button
                   title={
-                    <div className="flex px-4 gap-1 items-center">
+                    <div className="flex px-4 py-2 gap-1 items-center">
                       <img src={prev} className="" alt="" />
                       <span>Previous</span>
                     </div>
                   }
-                  btnStyles={`text-lg bg-secondary shadow-md px-4 rounded-lg w-full ${
+                  btnStyles={`text-lg bg-secondary shadow-md px-4 py-2 rounded-lg w-full ${
                     currentQuestion == 0 ? "text-gry bg-gray" : "text-primary"
                   }`}
                   btnClick={handlePrevious}
@@ -292,23 +285,18 @@ export const TakeExam = () => {
                 {currentQuestion === questions.length - 1 ? (
                   <Button
                     title="Submit"
-                    btnStyles="bg-primary text-white text-lg rounded-lg shadow-md px-4 w-full"
+                    btnStyles="bg-primary text-white text-lg rounded-lg shadow-md px-4 py-3 w-full"
                     btnClick={() => setReviewMode(true)}
                   />
                 ) : (
                   <Button
                     title={
-                      <div className="flex px-4 py-3 gap-1 items-center">
+                      <div className="flex px-4 py-2 gap-1 items-center">
                         <img src={next} className="" alt="" />
                         <span>Next</span>
                       </div>
                     }
-                    btnStyles={`text-lg bg-primary shadow-md px-4 py-3 rounded-lg w-full text-white
-                        ${
-                          currentQuestion === questions.length - 1
-                            ? "hidden"
-                            : ""
-                        }`}
+                    btnStyles={`text-lg bg-primary shadow-md px-4 py-2 rounded-lg w-full text-white`}
                     btnClick={handleNext}
                   />
                 )}
@@ -386,7 +374,6 @@ export const TakeExam = () => {
               />
             </div>
           }
-          // closeModal={() => setShowModal(false)}
         />
       )}
       {resultModal && (
@@ -404,14 +391,13 @@ export const TakeExam = () => {
             )
           }
           modStyles="w-1/2 justify-center bg-white"
-          // closeModal={() => setResultModal(false)}
           buttons={
-            quizType === "prcatice" ? (
+            quizType === "practice" ? (
               <div className="flex justify-center w-full p-4 my-4">
                 <Button
                   title="Back to Dashboard"
                   btnClick={() => {
-                    navigate("/dashboard/result");
+                    navigate("/dashboard/practice");
                     setQuizActive(false);
                   }}
                   btnStyles="border border-primary text-primary px-4 py-3 rounded-md"
