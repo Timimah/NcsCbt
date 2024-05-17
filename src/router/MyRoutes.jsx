@@ -23,6 +23,8 @@ import axios from "axios";
 import { Practice } from "../pages/UserPages/dashboard/Practice";
 import { ExamPage } from "../pages/UserPages/dashboard/Exam";
 import { ForgotPassword } from "../pages/UserPages/auth/ForgotPassword";
+import { Page404 } from "../pages/404";
+import { AdminProfile } from "../pages/AdminPages/dashboard/AdminProfile";
 
 export const MyRoutes = () => {
   const navigate = useNavigate();
@@ -58,7 +60,6 @@ export const MyRoutes = () => {
         <Route path="material" element={<Materials />} />
         <Route path="practice" element={<Practice />} />
         <Route path="exam" element={<ExamPage />} />
-        <Route path="result" element={<Results />} />
         <Route path="user-profile" element={<UserProfile />} />
       </Route>
       <Route path="/admin-dashboard" element={<AdminDashboard />}>
@@ -68,14 +69,12 @@ export const MyRoutes = () => {
         <Route path="materials" element={<UploadMaterials />} />
         <Route path="result" element={<Result />} />
         <Route path="exam" element={<Exam />} />
-        {/* <Route path="user-profile" element={<UserProfile />} /> */}
+        <Route path="admin-profile" element={<AdminProfile />} />
         <Route path="payment-history" element={<Payment />} />
         <Route path="upload-question" element={<UploadQuestions />} />
         <Route path="view-question" element={<ViewQuestion />} />
-        {/* <Route path="/dashboard/edit-venue" />
-          <Route path="/dashboard/edit-vendor" /> */}
       </Route>
-      <Route path="*" />
+      <Route path="*" element={<Page404 />}/>
     </Routes>
   );
 };
