@@ -12,6 +12,29 @@ export default {
         cardgreen: "#016F4AB2",
         story: "#D5FAFC",
         footer: "#016F4A33"
+      },
+      keyframes: {
+        typing: {
+          "0%": {
+            width: "0%",
+            visibility: "hidden"
+          },
+          "100%": {
+            width: "100%"
+          }
+        },
+        blink: {
+          "50%": {
+            borderColor: "transparent"
+          },
+          "100%": {
+            borderColor: "white"
+          }
+        }
+      },
+      animation: {
+        typing1: "typing 4s steps(50) infinite alternate, blink .10s infinite",
+        typing2: "typing 4s steps(35) infinite alternate, blink .5s infinite"
       }
     },
   },
