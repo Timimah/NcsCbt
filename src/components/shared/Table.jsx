@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 export const Table = ({ data, columns, customTitle }) => {
+  const [numEntries, setNumEntries] = useState(20);
   const printTable = () => {
     const newWindow = window.open('', '_blank');
     const tableHTML = document.querySelector('.table-to-print').outerHTML;
@@ -34,6 +35,10 @@ export const Table = ({ data, columns, customTitle }) => {
     }, 2000);
   };
 
+  const showMore = () => {
+    setNumEntries(prevNumEntries => Math.min(prevNumEntries + 20, data.length));
+  };
+
   return (
     <div className="overflow-x-auto">
     <div className='flex justify-end my-4'>
@@ -53,7 +58,7 @@ export const Table = ({ data, columns, customTitle }) => {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 bg-gray-50">
-          {data.map((item) => (
+          {data.slice(0, numEntries).map((item) => (
             <tr
               key={item.id}
               className="hover:bg-secondary hover:shadow-md"
@@ -70,6 +75,9 @@ export const Table = ({ data, columns, customTitle }) => {
           ))}
         </tbody>
       </table>
+      {numEntries < data.length && ( // Only show the "Show More" button if there are more entries to display
+        <button onClick={showMore} className="mt-2 bg-primary px-4 py-3 text-white rounded-md shadow-md">Show More</button>
+      )}
     </div>
   );
 };
