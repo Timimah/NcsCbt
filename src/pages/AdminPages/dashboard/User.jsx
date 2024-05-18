@@ -7,7 +7,7 @@ import { OverviewCard } from "../../../components/admin/OverviewCard";
 import user from "../../../assets/user.png";
 import axios from "axios";
 import { useUserStore } from "../../../store/userStore";
-import success from '../../../assets/upload.png'
+import success from "../../../assets/upload.png";
 
 const adminHeader = [
   { key: "id", label: "S/N" },
@@ -67,7 +67,8 @@ export const User = () => {
   const handleSubmit = async () => {
     if (isValid) {
       setIsLoading(true);
-      const adminData = { name, email, phoneNumber, password };
+      const fullName = name;
+      const adminData = { fullName, email, phoneNumber, password };
       try {
         const response = await axios.post(
           "https://ncs-cbt-api.onrender.com/admin/register",
@@ -79,7 +80,15 @@ export const User = () => {
             },
           }
         );
+        console.log(response);
+        setName("");
+        setEmail("");
+        setPhoneNumber("");
+        setPassword("");
+        setShowModal(false);
+        setHandleCreate(true);
       } catch (err) {
+        console.log(err);
         if (!err?.response) {
           console.log(err);
         } else if (err.response?.status === 409) {
@@ -88,12 +97,6 @@ export const User = () => {
           setError("Registration Failed");
         }
       }
-      setName("");
-      setEmail("");
-      setPhoneNumber("");
-      setPassword("");
-      setShowModal(false);
-      setHandleCreate(true);
     }
   };
 
@@ -172,13 +175,13 @@ export const User = () => {
                   />
                 </div>
               ))}
-              <div className="w-full"> 
-              <Button
-                title="Create Admin"
-                btnStyles="bg-primary rounded-md text-white px-4 py-3"
-                btnClick={() => setShowModal(true)}
-              />
-            </div>
+              <div className="w-full">
+                <Button
+                  title="Create Admin"
+                  btnStyles="bg-primary rounded-md text-white px-4 py-3"
+                  btnClick={() => setShowModal(true)}
+                />
+              </div>
             </div>
           </div>
           <div className="px-4 w-full">
