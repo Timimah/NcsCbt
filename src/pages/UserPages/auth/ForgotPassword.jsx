@@ -1,20 +1,43 @@
 import React, { useState } from "react";
 import { Button } from "../../../components/shared/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export const ForgotPassword = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
     const [isValid, setIsValid] = useState(false);
 
-  const resetPassword = (e) => {
-    if(isValid){
+  const resetPassword = async (e) => {
+    if(validateEmail(email)){
     console.log("Forgot password form submitted");
-    }
-    else {
-        setError("Enter a valid email address");
-    }
+    setIsValid(true);
+    setIsLoading(true);
+      await axios.post("https://ncs-cbt-api.onrender.com/users/forgotPassword", {
+        email,
+      }).then((res) => {
+        setError(res.data.message + `. Check your email for the reset link`);
+        setIsLoading(false);
+        setEmail("");
+        navigate('/login')
+      }).catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+        alert("Email not found");
+      }
+      )
+  }
+  else {
+    setError("Enter a valid email address");
+    setIsValid(false);
+  }
+  };
+
+  const validateEmail = (email) => {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
   };
 
   return (
@@ -34,6 +57,7 @@ export const ForgotPassword = () => {
               type="text"
               value={email}
               onChange={(e) => {
+                validateEmail(e.target.value);
                 setEmail(e.target.value);
                 if (e.target.value == "") {
                   setIsValid(false);

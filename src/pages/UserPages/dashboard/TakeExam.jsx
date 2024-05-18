@@ -303,7 +303,7 @@ export const TakeExam = () => {
               </div>
             </div>
             <div className="md:flex flex-col gap-8 w-1/2 hidden">
-              <div className="bg-secondary shadow-md rounded-lg py-10 items-center justify-center p-8 flex flex-col gap-8">
+              <div className="bg-secondary quiz-vector shadow-md rounded-lg py-10 items-center justify-center p-8 flex flex-col gap-8">
                 <div
                   className={`${
                     timeRemaining <= 300

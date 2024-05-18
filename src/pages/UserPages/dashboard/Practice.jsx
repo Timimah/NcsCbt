@@ -99,9 +99,9 @@ useEffect(() => {
   return (
     <div className="flex flex-col items-center justify-center p-8 md:">
       <Header title="Practice" />
-      <div>
+      <div className="w-full">
         <div className="flex flex-col gap-4">
-          <div className="flex justify-between items-center">
+          <div className="flex w-full items-center justify-between">
             <div className="font-bold text-2xl">Review Quiz</div>
             <div>
               <Button
