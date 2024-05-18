@@ -8,9 +8,7 @@ import { set } from "firebase/database";
 export const AdminDashboard = ({ children }) => {
   const [active, setActive] = useState("dashboardmain");
   const navigate = useNavigate();
-  const {
-    loggedInUser, setIsLoggedIn
-  } = useUserStore();
+  const { loggedInUser, setIsLoggedIn } = useUserStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const token = localStorage.getItem("auth-token");
   let userName = loggedInUser ? loggedInUser : "";
@@ -18,8 +16,7 @@ export const AdminDashboard = ({ children }) => {
   useEffect(() => {
     if (userName === "") {
       navigate("/admin");
-    } 
-    else {
+    } else {
       if (active === "dashboardmain") {
         navigate("/admin-dashboard/overview");
       }
@@ -230,6 +227,32 @@ export const AdminDashboard = ({ children }) => {
             <p className="">Result</p>
           </div>
           <div
+            className={`hidden md:flex ${
+              active === "profile"
+                ? `flex items-center bg-primary text-white px-4 w-full py-3 cursor-pointer rounded-md my-2 gap-2`
+                : `flex items-center hover:bg-active px-4 w-full py-3 cursor-pointer rounded-full my-2 gap-2`
+            }`}
+            onClick={() => {
+              setActive("profile");
+              navigate("/admin-dashboard/admin-profile");
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke={active === "profile" ? "white" : "#8A898D"}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="feather feather-user h-6"
+            >
+              <path d="M20 21v-2a4 4 0 0 0 -4 -4H8a4 4 0 0 0 -4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <p className="">Profile</p>
+          </div>
+          <div
             className={
               active === "logout"
                 ? `flex items-center bg-primary text-white px-4 w-full py-3 cursor-pointer rounded-md my-2 gap-2`
@@ -237,7 +260,7 @@ export const AdminDashboard = ({ children }) => {
             }
             onClick={() => {
               setActive("logout");
-              setIsLoggedIn(false)
+              setIsLoggedIn(false);
               navigate("/admin");
             }}
           >
@@ -275,7 +298,10 @@ export const AdminDashboard = ({ children }) => {
             <div className="flex justify-between w-full mb-6">
               <div
                 className="flex flex-col md:flex-row md:items-center cursor-pointer md:gap-4"
-                onClick={() => {navigate('/admin-dashboard/admin-profile'); setIsMenuOpen(false)}}
+                onClick={() => {
+                  navigate("/admin-dashboard/admin-profile");
+                  setIsMenuOpen(false);
+                }}
               >
                 <img alt="User Avatar" className="w-8 h-8 rounded-full mr-2" />
                 <div>
@@ -496,7 +522,7 @@ export const AdminDashboard = ({ children }) => {
               }
               onClick={() => {
                 setActive("logout");
-                setIsLoggedIn(false)
+                setIsLoggedIn(false);
                 navigate("/admin");
               }}
             >
