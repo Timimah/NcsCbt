@@ -14,6 +14,9 @@ export const useUserStore = create(
       loggedInUserId: "",
       loggedInUserRank: "",
       loggedInUserPhoneNumber: "",
+      adminEmail: "",
+      adminFullName: "",
+      adminPhoneNumber: "",
       subscribers: [],
       results: [],
       users: [],
@@ -47,6 +50,12 @@ export const useUserStore = create(
 
       setLoggedInUserPhoneNumber: (user) =>
         set({ loggedInUserPhoneNumber: user }),
+
+      setAdminEmail: (admin) => set({ adminEmail: admin }),
+
+      setAdminFullName: (admin) => set({ adminFullName: admin }),
+
+      setAdminPhoneNumber: (admin) => set({ adminPhoneNumber: admin }),
 
       setSubscribers: (subscribers) => set({ subscribers: subscribers }),
 
