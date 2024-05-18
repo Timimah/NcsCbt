@@ -53,6 +53,12 @@
     mix-blend-mode: exclusion; */
   }
 
+  .quiz-vector {
+    background: url(./assets/quizvector.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
   @media (prefers-color-scheme: light) {
     :root {
       color: #016f4a;
