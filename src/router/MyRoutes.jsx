@@ -5,7 +5,6 @@ import { CreateAccount } from "../pages/UserPages/auth/CreateAccount";
 import { Dashboard } from "../pages/UserPages/dashboard/Dashboard";
 import { DashboardPage } from "../pages/UserPages/dashboard/DashboardPage";
 import { Materials } from "../pages/UserPages/dashboard/Materials";
-import { Results } from "../pages/UserPages/dashboard/Results";
 import { UserProfile } from "../pages/UserPages/dashboard/UserProfile";
 import { Home } from "../pages/WebsitePages/Home";
 import { AdminDashboard } from "../pages/AdminPages/dashboard/AdminDashboard";

@@ -4,7 +4,6 @@ import { Button } from "../../../components/shared/Button";
 import { Modal } from "../../../components/shared/Modal";
 import upload from "../../../assets/upload-cloud.png";
 import success from "../../../assets/upload.png";
-import axios from "axios";
 import { useUserStore } from "../../../store/userStore";
 import { materialStorage } from "../../../../config";
 import {

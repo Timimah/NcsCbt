@@ -3,7 +3,7 @@ import { Table } from "../../../components/shared/Table";
 import { Header } from "../../../components/shared/Header";
 import { Button } from "../../../components/shared/Button";
 import { Modal } from "../../../components/shared/Modal";
-import * as XLSX from "xlsx";
+import * as XLSX from "xlsx"; 
 import { useUserStore } from "../../../store/userStore";
 
 const columns = [

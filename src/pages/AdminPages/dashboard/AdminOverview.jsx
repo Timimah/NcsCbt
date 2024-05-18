@@ -6,10 +6,6 @@ import subscription from "../../../assets/sub.png";
 import examinee from "../../../assets/examinee.png";
 import { OverviewCard } from "../../../components/admin/OverviewCard";
 import { useUserStore } from "../../../store/userStore";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { materialStorage } from "../../../../config";
-import { getDownloadURL, getMetadata, listAll, ref } from "firebase/storage";
 
 export const AdminOverview = () => {
   const {

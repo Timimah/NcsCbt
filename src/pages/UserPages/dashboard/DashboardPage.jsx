@@ -2,13 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Header } from "../../../components/shared/Header";
 import { Button } from "../../../components/shared/Button";
 import quiz from "../../../assets/quiz.png";
-import { Modal } from "../../../components/shared/Modal";
 import { Chart } from "../../../components/user/Chart";
 import { useUserStore } from "../../../store/userStore";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { getDownloadURL, getMetadata, listAll, ref } from "firebase/storage";
-import { imageStorage, materialStorage } from "../../../../config";
 
 export const DashboardPage = () => {
   const {userMaterials, isLoggedIn} = useUserStore()
