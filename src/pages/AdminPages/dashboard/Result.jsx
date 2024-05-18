@@ -209,7 +209,7 @@ export const Result = () => {
             />
           }
           closeModal={() => setShowModal(false)}
-          modStyles="bg-secondary w-1/2"
+          modStyles="w-1/2"
         />
       )}
     </div>

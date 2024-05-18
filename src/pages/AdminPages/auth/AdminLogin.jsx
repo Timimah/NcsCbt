@@ -50,7 +50,7 @@ export const AdminLogin = () => {
 
 
   return (
-    <div className="bg-vector bg-secondary min-h-screen flex items-center justify-center">
+    <div className="bg-vector min-h-screen flex items-center justify-center">
       <div className='w-full max-w-lg px-10 py-8 mx-8 md:mx-auto bg-secondary rounded-2xl shadow-md'>
         <div className='max-w-md mx-auto space-y-3'>
           <h3 className="text-3xl text-primary font-bold">Welcome back!</h3>

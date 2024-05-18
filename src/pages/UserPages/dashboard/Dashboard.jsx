@@ -47,7 +47,7 @@ export const Dashboard = () => {
 
   return (
     <>
-      <section className="hidden md:flex bg-vector w-full bg-secondary h-full max-h-screen transform transition-all duration-300">
+      <section className="hidden md:flex bg-vector w-full h-full max-h-screen transform transition-all duration-300">
         <div className="flex flex-col items-center w-80 bg-white text-grey py-10 px-4">
           <div
             className={
@@ -191,7 +191,7 @@ export const Dashboard = () => {
         </div>
       </section>
       {/* mobile dashboard nav */}
-      <section className="md:hidden flex justify-between bg-vector bg-secondary h-full max-h-screen">
+      <section className="md:hidden flex justify-between bg-vector h-full max-h-screen">
         {isMenuOpen && (
           <div className="flex flex-col items-center absolute left-0 bottom-0 top-0 bg-white text-grey py-10 px-8 z-10 w-3/4">
             <div className="flex justify-between w-full mb-6">

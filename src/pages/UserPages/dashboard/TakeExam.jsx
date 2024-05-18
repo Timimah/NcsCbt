@@ -147,7 +147,7 @@ export const TakeExam = () => {
   };
 
   return (
-    <section className="flex flex-col bg-vector w-full bg-secondary h-screen overflow-y-auto transform transition-all duration-300">
+    <section className="flex flex-col bg-vector w-full h-screen overflow-y-auto transform transition-all duration-300">
       <div className="flex justify-between items-center p-8 w-full">
         <div className="flex items-center">
           <Button

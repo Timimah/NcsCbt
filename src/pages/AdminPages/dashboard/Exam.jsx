@@ -78,7 +78,6 @@ export const Exam = () => {
               <div className='flex justify-between gap-4 hover:textwhite'>
                 <Button title={<img src={view} alt='delete' className='w-7 h-7' />} btnStyles="text-primary bg-secondary px-4 py-2 rounded-md shadow-md"
                   btnClick={() => showQuestions(item.questionCategory)} />
-                {/* <Button title={<img src={del} alt='delete' />} btnStyles="text-primary bg-secondary px-4 py-2 rounded-md shadow-md" /> */}
               </div>
             </div>
           </div>
