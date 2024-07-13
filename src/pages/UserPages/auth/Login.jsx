@@ -3,24 +3,40 @@ import { useState } from "react";
 import { Button } from "../../../components/shared/Button";
 import { useUserStore } from "../../../store/userStore";
 import axios from "axios";
+import { getDownloadURL, getMetadata, listAll, ref } from "firebase/storage";
+import { materialStorage } from "../../../../config";
 
 export const Login = () => {
   const navigate = useNavigate();
   const {
     setLoggedInUser,
     setIsLoggedIn,
+    setExamQuestions,
+    setUserIsSubscribed,
+    examQuestions,
+    loggedInUser,
+    userImage,
     setUserIsUser,
+    userIsUser,
+    setUserMaterials,
+    setUserImage,
+    loggedInUserId,
     setLoggedInUserId,
     setLoggedInUserEmail,
     setLoggedInUserPhoneNumber,
     setLoggedInUserRank,
   } = useUserStore();
 
+  const imageRef = ref(materialStorage, "images/");
+
   const [examineeId, setExamineeId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const token = localStorage.getItem("auth-token");
+  const allMaterialsRef = ref(materialStorage, "materials/");
 
   const handleLogin = async () => {
     if (isValid) {
@@ -55,6 +71,77 @@ export const Login = () => {
         setIsLoading(false);
         setExamineeId("");
         setPassword("");
+        if (userIsUser) {
+          setIsLoading(true);
+          const timer = setTimeout(() => {
+            setIsLoading(false);
+          }, 10000); // 10000 milliseconds = 10 seconds
+
+          // Clear the timer when the component unmounts
+          const getMaterials = async () => {
+            setIsLoading(true);
+            const res = await listAll(allMaterialsRef);
+            let newMaterials = [];
+            for (const item of res.items) {
+              const url = await getDownloadURL(item);
+              const metadata = await getMetadata(item);
+              const coverImageUrl = metadata.customMetadata.materialCover;
+              newMaterials.push({
+                url: url,
+                materialDetails: metadata,
+                coverImage: coverImageUrl,
+              });
+              setUserMaterials(newMaterials);
+              setIsLoading(false);
+            }
+          };
+          getMaterials();
+
+          const fetchUserImage = async () => {
+            setUserImage("");
+            // List all files in Firebase Storage
+            const res = await listAll(imageRef);
+            res.items.forEach((item) => {
+              // Get metadata for each file
+              getMetadata(item).then((metadata) => {
+                // Check if the userId in the metadata matches the current user's ID
+                if (metadata.customMetadata) {
+                  // alert();
+                  if (metadata.customMetadata.userId === loggedInUserId) {
+                    getDownloadURL(item)
+                      .then((url) => {
+                        setUserImage(url);
+                      })
+                      .catch((error) => {
+                        if (error) {
+                          setUserImage("");
+                          console.error("Error getting image URL: ", error);
+                        }
+                      });
+                  }
+                }
+              });
+            });
+          };
+
+          fetchUserImage();
+
+          axios
+            .get("https://ncs-cbt-api.onrender.com/exam/getExamQuestions", {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            })
+            .then((res) => {
+              setUserIsSubscribed(true);
+              setExamQuestions(res.data.data);
+            })
+            .catch((err) => {
+              if (err.response.status === 401) {
+                setUserIsSubscribed(false);
+              }
+            });
+        }
       } catch (err) {
         setIsLoading(false);
         if (!err?.response) {
@@ -62,6 +149,10 @@ export const Login = () => {
         }
         if (err.response) {
           setError(err.response.data.message);
+        }
+        if (err.response.message === "Network Error") {
+          setError("No Internet Connection");
+          alert("No Internet Connection! Check your network")
         }
       }
     }
@@ -112,8 +203,8 @@ export const Login = () => {
           {error && <div className="text-sm text-red-500">{error}</div>}
           <div className="flex flex-col gap-3 pt-3 items-center">
             <Button
-              title={isLoading ? "Loading..." : "Login"}
-              btnStyles="bg-primary text-white text-lg rounded-lg shadow-sm py-4 px-4 w-full relative text-center flex justify-center items-center"
+              title={isLoading ? "Logging in..." : "Log In"}
+              btnStyles={`${isLoading ? "bg-grey text-secondary animate-pulse" : "bg-primary text-white"} text-lg rounded-lg shadow-sm py-4 px-4 w-full relative text-center flex justify-center items-center`}
               btnClick={handleLogin}
               disabled={isValid === false || isLoading === true}
             />

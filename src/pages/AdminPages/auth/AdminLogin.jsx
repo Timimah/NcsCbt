@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../../../store/userStore";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { getDownloadURL, getMetadata, listAll, ref } from "firebase/storage";
+import { materialStorage } from "../../../../config";
 
 export const AdminLogin = () => {
   const navigate = useNavigate();
@@ -12,7 +14,14 @@ export const AdminLogin = () => {
     setUserIsAdmin,
     setAdminEmail,
     setAdminPhoneNumber,
-    setAdminFullName,
+    loggedInUserRank,
+    setUsers,
+    userIsAdmin,
+    setMaterials,
+    setQuestions,
+    setSubscribers,
+    setResults,
+    setUserResults,
   } = useUserStore();
 
   const [email, setEmail] = useState("");
@@ -20,6 +29,50 @@ export const AdminLogin = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState(false);
+  const [nextRank, setNextRank] = useState("");
+  const [userRank, setUserRank] = useState(nextRank);
+  const [showModal, setShowModal] = useState(false)
+  const token = localStorage.getItem("auth-token");
+
+  const allMaterialsRef = ref(materialStorage, "materials/");
+
+  const setRank = () => {
+    if (loggedInUserRank === "CAI") {
+      setNextRank("CAII");
+      setUserRank(`${loggedInUserRank}-${nextRank}`);
+    } else if (loggedInUserRank === "CAII") {
+      setNextRank("AIC");
+      setUserRank(`${loggedInUserRank}-${nextRank}`);
+    } else if (loggedInUserRank === "AIC") {
+      setNextRank("IC");
+      setUserRank(`${loggedInUserRank}-${nextRank}`);
+    } else if (loggedInUserRank === "IC") {
+      setNextRank("ASCII");
+      setUserRank(`${loggedInUserRank}-${nextRank}`);
+    } else if (loggedInUserRank === "ASCII") {
+      setNextRank("ASCI");
+      setUserRank(`${loggedInUserRank}-${nextRank}`);
+    } else if (loggedInUserRank === "ASCI") {
+      setNextRank("DSC");
+      setUserRank(`${loggedInUserRank}-${nextRank}`);
+    } else if (loggedInUserRank === "DSC") {
+      setNextRank("SC");
+      setUserRank(`${loggedInUserRank}-${nextRank}`);
+    } else if (loggedInUserRank === "SC") {
+      setNextRank("CSC");
+      setUserRank(`${loggedInUserRank}-${nextRank}`);
+    } else if (loggedInUserRank === "CSC") {
+      setNextRank("AC");
+      setUserRank(`${loggedInUserRank}-${nextRank}`);
+    } else if (loggedInUserRank === "AC") {
+      setNextRank("DC");
+      setUserRank(`${loggedInUserRank}-${nextRank}`);
+    } else if (loggedInUserRank === "DC") {
+      setNextRank("CC");
+      setUserRank(`${loggedInUserRank}-${nextRank}`);
+    }
+  };
+
 
   const handleLogin = async () => {
     if (isValid) {
@@ -42,11 +95,94 @@ export const AdminLogin = () => {
         navigate("/admin-dashboard");
         setIsLoggedIn(true);
         setUserIsAdmin(true);
+        if (userIsAdmin) {
+          setIsLoading(true);
+          axios
+            .get("https://ncs-cbt-api.onrender.com/admin/getUsers", {
+              headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+              },
+            })
+            .then((res) => {
+              const data = res.data.data;
+              setUsers(data);
+            })
+            .catch((err) => {});
+    
+          const getMaterials = async () => {
+            const res = await listAll(allMaterialsRef);
+            let newMaterials = [];
+    
+            for (const item of res.items) {
+              const url = await getDownloadURL(item);
+              const metadata = await getMetadata(item);
+              const coverImageUrl = metadata.customMetadata.materialCover;
+    
+              newMaterials.push({
+                url: url,
+                materialDetails: metadata,
+                coverImage: coverImageUrl,
+              });
+              setMaterials(newMaterials);
+            }
+          };
+          getMaterials();
+    
+          axios
+            .get("https://ncs-cbt-api.onrender.com/exam/", {
+              headers: {
+                "Authorization": `Bearer ${token}`,
+              },
+            })
+            .then((res) => {
+              const data = res.data.data;
+              setQuestions(data);
+              setIsLoading(false);
+            })
+            .catch((err) => {});
+    
+          axios
+            .get("https://ncs-cbt-api.onrender.com/admin/getAllSubscribers", {
+              headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+              },
+            })
+            .then((res) => {
+              const data = res.data.data;
+              setSubscribers(data);
+            })
+            .catch((err) => {});
+    
+          axios
+            .get("https://ncs-cbt-api.onrender.com/admin/getScores", {
+              headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+              },
+            })
+            .then((res) => {
+              const data = res.data.data;
+              setResults(data);
+              setRank();
+              const filteredUserResults = res.data.data.filter(
+                (result) => result.questionCategory === userRank
+              );
+    
+              setUserResults(filteredUserResults);
+            })
+            .catch((err) => {});
+        }
       } catch (err) {
         setIsLoading(false);
         console.log(err);
         if (err.response.message === "Network Error") {
           setError("No Internet Connection");
+          alert("No Internet Connection! Check your network")
         }
       }
       // setEmail("");
@@ -99,14 +235,12 @@ export const AdminLogin = () => {
           {error && <div className="text-sm text-red-500">{error}</div>}
           <div className="flex flex-col gap-3 pt-3 items-center">
             <button
-              className="bg-primary text-white text-lg rounded-lg shadow-sm py-4 px-4 w-full relative text-center flex justify-center items-center cursor-pointer"
+              className={`${isLoading ? "bg-grey text-secondary animate-pulse" : "bg-primary text-white"} text-lg rounded-lg shadow-sm py-4 px-4 w-full relative text-center flex justify-center items-center cursor-pointer`}
               onClick={handleLogin}
               disabled={!isValid}
             >
-              {isLoading ? "Loading..." : "Login"}
+              {isLoading ? "Logging In..." : "Log In"}
             </button>
-            {/* <Button title="Login" btnStyles="bg-primary text-white text-lg rounded-lg shadow-sm py-4 px-4 w-full" btnClick={} /> */}
-            {/* <a href="#">Forgot Password</a> */}
           </div>
         </div>
       </div>
