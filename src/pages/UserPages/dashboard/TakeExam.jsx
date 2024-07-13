@@ -32,6 +32,7 @@ export const TakeExam = () => {
   const [score, setScore] = useState("");
   const [message, setMessage] = useState("");
   const [reviewMode, setReviewMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
 
   let timer;
   let quizDetails;
@@ -106,6 +107,7 @@ export const TakeExam = () => {
       type: "practice",
     };
     try {
+      setIsLoading(true);
       const response = await axios.post(
         "https://ncs-cbt-api.onrender.com/exam/mark",
         practiceData,
@@ -118,6 +120,7 @@ export const TakeExam = () => {
       );
       const data = response.data.data;
       const message = response.data.message;
+      setIsLoading(false);
       setMessage(message);
       const mark = data.map((item) => item.mark);
       const totalMark = mark.reduce((a, b) => a + b, 0);
@@ -178,30 +181,30 @@ export const TakeExam = () => {
             Review Questions
           </div>
           <div className="bg-cardgreen text-white p-8 rounded-md flex flex-col gap-6">
-          {questions.map((question, i) => (
-            <div key={i} className="flex flex-col text-sm gap-2">
-              {/* <div className="font-bold text-lg">Question </div> */}
-              <div className="md:text-lg">
-                {i + 1}. {question.question}
-              </div>
-              {question.options.map((option, optionIndex) => (
-                <div
-                  key={optionIndex}
-                  className={`${
-                    selectedAnswers[i]?.answer === option
-                      ? "text-yellow font-bold"
-                      : ""
-                  }
-                  flex`}
-                >
-                  <span className="mr-3">
-                    {String.fromCharCode(65 + optionIndex)}.{" "}
-                  </span>
-                  <div>{option}</div>
+            {questions.map((question, i) => (
+              <div key={i} className="flex flex-col text-sm gap-2">
+                {/* <div className="font-bold text-lg">Question </div> */}
+                <div className="md:text-lg">
+                  {i + 1}. {question.question}
                 </div>
-              ))}
-            </div>
-          ))}
+                {question.options.map((option, optionIndex) => (
+                  <div
+                    key={optionIndex}
+                    className={`${
+                      selectedAnswers[i]?.answer === option
+                        ? "text-yellow font-bold"
+                        : ""
+                    }
+                  flex`}
+                  >
+                    <span className="mr-3">
+                      {String.fromCharCode(65 + optionIndex)}.{" "}
+                    </span>
+                    <div>{option}</div>
+                  </div>
+                ))}
+              </div>
+            ))}
           </div>
           <div className="flex md:flex-row flex-col py-10 gap-10 px-10">
             <Button

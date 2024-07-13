@@ -13,6 +13,7 @@ export const Practice = () => {
   const [showInstructions, setShowInstructions] = useState(false);
   const [rank, setRank] = useState("");
   const [numberOfQuestions, setNumberOfQuestions] = useState(2);
+  const [isLoading, setIsLoading] = useState(false)
   const [time, setTime] = useState();
   const [error, setError] = useState("");
   const token = localStorage.getItem("auth-token");
@@ -47,13 +48,14 @@ useEffect(() => {
     if (!rank) {
       setError("Please select a category");
     } else {
+      setIsLoading(true)
       axios
         .post(
           "https://ncs-cbt-api.onrender.com/exam/getPracticeQuestions",
           { rank },
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              "Authorization": `Bearer ${token}`,
             },
           }
         )
@@ -82,6 +84,7 @@ useEffect(() => {
                 "practiceQuestionsDetails",
                 JSON.stringify({ rank, time: (numberOfQuestions * 60) / 60 })
               );
+              setIsLoading(false)
               localStorage.setItem("type", "practice");
               setShowModal(false);
               setShowInstructions(true);
@@ -92,6 +95,10 @@ useEffect(() => {
         })
         .catch((err) => {
           console.log(err);
+          if (err.message === "Network Error") {
+            alert("Network Error! Check your internet connection")
+            setIsLoading(false)
+          }
         });
     }
   };
@@ -185,8 +192,8 @@ useEffect(() => {
           }
           buttons={
             <Button
-              title="Start Quiz"
-              btnStyles="bg-primary text-white py-2 px-4 rounded-md mt-4 w-full"
+              title={isLoading ? "Loading..." : "Start Exam"}
+              btnStyles={`${isLoading ? "bg-grey animate-pulse text-secondary" : "bg-primary text-white"} py-2 px-4 rounded-md mt-4 w-full`}
               btnClick={getPracticeQuestions}
             />
           }
@@ -265,7 +272,7 @@ useEffect(() => {
           }
           buttons={
             <Button
-              title="Start Exam"
+              title="Start Quiz"
               btnStyles="bg-primary text-white py-2 px-4 rounded-md mt-4 w-fit mx-auto"
               btnClick={() => {
                 setShowInstructions(false);

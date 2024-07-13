@@ -46,7 +46,7 @@ export const ForgotPassword = () => {
         <div className="max-w-md mx-auto space-y-3">
           <h3 className="text-3xl text-primary font-bold">Forgot Password</h3>
           <p className="text-grey mb-8">
-            Please enter the Email Address you used to create an account
+            Please enter the email address you used to create an account
           </p>
           {error && <div className="text-sm text-red-500">{error}</div>}
           <div>

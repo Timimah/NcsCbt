@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useUserStore } from "../../../store/userStore";
 import { Button } from "../../../components/shared/Button";
+import { Modal } from "../../../components/shared/Modal";
 
 export const Dashboard = () => {
   const { setIsLoggedIn } = useUserStore();
@@ -12,6 +13,7 @@ export const Dashboard = () => {
   const { loggedInUser } = useUserStore();
   let userName = loggedInUser ? loggedInUser : "";
   const path = window.location.pathname;
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (userName === "") {
@@ -36,6 +38,22 @@ export const Dashboard = () => {
     }
   }, []);
 
+  useEffect(() => {
+    // Set a timeout for one hour (3600000 milliseconds)
+    const timeout = setTimeout(() => {
+      setShowModal(true); // Show the modal after one hour
+    }, 3600000);
+
+    // Clean up the timeout on component unmount
+    return () => clearTimeout(timeout);
+  }, []);
+
+  const handleModalConfirmation = () => {
+    // Redirect the user to the login screen
+    navigate("/login");
+    setShowModal(false);
+  };
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -47,6 +65,27 @@ export const Dashboard = () => {
 
   return (
     <>
+      {showModal && (
+        <Modal
+          content={
+            <div className="text-lg my-4">
+              Your session has expired. Please log in again to continue
+            </div>
+          }
+          buttons={
+            <div className="flex justify-center">
+              {" "}
+              <Button
+                btnClick={handleModalConfirmation}
+                title="Log In"
+                btnStyles="px-4 py-3 rounded-md bg-primary text-white w-fit"
+              />
+            </div>
+          }
+          // closeModal={() => setShowModal(false)}
+          modStyles="bg-secondary"
+        />
+      )}
       <section className="hidden md:flex bg-vector w-full h-full max-h-screen transform transition-all duration-300">
         <div className="flex flex-col items-center w-80 bg-white text-grey py-10 px-4">
           <div
@@ -340,7 +379,7 @@ export const Dashboard = () => {
               }
               onClick={() => {
                 setActive("logout");
-                setIsLoggedIn(false)
+                setIsLoggedIn(false);
                 navigate("/login");
               }}
             >

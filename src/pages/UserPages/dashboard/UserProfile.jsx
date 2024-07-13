@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../../../store/userStore";
 import { ref, uploadBytes, getDownloadURL, updateMetadata } from "firebase/storage";
 import { v4 } from "uuid";
+import { imageStorage } from "../../../../config";
 
 export const UserProfile = () => {
   const navigate = useNavigate();

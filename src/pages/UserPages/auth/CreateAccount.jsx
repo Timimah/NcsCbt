@@ -23,6 +23,7 @@ export const CreateAccount = () => {
   const [rankError, setRankError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
+const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async () => { 
     let isValid = true;
@@ -60,6 +61,7 @@ export const CreateAccount = () => {
       let userData = { fullName, examineeId, email, phoneNumber, rank, password };
      
     const sendRequest = async () => {
+      setIsLoading(true)
       try {
         const response = await axios.post(
           "https://ncs-cbt-api.onrender.com/users/register",
@@ -68,6 +70,7 @@ export const CreateAccount = () => {
             headers: { "Content-Type": "application/json" },
           }
         );
+        setIsLoading(false)
         setFullName("");
       setExamineeId("");
       setEmail("");
@@ -174,7 +177,7 @@ export const CreateAccount = () => {
             {confirmPasswordError && <div className="text-sm text-red-500">{confirmPasswordError}</div>}
           </div>
           <div className="flex flex-col gap-3 pt-3 items-center">
-            <Button title="Create Account" btnStyles="bg-primary text-white text-lg rounded-lg shadow-sm py-4 px-4 w-full" btnClick={handleSubmit} />
+            <Button title={isLoading ? "Creating Account..." : "Create Account"} btnStyles={`${isLoading ? "bg-grey text-secondary animate-pulse" : "bg-primary text-white"} text-lg rounded-lg shadow-sm py-4 px-4 w-full`} btnClick={handleSubmit} />
             <Button title="Login" btnStyles="border border-primary text-primary text-lg rounded-lg shadow-sm py-4 px-4 w-full" btnClick={() => navigate('/login')} />
           </div>
         </div>

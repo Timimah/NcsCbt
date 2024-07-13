@@ -4,6 +4,7 @@ import axios from "axios";
 import { useUserStore } from "../../../store/userStore";
 import { Button } from "../../../components/shared/Button";
 import { set } from "firebase/database";
+import { Modal } from "../../../components/shared/Modal";
 
 export const AdminDashboard = ({ children }) => {
   const [active, setActive] = useState("dashboardmain");
@@ -41,12 +42,49 @@ export const AdminDashboard = ({ children }) => {
     }
   }, []);
 
+  useEffect(() => {
+    // Set a timeout for one hour (3600000 milliseconds)
+    const timeout = setTimeout(() => {
+      setShowModal(true); // Show the modal after one hour
+    }, 3600000);
+
+    // Clean up the timeout on component unmount
+    return () => clearTimeout(timeout);
+  }, []);
+
+  const handleModalConfirmation = () => {
+    // Redirect the user to the login screen
+    navigate("/login");
+    setShowModal(false);
+  };
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   return (
     <>
+    {showModal && (
+        <Modal
+          content={
+            <div className="text-lg my-4">
+              Your session has expired. Please log in again to continue
+            </div>
+          }
+          buttons={
+            <div className="flex justify-center">
+              {" "}
+              <Button
+                btnClick={handleModalConfirmation}
+                title="Log In"
+                btnStyles="px-4 py-3 rounded-md bg-primary text-white w-fit"
+              />
+            </div>
+          }
+          // closeModal={() => setShowModal(false)}
+          modStyles="bg-secondary"
+        />
+      )}
       <section className="hidden md:flex bg-vector w-full h-full transform transition-all duration-300">
         <div className="flex flex-col items-center w-1/4 bg-white text-grey py-10 px-4">
           <div
