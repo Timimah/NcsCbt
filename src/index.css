@@ -59,6 +59,10 @@
     background-size: cover;
   }
 
+  .circle {
+    @apply rounded-full w-12 h-12 md:w-32 md:h-32 shadow-lg;
+  }
+
   @media (prefers-color-scheme: light) {
     :root {
       color: #016f4a;
