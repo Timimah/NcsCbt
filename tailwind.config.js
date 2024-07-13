@@ -28,13 +28,13 @@ export default {
             borderColor: "transparent"
           },
           "100%": {
-            borderColor: "white"
+            borderColor: "#016f4a"
           }
-        }
+        },
       },
       animation: {
         typing1: "typing 4s steps(50) infinite alternate, blink .10s infinite",
-        typing2: "typing 4s steps(35) infinite alternate, blink .5s infinite"
+        typing2: "typing 4s steps(35) infinite alternate, blink .5s infinite",
       }
     },
   },
