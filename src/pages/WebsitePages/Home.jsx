@@ -231,11 +231,11 @@ const {questions} = useUserStore();
         <section id="home" className="py-20 px-6">
           <div className="max-w-3xl mx-auto text-center flex flex-col items-center justify-center">
             <h1 className="text-2xl md:text-5xl font-bold mb-4 text-primary flex flex-col items-center">
-              <div className="whitespace-nowrap animate-typing1 overflow-hidden [animation-delay: -2s]">Nigeria Customs Service<br /></div> 
-              <div className="whitespace-nowrap animate-typing2 overflow-hidden [animation-delay: -60s]">2024 CBT Practice</div>{" "}
+              <div className="whitespace-nowrap overflow-hidden [animation-delay: -2s]">Nigeria Customs Service<br /></div> 
+              <div className="whitespace-nowrap overflow-hidden [animation-delay: -60s]">CBT Platform</div>{" "}
             </h1>
             <span className="text-sm">
-              Get Yourself Prepared For NCS 2024 CBT Exams to Get High Score
+            Score High for Nigeria Customs Service 2024 Promotion Exams
             </span>
             <Button
               title="Get Started"
