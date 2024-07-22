@@ -63,20 +63,20 @@
     @apply rounded-full w-12 h-12 md:w-32 md:h-32 shadow-lg;
   }
 
-  @media (prefers-color-scheme: light) {
+  /* @media (prefers-color-scheme: light) {
     :root {
       color: black;
       background-color: white;
-    }
+    } */
 
-    a:hover {
+    /* a:hover {
       color: #016f4a;
-    }
+    } */
 
-    button {
+    /* button {
       background-color: #e9fff7
     }
-  }
+  } */
 
   /* @media (prefers-color-scheme: dark) {
     :root {
