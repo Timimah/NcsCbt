@@ -67,9 +67,9 @@
     :root {
       color: black;
       background-color: white;
-    } */
+    }
 
-    a:hover {
+    */ a:hover {
       color: #016f4a;
     }
 
@@ -91,5 +91,5 @@
     /* button {
       background-color: #016f4a;
     } */
-}
+  }
 }
