@@ -11,6 +11,7 @@ export const AdminDashboard = ({ children }) => {
   const navigate = useNavigate();
   const { loggedInUser, setIsLoggedIn } = useUserStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false)
   const token = localStorage.getItem("auth-token");
   let userName = loggedInUser ? loggedInUser : "";
 

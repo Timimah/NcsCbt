@@ -31,7 +31,6 @@ export const AdminLogin = () => {
   const [isValid, setIsValid] = useState(false);
   const [nextRank, setNextRank] = useState("");
   const [userRank, setUserRank] = useState(nextRank);
-  const [showModal, setShowModal] = useState(false)
   const token = localStorage.getItem("auth-token");
 
   const allMaterialsRef = ref(materialStorage, "materials/");
