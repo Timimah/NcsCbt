@@ -75,6 +75,7 @@ export const AdminLogin = () => {
 
   const handleLogin = async () => {
     if (isValid) {
+      alert("Valid!")
       setIsLoading(true);
       try {
         const response = await axios.post(

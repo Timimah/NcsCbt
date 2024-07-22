@@ -65,8 +65,8 @@
 
   @media (prefers-color-scheme: light) {
     :root {
-      color: #016f4a;
-      background-color: #e9fff7;
+      color: black;
+      background-color: white;
     }
 
     a:hover {
