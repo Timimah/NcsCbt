@@ -128,7 +128,7 @@ const {questions} = useUserStore();
               <Link
                 to="/"
                 onClick={toggleMenu}
-                className="py-3 px-4 font-semibold text-primary hover:bg-primary hover:text-white text-center rounded-md"
+                className="py-3 px-4 font-semibold text-primary hover:bg-primary hover:text-primary text-center rounded-md"
               >
                 Home
               </Link>
@@ -137,7 +137,7 @@ const {questions} = useUserStore();
                   toggleMenu();
                   scrollToSection("about");
                 }}
-                className="py-3 px-4 font-semibold text-primary hover:bg-primary hover:text-white text-center rounded-md"
+                className="py-3 px-4 font-semibold text-primary hover:bg-primary hover:text-primary text-center rounded-md"
               >
                 About Us
               </Link>
@@ -146,7 +146,7 @@ const {questions} = useUserStore();
                   toggleMenu();
                   scrollToSection("pricing");
                 }}
-                className="py-3 px-4 font-semibold text-primary hover:bg-primary hover:text-white text-center rounded-md"
+                className="py-3 px-4 font-semibold text-primary hover:bg-primary hover:text-primary text-center rounded-md"
               >
                 Pricing
               </Link>
@@ -155,7 +155,7 @@ const {questions} = useUserStore();
                   toggleMenu();
                   scrollToSection("contact");
                 }}
-                className="py-3 px-4 font-semibold text-primary hover:bg-primary hover:text-white text-center rounded-md"
+                className="py-3 px-4 font-semibold text-primary hover:bg-primary hover:text-primary text-center rounded-md"
               >
                 Contact
               </Link>
@@ -186,7 +186,7 @@ const {questions} = useUserStore();
             <img src={ncs} alt="" />
             <span className="font-bold text-2xl text-primary">NCSCBT</span>
           </div>
-          <ul className="flex text-lg space-x-10 font-bold">
+          <ul className="flex text-lg space-x-10 font-bold hover:text-primary">
             <li>
               <a href="#" onClick={() => scrollToSection("home")}>
                 Home

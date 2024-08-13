@@ -65,13 +65,13 @@
 
   @media (prefers-color-scheme: light) {
     :root {
-      color: black;
+      /* color: black; */
       background-color: white;
     }
 
-    a:hover {
+    /* a:hover {
       color: #016f4a;
-    }
+    } */
 
     /* button {
       background-color: #e9fff7
@@ -80,13 +80,13 @@
 
   @media (prefers-color-scheme: dark) {
     :root {
-      color: #e9fff7;
+      /* color: ; */
       background-color: #016f4a;
     }
 
-    a:hover {
+    /* a:hover {
       color: #e9fff7;
-    }
+    } */
 
     /* button {
       background-color: #016f4a;
