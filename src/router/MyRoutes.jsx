@@ -1,4 +1,4 @@
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate, useParams } from "react-router-dom";
 import { TakeExam } from "../pages/UserPages/dashboard/TakeExam";
 import { Login } from "../pages/UserPages/auth/Login";
 import { CreateAccount } from "../pages/UserPages/auth/CreateAccount";
@@ -53,7 +53,7 @@ export const MyRoutes = () => {
       <Route path="/create-account" element={<CreateAccount />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/reset-password/:jwt" element={<ResetPassword />} />
       <Route path="/admin" element={<AdminLogin />} />
       <Route path="/take-exam" element={<TakeExam />} />
       <Route path="/dashboard" element={<Dashboard />}>
