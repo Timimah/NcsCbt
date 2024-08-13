@@ -84,8 +84,10 @@ const [isLoading, setIsLoading] = useState(false)
           console.log(err);
         } else if (err.response?.status === 409) {
           setFullNameError("Username Taken");
+          setIsLoading(false)
         } else {
           setConfirmPasswordError("Registration Failed");
+          setIsLoading(false)
         }
       }
     };
