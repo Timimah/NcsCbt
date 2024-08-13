@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Button } from "../../../components/shared/Button";
-import { Link, useNavigate,useParams } from "react-router-dom";
+import { Link, useNavigate,useSearchParams } from "react-router-dom";
 import axios from "axios";
 
 export const ResetPassword = () => {
   const navigate = useNavigate();
-  const { jwt } = useParams();
+  const [searchParams] = useSearchParams();
+  const jwt = searchParams.get("jwt");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState("");
