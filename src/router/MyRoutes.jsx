@@ -28,7 +28,7 @@ import { ResetPassword } from "../pages/UserPages/auth/RestPassword";
 
 export const MyRoutes = () => {
   const navigate = useNavigate();
-  const { jwt } = useParams();
+  const { id } = useParams();
   // const [searchParams] = useSearchParams();
   // const jwt = searchParams.get("jwt");
   const validateLogin = (location) => {
@@ -56,7 +56,7 @@ export const MyRoutes = () => {
       <Route path="/create-account" element={<CreateAccount />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path={`/reset-password/:${jwt}`} element={<ResetPassword />} />
+      <Route path={`/reset-password/${id}/${token}`} element={<ResetPassword />} />
       <Route path="/admin" element={<AdminLogin />} />
       <Route path="/take-exam" element={<TakeExam />} />
       <Route path="/dashboard" element={<Dashboard />}>
