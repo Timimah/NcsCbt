@@ -12,7 +12,7 @@ export const ForgotPassword = () => {
 
   const resetPassword = async (e) => {
     if(validateEmail(email)){
-    console.log("Forgot password form submitted");
+    console.log("Forgot password form submitted", email);
     setIsValid(true);
     setIsLoading(true);
       await axios.post("https://ncs-cbt-api.onrender.com/users/forgotPassword", {
@@ -21,11 +21,11 @@ export const ForgotPassword = () => {
         setError(res.data.message + `. Check your email for the reset link`);
         setIsLoading(false);
         setEmail("");
-        navigate('/login')
+        // navigate('/reset-password')
       }).catch((err) => {
         console.log(err);
         setIsLoading(false);
-        alert("Email not found");
+        alert(err.message);
       }
       )
   }
@@ -46,7 +46,7 @@ export const ForgotPassword = () => {
         <div className="max-w-md mx-auto space-y-3">
           <h3 className="text-3xl text-primary font-bold">Forgot Password</h3>
           <p className="text-grey mb-8">
-            Please enter the email address you used to create an account
+            Please enter the email address you used to create your account
           </p>
           {error && <div className="text-sm text-red-500">{error}</div>}
           <div>
@@ -67,21 +67,21 @@ export const ForgotPassword = () => {
                 setError("");
               }}
               className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary"
-              placeholder="Enter your ID"
+              placeholder="Enter your email address"
             />
           </div>
         </div>
         <div className="flex flex-col mt-10 items-center">
             <Button
               title={isLoading ? "Loading..." : "Reset Password"}
-              btnStyles="bg-primary text-white text-lg rounded-lg shadow-sm py-4 px-4 w-full relative text-center flex justify-center items-center"
+              btnStyles={`${isLoading ? "bg-grey text-secondary animate-pulse" : "bg-primary text-white"} text-lg rounded-lg shadow-sm py-4 px-4 w-full relative text-center flex justify-center items-center`}
               btnClick={resetPassword}
               disabled={isValid === false}
             />
           </div>
       </div>
-      <div>Remember Password ?
-      <Link to="/login" className="text-sm text-primary"> Login</Link>
+      <div className="dark:text-secondary">Remember Password?
+      <Link to="/login" className="text-sm dark:text-grey text-primary"> Login</Link>
       </div>
     </div>
   );
