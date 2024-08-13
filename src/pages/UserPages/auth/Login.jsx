@@ -217,7 +217,7 @@ export const Login = () => {
           </div>
         </div>
       </div>
-      <Link to="/forgot-password" className="text-sm text-primary">
+      <Link to="/forgot-password" className="text-sm dark:text-secondary text-primary">
         Forgot Password?
       </Link>
     </div>
