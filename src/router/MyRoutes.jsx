@@ -29,10 +29,10 @@ import { ResetPassword } from "../pages/UserPages/auth/RestPassword";
 export const MyRoutes = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const token = localStorage.getItem("auth-token");
   // const [searchParams] = useSearchParams();
   // const jwt = searchParams.get("jwt");
   const validateLogin = (location) => {
-    const token = localStorage.getItem("auth-token");
     axios
       .get("https://ncs-cbt-api.onrender.com/admin/dashboard", {
         headers: {
