@@ -11,7 +11,7 @@ export const Page404 = () => {
                 <span class="sr-only">Error</span>404
             </h2>
             <p class="text-2xl md:text-3xl dark:text-gray-300 animate-bounce">Oops! We couldn't find this page.</p>
-            <Link to={history(-1)} class="px-8 py-4 text-xl font-semibold rounded dark:bg-secondary bg-primary text-primary">Back to home</Link>
+            <Link to='/' class="px-8 py-4 text-xl font-semibold rounded dark:bg-secondary bg-primary text-primary">Back to home</Link>
         </div>
     </div>
 </section>
