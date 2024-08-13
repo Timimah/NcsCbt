@@ -18,6 +18,7 @@ export const ResetPassword = () => {
   }
   else {
     setError("Enter a valid password");
+    // testing reset password feature
     setIsValid(false);
   }
   };
