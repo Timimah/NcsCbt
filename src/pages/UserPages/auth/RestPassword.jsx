@@ -63,7 +63,7 @@ export const ResetPassword = () => {
           </p>
           {error && <div className="text-sm text-red-500">{error}</div>}
           <div>
-            <label htmlFor="new password" className="block py-1 -mb-1">
+            <label htmlFor="password" className="block py-1 -mb-1">
               New Password
             </label>
             <input
@@ -83,29 +83,24 @@ export const ResetPassword = () => {
             />
           </div>
           <div>
-            <label htmlFor="confirm password" className="block py-1 -mb-1">
+            <label htmlFor="confirmPassword" className="block py-1 -mb-1">
               Confirm Password
             </label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => {
-                setConfirmPassword(e.target.value);
-                console.log(e.target.value);
-                if (e.target.value == "") {
-                  setIsValid(false);
-                  setError("Enter a valid password");
-                }
-                if (password !== confirmPassword) {
-                  setIsValid(false);
-                  setError("Passwords do not match");
-                }
-                setIsValid(true);
-                setError("");
-              }}
-              className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary"
-              placeholder="Enter your new password"
-            />
+            <input type="password" value={confirmPassword} onChange={(e) => {
+              setConfirmPassword(e.target.value);
+              if (e.target.value == "") {
+                setIsValid(false);
+                setError("Enter a valid password");
+              }
+              if (password !== confirmPassword) {
+                setIsValid(false);
+                setError("Passwords do not match");
+              }
+              setIsValid(true);
+              setError("");
+            }
+            } 
+            className="border w-full py-4 px-4 rounded-lg shadow-sm text-sm hover:border-primary" placeholder="Enter your new password" />
           </div>
         </div>
         <div className="flex flex-col mt-10 items-center">
