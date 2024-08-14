@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "../../../components/shared/Button";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { set } from "firebase/database";
 
 export const ResetPassword = () => {
   const navigate = useNavigate();
@@ -24,7 +25,10 @@ export const ResetPassword = () => {
         })
         .catch((err) => {
           console.log(err);
-          // navigate("/login");
+          if (err.message === "Network Error") {
+            // verifyToken();
+            alert("Network Error! Check your internet connection");
+          }
         });
     };
     verifyToken();
@@ -32,6 +36,12 @@ export const ResetPassword = () => {
 
   const resetPassword = async (e) => {
     if (isValid) {
+      if (password !== confirmPassword) {
+        setError("Password does not match");
+        setConfirmPassword("");
+        setIsValid(false);
+        return;
+      }
       setIsLoading(true);
       await axios
         .post(
@@ -50,6 +60,9 @@ export const ResetPassword = () => {
         })
         .catch((err) => {
           console.log(err);
+          setError("An error occured. Please try again");
+          setPassword("");
+          setConfirmPassword("");
           setIsLoading(false);
           setPasswordChanged(false);
         });
@@ -103,10 +116,6 @@ export const ResetPassword = () => {
                       setIsValid(false);
                       setError("Enter a valid password");
                     }
-                    if (e.target.value !== password) {
-                      setIsValid(false);
-                      setError("Passwords do not match");
-                    }
                     setIsValid(true);
                     setError("");
                   }}
@@ -130,13 +139,18 @@ export const ResetPassword = () => {
           </>
         )}
         {passwordChanged && (
-          <div>
-            Your password has been changed successfully.{" "}
-            <span>
-              <Link to="/login" className="text-primary">
+           <div className="max-w-md mx-auto space-y-6 my-4">
+              <h3 className="text-3xl text-primary font-bold">
+                Reset Password
+              </h3>
+          <div className="space-y-6">
+            <p className="text-xl">Your password has been changed successfully</p>
+            <p className="text-sm">
+              <Link to="/login" className="text-primary border border-primary rounded-md px-4 py-3">
                 Back to Login
               </Link>
-            </span>
+            </p>
+          </div>
           </div>
         )}
       </div>
