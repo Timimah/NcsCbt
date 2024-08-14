@@ -110,7 +110,7 @@ export const ResetPassword = () => {
         <div className="flex flex-col mt-10 items-center">
             <Button
               title={isLoading ? "Loading..." : "Reset Password"}
-              btnStyles="bg-primary text-white text-lg rounded-lg shadow-sm py-4 px-4 w-full relative text-center flex justify-center items-center"
+              btnStyles={`${isLoading ? "bg-grey text-secondary animate-pulse" : "bg-primary text-white"} text-lg rounded-lg shadow-sm py-4 px-4 w-full relative text-center flex justify-center items-center`}
               btnClick={resetPassword}
               disabled={isValid === false}
             />
