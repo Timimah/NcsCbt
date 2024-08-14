@@ -28,7 +28,6 @@ import { ResetPassword } from "../pages/UserPages/auth/RestPassword";
 
 export const MyRoutes = () => {
   const navigate = useNavigate();
-  const { id, token } = useParams();
   // const token = localStorage.getItem("auth-token");
   // const [searchParams] = useSearchParams();
   // const jwt = searchParams.get("jwt");

@@ -1,17 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../../../components/shared/Button";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 export const ResetPassword = () => {
   const navigate = useNavigate();
+  const { id, token } = useParams();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
     const [isValid, setIsValid] = useState(false);
 
-  const resetPassword = async (e) => {
+  useEffect(() => {
+    const verifyToken = async () => {
+      await axios
+        .get(`https://ncs-cbt-api.onrender.com/users/reset-password/${id}/${token}`)
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+          // navigate("/login");
+        });
+    }
+    verifyToken();
+  }, [id, token]);
+
+    const resetPassword = async (e) => {
     if(isValid) {
     setIsLoading(true);
   }
