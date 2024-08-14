@@ -91,6 +91,7 @@ export const ResetPassword = () => {
               value={confirmPassword}
               onChange={(e) => {
                 setConfirmPassword(e.target.value);
+                console.log(e.target.value);
                 if (e.target.value == "") {
                   setIsValid(false);
                   setError("Enter a valid password");
