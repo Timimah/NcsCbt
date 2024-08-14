@@ -54,7 +54,7 @@ export const ForgotPassword = () => {
               Email Address
             </label>
             <input
-              type="text"
+              type="email"
               value={email}
               onChange={(e) => {
                 validateEmail(e.target.value);

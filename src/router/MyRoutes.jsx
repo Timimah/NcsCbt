@@ -27,10 +27,6 @@ import { AdminProfile } from "../pages/AdminPages/dashboard/AdminProfile";
 import { ResetPassword } from "../pages/UserPages/auth/RestPassword";
 
 export const MyRoutes = () => {
-  const navigate = useNavigate();
-  // const token = localStorage.getItem("auth-token");
-  // const [searchParams] = useSearchParams();
-  // const jwt = searchParams.get("jwt");
 
   return (
     <Routes>
