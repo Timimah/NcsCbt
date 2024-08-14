@@ -30,6 +30,21 @@ export const ResetPassword = () => {
     const resetPassword = async (e) => {
     if(isValid) {
     setIsLoading(true);
+      await axios.post(`https://ncs-cbt-api.onrender.com/users/reset-password/${id}/${token}`, {
+        password,
+      }).then((res) => {
+        setError(res.data.message);
+        setIsLoading(false);
+        setPassword("");
+        setConfirmPassword("");
+        console.log(res.data);
+        // navigate('/login')
+      }).catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+        alert(err.message);
+      }
+      )
   }
   else {
     setError("Enter a valid password");
@@ -52,7 +67,7 @@ export const ResetPassword = () => {
               New Password
             </label>
             <input
-              type="text"
+              type="password"
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
@@ -72,13 +87,17 @@ export const ResetPassword = () => {
               Confirm Password
             </label>
             <input
-              type="text"
+              type="password"
               value={confirmPassword}
               onChange={(e) => {
                 setConfirmPassword(e.target.value);
                 if (e.target.value == "") {
                   setIsValid(false);
                   setError("Enter a valid password");
+                }
+                if (password !== confirmPassword) {
+                  setIsValid(false);
+                  setError("Passwords do not match");
                 }
                 setIsValid(true);
                 setError("");
