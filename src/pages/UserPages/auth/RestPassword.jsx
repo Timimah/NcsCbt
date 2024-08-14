@@ -103,7 +103,7 @@ export const ResetPassword = () => {
                       setIsValid(false);
                       setError("Enter a valid password");
                     }
-                    if (password !== confirmPassword) {
+                    if (e.target.value !== password) {
                       setIsValid(false);
                       setError("Passwords do not match");
                     }
