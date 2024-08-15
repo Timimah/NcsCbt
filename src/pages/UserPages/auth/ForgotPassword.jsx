@@ -21,11 +21,13 @@ export const ForgotPassword = () => {
         setError(res.data.message + `. Check your email for the reset link`);
         setIsLoading(false);
         setEmail("");
-        // navigate('/reset-password')
       }).catch((err) => {
         console.log(err);
         setIsLoading(false);
-        alert(err.message);
+        if(err.message === "Request failed with status code 401"){
+        setError(`User with ${email} does not exist`);
+        }
+        setEmail("");
       }
       )
   }

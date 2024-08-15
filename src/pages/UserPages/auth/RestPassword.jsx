@@ -14,24 +14,21 @@ export const ResetPassword = () => {
   const [isValid, setIsValid] = useState(false);
   const [passwordChanged, setPasswordChanged] = useState(false);
 
-  useEffect(() => {
-    const verifyToken = async () => {
-      await axios
-        .get(
-          `https://ncs-cbt-api.onrender.com/users/reset-password/${id}/${token}`
-        )
-        .then((res) => {
-          console.log(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-          if (err.message === "Network Error") {
-            // verifyToken();
-            alert("Network Error! Check your internet connection");
-          }
-        });
-    };
-    verifyToken();
+  useEffect(async () => {
+    await axios
+      .get(
+        `https://ncs-cbt-api.onrender.com/users/reset-password/${id}/${token}`
+      )
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.message === "Network Error") {
+          // verifyToken();
+          alert("Network Error! Check your internet connection");
+        }
+      });
   }, [id, token]);
 
   const resetPassword = async (e) => {
@@ -139,18 +136,21 @@ export const ResetPassword = () => {
           </>
         )}
         {passwordChanged && (
-           <div className="max-w-md mx-auto space-y-6 my-4">
-              <h3 className="text-3xl text-primary font-bold">
-                Reset Password
-              </h3>
-          <div className="space-y-6">
-            <p className="text-xl">Your password has been changed successfully</p>
-            <p className="text-sm">
-              <Link to="/login" className="text-primary border border-primary rounded-md px-4 py-3">
-                Back to Login
-              </Link>
-            </p>
-          </div>
+          <div className="max-w-md mx-auto space-y-6 my-4">
+            <h3 className="text-3xl text-primary font-bold">Reset Password</h3>
+            <div className="space-y-6">
+              <p className="text-xl">
+                Your password has been changed successfully
+              </p>
+              <p className="text-sm">
+                <Link
+                  to="/login"
+                  className="text-primary border border-primary rounded-md px-4 py-3"
+                >
+                  Back to Login
+                </Link>
+              </p>
+            </div>
           </div>
         )}
       </div>
