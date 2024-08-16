@@ -25,17 +25,17 @@ NCS CBT is a Vite + React-based computer-based testing (CBT) web application des
    git clone https://github.com/your-username/ncs-cbt.git
    ```
 2. Navigate to the project directory:
- ```bash
- cd ncs-cbt
- ```
+    ```bash
+    cd ncs-cbt
+    ```
 3. Install the dependencies:
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 4. Start the development server:
-```bash
-npm run dev
-```
+   ```bash
+   npm run dev
+   ```
 
 ## Usage
 
@@ -50,6 +50,6 @@ If you'd like to contribute to NCS CBT, please fork the repository and use a fea
 
 This project is licensed under the MIT License.
 
-##Contact
+## Contact
 
 For any inquiries, please contact Jesujoba at [jblessed-agboola@gmail.com].
